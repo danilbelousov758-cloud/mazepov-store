@@ -1,836 +1,835 @@
 "use client";
 
-
 import Image from "next/image";
 import Header from "@/components/Header";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 
 export default function ModsPage() {
 
 
-const [openCategory,setOpenCategory] =
-useState<string | null>(null);
+  const [openCategory, setOpenCategory] = useState<string | null>(null);
 
+  const [openSubCategory, setOpenSubCategory] = useState<string | null>(null);
 
-const [activeCategory,setActiveCategory] =
-useState("Все");
+  const [activeCategory, setActiveCategory] = useState("Все");
 
 
-const [user,setUser] =
-useState<any>(null);
 
 
+  const categories = [
 
-useEffect(()=>{
+    {
+      name: "Скины",
 
-fetch("/api/auth/me")
+      items: [
+        "Государственные",
+        "Мафии",
+        "Банды",
+        "Гражданские",
+      ],
+    },
 
-.then(res=>res.json())
 
-.then(data=>{
 
-setUser(data.user);
+    {
+      name: "Оружие",
 
-});
+      items: [
+        "Ганпак",
+        "Дигл",
+        "ЮСП",
+        "Револьвер",
+        "АПС",
+        "СВД ПСО",
+        "СВД",
+        "M4A4",
+        "Абакан",
+        "АС Вал",
+        "Гроза",
+        "Дробовик",
+      ],
+    },
 
 
-},[]);
 
+    {
+      name: "Дороги",
 
+      items: [],
+    },
 
 
 
-const canCreateMod =
+    {
+      name: "Карты",
 
-user &&
+      items: [],
+    },
 
-(
-user.role === "OWNER" ||
-user.role === "ADMIN" ||
-user.role === "MODERATOR"
-);
 
 
+    {
+      name: "Интерьеры",
 
+      items: [
+        "24.7",
+        "ДПС/ППС/ФСБ",
+        "Оружейка",
+        "Ашан",
+        "Аптека",
+        "ПК клуб",
+        "Особняк",
+        "Банк",
+      ],
+    },
 
 
 
-const categoriesWithItems = [
+    {
+      name: "Заменные территории",
 
+      items: [
+        "24.7",
+        "ДПС/ППС/ФСБ",
+        "Оружейка",
+        "Ашан",
+        "Аптека",
+        "ПК клуб",
+        "Особняк",
+        "ЦР",
+        "ФСИН",
 
-{
-name:"Скины",
+        "Арзамас",
+        "Батырево",
+        "Южка",
 
-items:[
+        "Бизвар локации",
+        "Вокзалы",
+        "Казино",
+        "Порт",
+      ],
+    },
 
-"Государственные",
-"Мафии",
-"Банды",
-"Гражданские"
 
-]
 
-},
+    {
+      name: "Инвентарь",
 
+      items: [],
+    },
 
 
-{
-name:"Оружие",
 
-items:[
+    {
+      name: "Скайбоксы",
 
-"Ганпак",
-"Дигл",
-"ЮСП",
-"Револьвер",
-"АПС",
-"СВД ПСО",
-"СВД",
-"M4A4",
-"Абакан",
-"АС Вал",
-"Гроза",
-"Дробовик"
+      items: [],
+    },
 
-]
 
-},
 
+    {
+      name: "Эффекты",
 
+      items: [
+        "Кровь",
+        "Эффект при попадании",
+        "Эффект при убийстве и ноке (ld_bum)",
+      ],
+    },
 
-{
-name:"Интерьеры",
 
-items:[
 
-"24.7",
-"ДПС/ППС/ФСБ",
-"Оружейка",
-"Ашан",
-"Аптека",
-"ПК клуб",
-"Особняк",
-"Банк"
+    {
+      name: "Нефтевышки",
 
-]
+      items: [],
+    },
 
-},
 
 
+    {
+      name: "Прицелы",
 
-{
-name:"Заменные территории",
+      items: [],
+    },
 
-items:[
 
-"24.7",
-"ДПС/ППС/ФСБ",
-"Оружейка",
-"Ашан",
-"Аптека",
-"ПК клуб",
-"Особняк",
-"ЦР",
-"ФСИН",
-"Арзамас",
-"Батырево",
-"Южный",
-"Бизвар локации",
-"Вокзалы",
-"Казино",
-"Порт"
 
-]
+    {
+      name: "Курсор мыши",
 
-},
+      items: [],
+    },
 
 
 
-{
-name:"Эффекты",
+    {
+      name: "Фисты",
 
-items:[
+      items: [],
+    },
 
-"Кровь",
-"Эффект при попадании",
-"Эффект при убийстве и ноке"
 
-]
 
-},
+    {
+      name: "Звуки",
 
+      items: [
+        "Попадание",
+        "Ганы",
+        "Пистолеты",
+        "M4A4",
+        "Абакан",
+        "Гроза",
+        "СВД",
+        "СВД ПСО",
+      ],
+    },
 
 
-{
-name:"Звуки",
 
-items:[
+    {
+      name: "Таймциклы",
 
-"Попадание",
-"Ганы",
-"Пистолеты",
-"M4A4",
-"Абакан",
-"Гроза",
-"СВД",
-"СВД ПСО"
+      items: [],
+    },
 
-]
 
-}
 
+    {
+      name: "Пикапы",
 
+      items: [],
+    },
 
-];
 
 
+    {
+      name: "АХК",
 
+      items: [],
+    },
 
 
 
+    {
+      name: "АСИ плагины",
 
-const simpleCategories = [
+      items: [],
+    },
 
 
-"Дороги",
-"Карты",
-"Инвентарь",
-"Скайбоксы",
-"Нефтевышки",
-"Прицелы",
-"Курсор мыши",
-"Фисты",
-"Таймциклы",
-"Пикапы",
-"АХК",
-"АСИ плагины",
-"Деревья",
-"Графика",
-"Загрузочный экран",
-"Подсказки для госс. сотрудников"
 
+    {
+      name: "Деревья",
 
-];
+      items: [],
+    },
 
 
 
+    {
+      name: "Графика",
 
+      items: [],
+    },
 
 
 
-const mods = [
+    {
+      name: "Загрузочный экран",
 
+      items: [],
+    },
 
-{
-title:"Государственные скины",
-category:"Государственные",
-image:"/images/mods/mod1.png"
 
-},
 
+    {
+      name: "Подсказки для госс. сотрудников",
 
-{
-title:"Ганпак оружия",
-category:"Ганпак",
-image:"/images/mods/mod2.png"
+      items: [],
+    },
 
-},
+  ];
 
 
-{
-title:"Новая карта",
-category:"Карты",
-image:"/images/mods/mod3.png"
 
-},
 
 
-{
-title:"Интерьер банка",
-category:"Банк",
-image:"/images/mods/mod4.png"
+  const mods = [
 
-}
+    {
+      title: "Государственные скины",
 
+      category: "Государственные",
 
+      image: "/images/mods/mod1.png",
+    },
 
-];
 
+    {
+      title: "Ганпак оружия",
 
+      category: "Ганпак",
 
+      image: "/images/mods/mod2.png",
+    },
 
 
+    {
+      title: "Новая карта",
 
+      category: "Карты",
 
+      image: "/images/mods/mod3.png",
+    },
 
-const filteredMods =
 
-activeCategory === "Все"
+    {
+      title: "Интерьер банка",
 
-?
+      category: "Банк",
 
-mods
+      image: "/images/mods/mod4.png",
+    },
 
-:
+  ];
 
-mods.filter(
 
-mod => mod.category === activeCategory
 
-);
 
 
+  const filteredMods =
 
+    activeCategory === "Все"
 
+    ?
 
+    mods
 
+    :
 
-return (
+    mods.filter(
+      (mod) =>
+        mod.category === activeCategory
+    );
 
-<main
 
-className="
-relative
-min-h-screen
-overflow-hidden
-text-white
-"
 
->
+  return (
 
+    <main
 
+      className="
+        relative
+        min-h-screen
+        overflow-hidden
+        text-white
+      "
 
+    >
 
 
-<video
 
-autoPlay
-loop
-muted
-playsInline
+      {/* VIDEO BACKGROUND */}
 
-className="
-fixed
-inset-0
-w-full
-h-full
-object-cover
-z-0
-pointer-events-none
-"
+      <video
 
->
+        autoPlay
+        loop
+        muted
+        playsInline
 
-<source
+        className="
+          fixed
+          inset-0
+          w-full
+          h-full
+          object-cover
+          z-0
+          pointer-events-none
+        "
 
-src="/videos/background.mp4"
+      >
 
-type="video/mp4"
+        <source
 
-/>
+          src="/videos/background.mp4"
 
-</video>
+          type="video/mp4"
 
+        />
 
+      </video>
 
 
 
 
 
-<div
+      {/* DARK OVERLAY */}
 
-className="
-fixed
-inset-0
-bg-black/60
-z-10
-pointer-events-none
-"
+      <div
 
-/>
+        className="
+          fixed
+          inset-0
+          bg-black/60
+          z-10
+          pointer-events-none
+        "
 
+      />
 
 
 
 
 
+      {/* HEADER */}
 
+      <div
 
-<div
+        className="
+          relative
+          z-20
+        "
 
-className="
-relative
-z-[100]
-"
+      >
 
->
+        <Header />
 
-<Header/>
+      </div>
 
-</div>
 
 
 
 
 
 
+      {/* CONTENT */}
 
+      <section
 
+        className="
+          relative
+          z-20
+          pt-32
+          w-[82%]
+          max-w-6xl
+          mx-auto
+          flex
+          gap-6
+        "
 
-<section
+      >
 
-className="
-relative
-z-20
-pt-34
-w-[82%]
-max-w-6xl
-mx-auto
-flex
-gap-6
-"
 
->
 
 
 
+        {/* LEFT MENU */}
 
+        <aside
 
+          className="
+            w-72
+            h-[75vh]
+            overflow-y-auto
+            rounded-2xl
+            border
+            border-zinc-800
+            bg-black/70
+            p-5
+          "
 
+        >
 
 
 
-<aside
+          <h2
 
-className="
-w-72
-h-[75vh]
-overflow-y-auto
-rounded-2xl
-border
-border-zinc-800
-bg-black/70
-p-5
-"
+            className="
+              text-xl
+              font-bold
+              mb-5
+            "
 
->
+          >
 
+            Категории
 
+          </h2>
 
 
-<h2
 
-className="
-text-xl
-font-bold
-mb-5
-"
 
->
 
-Категории
+          <button
 
-</h2>
+            onClick={() =>
+              setActiveCategory("Все")
+            }
 
+            className="
+              w-full
+              text-left
+              py-2
+              text-gray-300
+              hover:text-white
+            "
 
+          >
 
+            Все моды
 
+          </button>
 
 
-{
 
-canCreateMod &&
 
-(
 
-<a
 
-href="/mods/create"
 
-className="
-block
-mb-4
-text-center
-bg-white
-text-black
-rounded-xl
-py-2
-font-bold
-"
+          {
+            categories.map((category) => (
 
->
+              <div
 
-+ Создать мод
+                key={category.name}
 
-</a>
+                className="
+                  mt-3
+                "
 
-)
+              >
 
-}
 
 
 
 
+                <button
 
+                  onClick={() =>
 
+                    setOpenCategory(
 
+                      openCategory === category.name
 
-<button
+                      ?
 
-onClick={()=>setActiveCategory("Все")}
+                      null
 
-className="
-w-full
-text-left
-py-2
-text-gray-300
-hover:text-white
-"
+                      :
 
->
+                      category.name
 
-Все моды
+                    )
 
-</button>
+                  }
 
+                  className="
+                    w-full
+                    flex
+                    justify-between
+                    items-center
+                    py-2
+                    font-semibold
+                  "
 
+                >
 
+                  <span>
 
+                    {category.name}
 
+                  </span>
 
 
 
-{
+                  {
 
-categoriesWithItems.map(category=>(
+                    category.items.length > 0 &&
 
+                    (
 
-<div
+                      <span>
 
-key={category.name}
+                        {
 
-className="mt-3"
+                          openCategory === category.name
 
->
+                          ?
 
+                          "−"
 
-<button
+                          :
 
-onClick={()=>setOpenCategory(
+                          "+"
 
-openCategory === category.name
+                        }
 
-?
+                      </span>
 
-null
+                    )
 
-:
+                  }
 
-category.name
 
-)}
+                </button>
 
-className="
-w-full
-flex
-justify-between
-font-semibold
-py-2
-"
 
->
 
 
-{category.name}
 
 
-<span>
 
-{
 
-openCategory===category.name
+                {
 
-?
+                  openCategory === category.name &&
 
-"−"
+                  category.items.length > 0 &&
 
-:
+                  (
 
-"+"
+                    <div
 
-}
+                      className="
+                        ml-4
+                        border-l
+                        border-zinc-800
+                        pl-3
+                      "
 
-</span>
+                    >
 
+                      {
 
-</button>
+                        category.items.map((item)=>(
 
 
+                          <button
 
+                            key={item}
 
+                            onClick={() =>
 
+                              setActiveCategory(item)
 
+                            }
 
-{
+                            className="
+                              block
+                              py-1
+                              text-sm
+                              text-gray-400
+                              hover:text-white
+                            "
 
-openCategory===category.name &&
+                          >
 
+                            {item}
 
-<div className="ml-4">
+                          </button>
 
 
-{
+                        ))
 
-category.items.map(item=>(
+                      }
 
 
-<button
+                    </div>
 
-key={item}
+                  )
 
-onClick={()=>setActiveCategory(item)}
+                }
 
-className="
-block
-py-1
-text-sm
-text-gray-400
-hover:text-white
-"
 
->
 
-{item}
 
-</button>
 
+              </div>
 
-))
 
+            ))
 
-}
+          }
 
 
-</div>
 
 
-}
 
+        </aside>
 
 
 
 
-</div>
 
 
-))
 
 
-}
 
+        {/* MODS */}
 
+        <div
 
+          className="
+            flex-1
+            grid
+            grid-cols-3
+            gap-4
+            h-fit
+          "
 
+        >
 
 
 
-<div
 
-className="
-mt-6
-border-t
-border-zinc-800
-pt-4
-"
 
->
+          {
 
+            filteredMods.map((mod,index)=>(
 
-{
 
-simpleCategories.map(item=>(
+              <div
 
+                key={index}
 
-<button
+                className="
+                  rounded-xl
+                  border
+                  border-zinc-800
+                  bg-black/70
+                  overflow-hidden
+                  shadow-lg
+                "
 
-key={item}
+              >
 
-onClick={()=>setActiveCategory(item)}
 
-className="
-block
-w-full
-text-left
-py-2
-text-gray-400
-hover:text-white
-"
 
->
+                <Image
 
-{item}
+                  src={mod.image}
 
-</button>
+                  alt={mod.title}
 
+                  width={500}
 
-))
+                  height={300}
 
+                  className="
+                    w-full
+                    h-40
+                    object-cover
+                  "
 
-}
+                />
 
 
-</div>
 
 
 
+                <div
 
+                  className="
+                    p-3
+                  "
 
-</aside>
+                >
 
+                  <h3
 
+                    className="
+                      text-sm
+                      font-semibold
+                    "
 
+                  >
 
+                    {mod.title}
 
+                  </h3>
 
 
 
 
-<div
+                  <p
 
-className="
-flex-1
-grid
-grid-cols-3
-gap-4
-h-fit
-"
+                    className="
+                      text-xs
+                      text-gray-500
+                      mt-1
+                    "
 
->
+                  >
 
+                    {mod.category}
 
+                  </p>
 
 
 
+                </div>
 
-{
 
-filteredMods.map((mod,index)=>(
 
 
-<div
+              </div>
 
-key={index}
 
-className="
-rounded-xl
-border
-border-zinc-800
-bg-black/70
-overflow-hidden
-shadow-lg
-"
+            ))
 
->
+          }
 
 
-<Image
 
-src={mod.image}
 
-alt={mod.title}
 
-width={500}
 
-height={300}
 
-className="
-w-full
-h-40
-object-cover
-"
+          {
 
-/>
+            filteredMods.length === 0 &&
 
+            (
 
+              <p
 
+                className="
+                  text-gray-400
+                "
 
+              >
 
-<div className="p-3">
+                В этой категории пока нет модов
 
+              </p>
 
-<h3 className="font-semibold">
+            )
 
-{mod.title}
+          }
 
-</h3>
 
 
 
-<p className="text-xs text-gray-500">
 
-{mod.category}
+        </div>
 
-</p>
 
 
-</div>
 
 
+      </section>
 
-</div>
 
 
-))
 
 
-}
+    </main>
 
-
-
-
-
-{
-
-filteredMods.length===0 &&
-
-(
-
-<p className="text-gray-400">
-
-В этой категории пока нет модов
-
-</p>
-
-)
-
-
-}
-
-
-
-
-
-</div>
-
-
-
-
-
-
-
-
-</section>
-
-
-
-
-
-
-</main>
-
-
-);
-
+  );
 
 }
