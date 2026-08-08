@@ -1,190 +1,911 @@
-import Image from "next/image";
+"use client";
 
-export default function Header() {
+import Image from "next/image";
+import Header from "@/components/Header";
+import { useState } from "react";
+
+
+export default function ModsPage() {
+
+
+  const [openCategory, setOpenCategory] = useState<string | null>(null);
+
+  const [openSubCategory, setOpenSubCategory] = useState<string | null>(null);
+
+  const [activeCategory, setActiveCategory] = useState("Все");
+
+
+
+
+
+  const expandableCategories = [
+
+    {
+      name: "Скины",
+
+      items: [
+        "Государственные",
+        "Мафии",
+        "Банды",
+        "Гражданские",
+      ],
+
+    },
+
+
+
+    {
+      name: "Оружие",
+
+      items: [
+        "Ганпак",
+        "Дигл",
+        "ЮСП",
+        "Револьвер",
+        "АПС",
+        "СВД ПСО",
+        "СВД",
+        "M4A4",
+        "Абакан",
+        "АС Вал",
+        "Гроза",
+        "Дробовик",
+      ],
+
+    },
+
+
+
+    {
+      name: "Интерьеры",
+
+      items: [
+        "24.7",
+        "ДПС/ППС/ФСБ",
+        "Оружейка",
+        "Ашан",
+        "Аптека",
+        "ПК клуб",
+        "Особняк",
+        "Банк",
+      ],
+
+    },
+
+
+
+    {
+      name: "Заменные территории",
+
+      items: [
+
+        "24.7",
+        "ДПС/ППС/ФСБ",
+        "Оружейка",
+        "Ашан",
+        "Аптека",
+        "ПК клуб",
+        "Особняк",
+        "ЦР",
+        "ФСИН",
+
+
+        {
+          name: "Арзамас",
+
+          children: [
+            "Батырево",
+            "Южка",
+          ],
+
+        },
+
+
+        "Бизвар локации",
+        "Вокзалы",
+        "Казино",
+        "Порт",
+
+      ],
+
+    },
+
+
+
+    {
+      name: "Эффекты",
+
+      items: [
+        "Кровь",
+        "Эффект при попадании",
+        "Эффект при убийстве и ноке (ld_bum)",
+      ],
+
+    },
+
+
+
+    {
+      name: "Звуки",
+
+      items: [
+
+        "Попадание",
+
+
+        {
+          name: "Ганы",
+
+          children: [
+            "Пистолеты",
+            "M4A4",
+            "Абакан",
+            "Гроза",
+            "СВД",
+            "СВД ПСО",
+          ],
+
+        },
+
+
+      ],
+
+    },
+
+
+  ];
+
+
+
+
+
+
+
+
+  const simpleCategories = [
+
+    "Дороги",
+    "Карты",
+    "Инвентарь",
+    "Скайбоксы",
+    "Нефтевышки",
+    "Прицелы",
+    "Курсор мыши",
+    "Фисты",
+    "Таймциклы",
+    "Пикапы",
+    "АХК",
+    "АСИ плагины",
+    "Деревья",
+    "Графика",
+    "Загрузочный экран",
+    "Подсказки для госс. сотрудников",
+
+  ];
+
+
+
+
+
+
+
+
+  const mods = [
+
+    {
+      title: "Государственные скины",
+      category: "Государственные",
+      image: "/images/mods/mod1.png",
+    },
+
+
+    {
+      title: "Ганпак оружия",
+      category: "Ганпак",
+      image: "/images/mods/mod2.png",
+    },
+
+
+    {
+      title: "Новая карта",
+      category: "Карты",
+      image: "/images/mods/mod3.png",
+    },
+
+
+    {
+      title: "Интерьер банка",
+      category: "Банк",
+      image: "/images/mods/mod4.png",
+    },
+
+  ];
+
+
+
+
+
+
+
+
+  const filteredMods =
+
+    activeCategory === "Все"
+
+      ?
+
+      mods
+
+      :
+
+      mods.filter(
+
+        (mod) =>
+
+          mod.category === activeCategory
+
+      );
 
   return (
 
-    <header
+    <main
 
       className="
-        w-[82%]
-        max-w-5xl
-        mx-auto
-        mt-6
-        rounded-2xl
-        bg-black/90
-        border
-        border-white/20
-        px-7
-        py-4
-        flex
-        items-center
-        justify-between
+        relative
+        min-h-screen
+        overflow-hidden
         text-white
-        shadow-xl
-        backdrop-blur-md
       "
 
     >
 
 
-      {/* LOGO */}
+      {/* VIDEO BACKGROUND */}
 
-      <a
+      <video
 
-        href="/"
+        autoPlay
+        loop
+        muted
+        playsInline
 
         className="
-          flex
-          items-center
-          gap-3
+          fixed
+          inset-0
+          w-full
+          h-full
+          object-cover
+          z-0
+          pointer-events-none
         "
 
       >
 
-        <span
+        <source
 
-          className="
-            text-xl
-            font-bold
-            tracking-widest
-          "
+          src="/videos/background.mp4"
 
-        >
+          type="video/mp4"
 
-          STORE
+        />
 
-        </span>
-
-
-      </a>
+      </video>
 
 
 
 
 
+      {/* DARK OVERLAY */}
 
-      {/* MENU */}
-
-      <nav
+      <div
 
         className="
+          fixed
+          inset-0
+          bg-black/60
+          z-10
+          pointer-events-none
+        "
+
+      />
+
+
+
+
+
+
+
+      {/* HEADER */}
+
+      <div
+
+        className="
+          relative
+          z-50
+        "
+
+      >
+
+        <Header />
+
+      </div>
+
+
+
+
+
+
+
+
+
+      {/* CONTENT */}
+
+      <section
+
+        className="
+          relative
+          z-20
+          pt-10
+          w-[82%]
+          max-w-6xl
+          mx-auto
           flex
-          items-center
           gap-6
-          text-sm
         "
 
       >
 
 
-        <a
-
-          href="/"
-
-          className="
-            hover:text-gray-400
-            transition
-          "
-
-        >
-
-          Главная
-
-        </a>
 
 
 
 
 
-        <a
+        {/* LEFT MENU */}
 
-          href="/mods"
+        <aside
 
           className="
-            hover:text-gray-400
-            transition
-          "
-
-        >
-
-          Моды
-
-        </a>
-
-
-
-
-
-        <a
-
-          href="/news"
-
-          className="
-            hover:text-gray-400
-            transition
-          "
-
-        >
-
-          Новости
-
-        </a>
-
-
-
-
-
-        <a
-
-          href="/support"
-
-          className="
-            hover:text-gray-400
-            transition
-          "
-
-        >
-
-          Поддержка
-
-        </a>
-
-
-
-
-
-        <a
-
-          href="/login"
-
-          className="
-            ml-2
-            px-5
-            py-2
-            rounded-xl
+            w-72
+            h-[75vh]
+            overflow-y-auto
+            rounded-2xl
             border
-            border-white/20
-            bg-white/10
-            font-semibold
-            hover:bg-white
-            hover:text-black
-            transition
+            border-zinc-800
+            bg-black/70
+            p-5
           "
 
         >
 
-          Войти
-
-        </a>
 
 
+          <h2 className="text-xl font-bold mb-5">
 
-      </nav>
+            Категории
+
+          </h2>
 
 
 
-    </header>
+
+
+          <button
+
+            onClick={() => setActiveCategory("Все")}
+
+            className="
+              w-full
+              text-left
+              py-2
+              text-gray-300
+              hover:text-white
+            "
+
+          >
+
+            Все моды
+
+          </button>
+
+
+
+
+
+
+
+          {
+            expandableCategories.map((category)=>(
+
+
+              <div
+
+                key={category.name}
+
+                className="mt-3"
+
+              >
+
+
+
+
+                <button
+
+                  onClick={() =>
+                    setOpenCategory(
+
+                      openCategory === category.name
+
+                      ?
+
+                      null
+
+                      :
+
+                      category.name
+
+                    )
+                  }
+
+
+                  className="
+                    w-full
+                    flex
+                    justify-between
+                    items-center
+                    py-2
+                    font-semibold
+                  "
+
+                >
+
+                  {category.name}
+
+
+                  <span>
+
+                    {
+
+                      openCategory === category.name
+
+                      ?
+
+                      "−"
+
+                      :
+
+                      "+"
+
+                    }
+
+                  </span>
+
+
+                </button>
+
+
+
+
+
+
+
+
+                {
+
+                  openCategory === category.name &&
+
+
+                  (
+
+                    <div
+
+                      className="
+                        ml-4
+                        border-l
+                        border-zinc-800
+                        pl-3
+                      "
+
+                    >
+
+
+
+                      {
+
+                        category.items.map((item)=>(
+
+
+
+                          typeof item === "string"
+
+
+                          ?
+
+
+                          (
+
+                            <button
+
+                              key={item}
+
+                              onClick={() =>
+                                setActiveCategory(item)
+                              }
+
+
+                              className="
+                                block
+                                w-full
+                                text-left
+                                py-1
+                                text-sm
+                                text-gray-400
+                                hover:text-white
+                              "
+
+                            >
+
+                              {item}
+
+                            </button>
+
+
+                          )
+
+
+
+                          :
+
+
+
+                          (
+
+                            <div key={item.name}>
+
+
+                              <button
+
+                                onClick={() =>
+                                  setOpenSubCategory(
+
+                                    openSubCategory === item.name
+
+                                    ?
+
+                                    null
+
+                                    :
+
+                                    item.name
+
+                                  )
+                                }
+
+
+                                className="
+                                  w-full
+                                  flex
+                                  justify-between
+                                  py-1
+                                  text-sm
+                                  text-gray-400
+                                "
+
+                              >
+
+                                {item.name}
+
+
+                                <span>
+
+                                  {
+
+                                    openSubCategory === item.name
+
+                                    ?
+
+                                    "−"
+
+                                    :
+
+                                    "+"
+
+                                  }
+
+                                </span>
+
+
+                              </button>
+
+
+
+
+
+
+                              {
+
+                                openSubCategory === item.name &&
+
+
+                                (
+
+                                  <div className="ml-4">
+
+
+                                    {
+
+                                      item.children.map(child=>(
+
+
+                                        <button
+
+                                          key={child}
+
+                                          onClick={() =>
+                                            setActiveCategory(child)
+                                          }
+
+
+                                          className="
+                                            block
+                                            py-1
+                                            text-sm
+                                            text-gray-500
+                                            hover:text-white
+                                          "
+
+                                        >
+
+                                          {child}
+
+                                        </button>
+
+
+                                      ))
+
+                                    }
+
+
+                                  </div>
+
+
+                                )
+
+                              }
+
+
+
+                            </div>
+
+
+                          )
+
+
+                        ))
+
+                      }
+
+
+
+
+                    </div>
+
+
+                  )
+
+
+                }
+
+
+
+              </div>
+
+
+            ))
+
+          }
+
+
+
+
+
+
+
+
+
+          <div
+
+            className="
+              mt-6
+              border-t
+              border-zinc-800
+              pt-4
+            "
+
+          >
+
+
+
+            {
+
+              simpleCategories.map(item=>(
+
+
+                <button
+
+                  key={item}
+
+                  onClick={() => setActiveCategory(item)}
+
+
+                  className="
+                    block
+                    w-full
+                    text-left
+                    py-2
+                    text-gray-400
+                    hover:text-white
+                  "
+
+                >
+
+                  {item}
+
+                </button>
+
+
+              ))
+
+            }
+
+
+
+          </div>
+
+
+
+
+
+
+        </aside>
+
+
+
+
+
+
+
+
+
+        {/* MODS GRID */}
+
+        <div
+
+          className="
+            flex-1
+            grid
+            grid-cols-3
+            gap-4
+            h-fit
+          "
+
+        >
+
+
+
+
+          {
+
+            filteredMods.map((mod,index)=>(
+
+
+              <div
+
+                key={index}
+
+                className="
+                  rounded-xl
+                  border
+                  border-zinc-800
+                  bg-black/70
+                  overflow-hidden
+                  shadow-lg
+                "
+
+              >
+
+
+
+                <Image
+
+                  src={mod.image}
+
+                  alt={mod.title}
+
+                  width={500}
+
+                  height={300}
+
+                  className="
+                    w-full
+                    h-40
+                    object-cover
+                  "
+
+                />
+
+
+
+
+
+                <div className="p-3">
+
+
+                  <h3 className="font-semibold">
+
+                    {mod.title}
+
+                  </h3>
+
+
+
+                  <p className="text-xs text-gray-500">
+
+                    {mod.category}
+
+                  </p>
+
+
+
+                </div>
+
+
+
+              </div>
+
+
+            ))
+
+          }
+
+
+
+
+
+          {
+
+            filteredMods.length === 0 &&
+
+            (
+
+              <p className="text-gray-400">
+
+                В этой категории пока нет модов
+
+              </p>
+
+            )
+
+          }
+
+
+
+
+        </div>
+
+
+
+
+
+
+
+      </section>
+
+
+
+
+
+    </main>
 
   );
 
