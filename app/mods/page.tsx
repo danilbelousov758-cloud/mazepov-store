@@ -10,7 +10,11 @@ export default function ModsPage() {
 
   const [openCategory, setOpenCategory] = useState<string | null>(null);
 
+  const [openSubCategory, setOpenSubCategory] = useState<string | null>(null);
+
   const [activeCategory, setActiveCategory] = useState("Все");
+
+
 
 
 
@@ -25,7 +29,9 @@ export default function ModsPage() {
         "Банды",
         "Гражданские",
       ],
+
     },
+
 
 
     {
@@ -45,7 +51,9 @@ export default function ModsPage() {
         "Гроза",
         "Дробовик",
       ],
+
     },
+
 
 
     {
@@ -61,31 +69,58 @@ export default function ModsPage() {
         "Особняк",
         "Банк",
       ],
+
     },
+
 
 
     {
       name: "Заменные территории",
 
       items: [
+
         "24.7",
+
         "ДПС/ППС/ФСБ",
+
         "Оружейка",
+
         "Ашан",
+
         "Аптека",
+
         "ПК клуб",
+
         "Особняк",
+
         "ЦР",
+
         "ФСИН",
-        "Арзамас",
-        "Батырево",
-        "Южка",
+
+
+        {
+          name: "Арзамас",
+
+          children: [
+            "Батырево",
+            "Южка",
+          ],
+
+        },
+
+
         "Бизвар локации",
+
         "Вокзалы",
+
         "Казино",
+
         "Порт",
+
       ],
+
     },
+
 
 
     {
@@ -96,26 +131,43 @@ export default function ModsPage() {
         "Эффект при попадании",
         "Эффект при убийстве и ноке (ld_bum)",
       ],
+
     },
+
 
 
     {
       name: "Звуки",
 
       items: [
+
         "Попадание",
-        "Ганы",
-        "Пистолеты",
-        "M4A4",
-        "Абакан",
-        "Гроза",
-        "СВД",
-        "СВД ПСО",
+
+
+        {
+          name: "Ганы",
+
+          children: [
+            "Пистолеты",
+            "M4A4",
+            "Абакан",
+            "Гроза",
+            "СВД",
+            "СВД ПСО",
+          ],
+
+        },
+
+
       ],
+
     },
 
 
   ];
+
+
+
 
 
 
@@ -123,23 +175,41 @@ export default function ModsPage() {
   const simpleCategories = [
 
     "Дороги",
+
     "Карты",
+
     "Инвентарь",
+
     "Скайбоксы",
+
     "Нефтевышки",
+
     "Прицелы",
+
     "Курсор мыши",
+
     "Фисты",
+
     "Таймциклы",
+
     "Пикапы",
+
     "АХК",
+
     "АСИ плагины",
+
     "Деревья",
+
     "Графика",
+
     "Загрузочный экран",
+
     "Подсказки для госс. сотрудников",
 
   ];
+
+
+
 
 
 
@@ -148,32 +218,48 @@ export default function ModsPage() {
 
     {
       title: "Государственные скины",
+
       category: "Государственные",
+
       image: "/images/mods/mod1.png",
+
     },
 
 
     {
       title: "Ганпак оружия",
+
       category: "Ганпак",
+
       image: "/images/mods/mod2.png",
+
     },
 
 
     {
       title: "Новая карта",
+
       category: "Карты",
+
       image: "/images/mods/mod3.png",
+
     },
 
 
     {
       title: "Интерьер банка",
+
       category: "Банк",
+
       image: "/images/mods/mod4.png",
+
     },
 
   ];
+
+
+
+
 
 
 
@@ -189,8 +275,11 @@ export default function ModsPage() {
       :
 
       mods.filter(
+
         (mod) =>
+
           mod.category === activeCategory
+
       );
 
   return (
@@ -207,7 +296,7 @@ export default function ModsPage() {
     >
 
 
-      {/* VIDEO BACKGROUND */}
+      {/* VIDEO */}
 
       <video
 
@@ -223,14 +312,16 @@ export default function ModsPage() {
           h-full
           object-cover
           z-0
-          pointer-events-none
         "
 
       >
 
         <source
+
           src="/videos/background.mp4"
+
           type="video/mp4"
+
         />
 
       </video>
@@ -238,7 +329,8 @@ export default function ModsPage() {
 
 
 
-      {/* DARK OVERLAY */}
+
+      {/* OVERLAY */}
 
       <div
 
@@ -247,7 +339,6 @@ export default function ModsPage() {
           inset-0
           bg-black/60
           z-10
-          pointer-events-none
         "
 
       />
@@ -278,9 +369,6 @@ export default function ModsPage() {
 
 
 
-
-      {/* CONTENT */}
-
       <section
 
         className="
@@ -300,7 +388,10 @@ export default function ModsPage() {
 
 
 
-        {/* LEFT MENU */}
+
+
+
+        {/* MENU */}
 
         <aside
 
@@ -337,7 +428,6 @@ export default function ModsPage() {
 
 
 
-
           <button
 
             onClick={() =>
@@ -349,7 +439,6 @@ export default function ModsPage() {
               text-left
               py-2
               text-gray-300
-              hover:text-white
             "
 
           >
@@ -364,11 +453,8 @@ export default function ModsPage() {
 
 
 
-          {/* РАСКРЫВАЮЩИЕСЯ КАТЕГОРИИ */}
-
 
           {
-
             expandableCategories.map((category)=>(
 
 
@@ -385,43 +471,39 @@ export default function ModsPage() {
 
 
 
-
                 <button
 
                   onClick={() =>
+
                     setOpenCategory(
 
                       openCategory === category.name
 
-                        ?
+                      ?
 
-                        null
+                      null
 
-                        :
+                      :
 
-                        category.name
+                      category.name
 
                     )
+
                   }
 
 
                   className="
-                    w-full
                     flex
                     justify-between
                     items-center
+                    w-full
                     py-2
                     font-semibold
                   "
 
                 >
 
-                  <span>
-
-                    {category.name}
-
-                  </span>
-
+                  {category.name}
 
 
                   <span>
@@ -430,18 +512,17 @@ export default function ModsPage() {
 
                       openCategory === category.name
 
-                        ?
+                      ?
 
-                        "−"
+                      "−"
 
-                        :
+                      :
 
-                        "+"
+                      "+"
 
                     }
 
                   </span>
-
 
 
                 </button>
@@ -452,9 +533,11 @@ export default function ModsPage() {
 
 
 
+
                 {
 
                   openCategory === category.name &&
+
 
                   (
 
@@ -470,35 +553,184 @@ export default function ModsPage() {
                     >
 
 
+
                       {
 
                         category.items.map((item)=>(
 
 
-                          <button
 
-                            key={item}
-
-                            onClick={() =>
-                              setActiveCategory(item)
-                            }
+                          typeof item === "string"
 
 
-                            className="
-                              block
-                              w-full
-                              text-left
-                              py-1
-                              text-sm
-                              text-gray-400
-                              hover:text-white
-                            "
+                          ?
 
-                          >
 
-                            {item}
+                          (
 
-                          </button>
+                            <button
+
+                              key={item}
+
+                              onClick={() =>
+                                setActiveCategory(item)
+                              }
+
+
+                              className="
+                                block
+                                w-full
+                                text-left
+                                py-1
+                                text-sm
+                                text-gray-400
+                              "
+
+                            >
+
+                              {item}
+
+                            </button>
+
+                          )
+
+
+                          :
+
+
+                          (
+
+                            <div
+
+                              key={item.name}
+
+                            >
+
+
+
+                              <button
+
+                                onClick={() =>
+
+                                  setOpenSubCategory(
+
+                                    openSubCategory === item.name
+
+                                    ?
+
+                                    null
+
+                                    :
+
+                                    item.name
+
+                                  )
+
+                                }
+
+
+                                className="
+                                  flex
+                                  justify-between
+                                  w-full
+                                  py-1
+                                  text-sm
+                                  text-gray-400
+                                "
+
+                              >
+
+                                {item.name}
+
+
+                                <span>
+
+                                  {
+
+                                    openSubCategory === item.name
+
+                                    ?
+
+                                    "−"
+
+                                    :
+
+                                    "+"
+
+                                  }
+
+                                </span>
+
+
+                              </button>
+
+
+
+
+
+
+                              {
+
+                                openSubCategory === item.name &&
+
+
+                                (
+
+                                  <div
+
+                                    className="
+                                      ml-4
+                                    "
+
+                                  >
+
+
+                                    {
+
+                                      item.children.map(child=>(
+
+
+                                        <button
+
+                                          key={child}
+
+                                          onClick={() =>
+                                            setActiveCategory(child)
+                                          }
+
+
+                                          className="
+                                            block
+                                            py-1
+                                            text-sm
+                                            text-gray-500
+                                          "
+
+                                        >
+
+                                          {child}
+
+                                        </button>
+
+
+                                      ))
+
+                                    }
+
+
+                                  </div>
+
+                                )
+
+                              }
+
+
+
+
+
+                            </div>
+
+                          )
 
 
                         ))
@@ -506,12 +738,14 @@ export default function ModsPage() {
                       }
 
 
-                    </div>
 
+
+                    </div>
 
                   )
 
                 }
+
 
 
 
@@ -529,8 +763,6 @@ export default function ModsPage() {
 
 
 
-          {/* ПРОСТЫЕ КАТЕГОРИИ */}
-
 
           <div
 
@@ -544,11 +776,9 @@ export default function ModsPage() {
           >
 
 
-
-
             {
 
-              simpleCategories.map((item)=>(
+              simpleCategories.map(item=>(
 
 
                 <button
@@ -566,7 +796,6 @@ export default function ModsPage() {
                     text-left
                     py-2
                     text-gray-400
-                    hover:text-white
                   "
 
                 >
@@ -581,12 +810,7 @@ export default function ModsPage() {
             }
 
 
-
-
-
           </div>
-
-
 
 
 
@@ -601,8 +825,7 @@ export default function ModsPage() {
 
 
 
-        {/* MOD CARDS */}
-
+        {/* MODS */}
 
         <div
 
@@ -614,7 +837,6 @@ export default function ModsPage() {
           "
 
         >
-
 
 
 
@@ -633,11 +855,9 @@ export default function ModsPage() {
                   border-zinc-800
                   bg-black/70
                   overflow-hidden
-                  shadow-lg
                 "
 
               >
-
 
 
 
@@ -661,52 +881,24 @@ export default function ModsPage() {
 
 
 
+                <div className="p-3">
 
 
-                <div
-
-                  className="
-                    p-3
-                  "
-
-                >
-
-
-
-                  <h3
-
-                    className="
-                      text-sm
-                      font-semibold
-                    "
-
-                  >
+                  <h3 className="font-semibold">
 
                     {mod.title}
 
                   </h3>
 
 
-
-
-                  <p
-
-                    className="
-                      text-xs
-                      text-gray-500
-                      mt-1
-                    "
-
-                  >
+                  <p className="text-xs text-gray-500">
 
                     {mod.category}
 
                   </p>
 
 
-
                 </div>
-
 
 
               </div>
@@ -719,21 +911,13 @@ export default function ModsPage() {
 
 
 
-
-
           {
 
             filteredMods.length === 0 &&
 
             (
 
-              <p
-
-                className="
-                  text-gray-400
-                "
-
-              >
+              <p className="text-gray-400">
 
                 В этой категории пока нет модов
 
@@ -742,7 +926,6 @@ export default function ModsPage() {
             )
 
           }
-
 
 
 
@@ -762,6 +945,8 @@ export default function ModsPage() {
 
     </main>
 
+
   );
+
 
 }
