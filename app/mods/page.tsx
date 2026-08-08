@@ -10,14 +10,11 @@ export default function ModsPage() {
 
   const [openCategory, setOpenCategory] = useState<string | null>(null);
 
-  const [openSubCategory, setOpenSubCategory] = useState<string | null>(null);
-
   const [activeCategory, setActiveCategory] = useState("Все");
 
 
 
-
-  const categories = [
+  const expandableCategories = [
 
     {
       name: "Скины",
@@ -29,7 +26,6 @@ export default function ModsPage() {
         "Гражданские",
       ],
     },
-
 
 
     {
@@ -52,23 +48,6 @@ export default function ModsPage() {
     },
 
 
-
-    {
-      name: "Дороги",
-
-      items: [],
-    },
-
-
-
-    {
-      name: "Карты",
-
-      items: [],
-    },
-
-
-
     {
       name: "Интерьеры",
 
@@ -85,7 +64,6 @@ export default function ModsPage() {
     },
 
 
-
     {
       name: "Заменные территории",
 
@@ -99,34 +77,15 @@ export default function ModsPage() {
         "Особняк",
         "ЦР",
         "ФСИН",
-
         "Арзамас",
         "Батырево",
         "Южка",
-
         "Бизвар локации",
         "Вокзалы",
         "Казино",
         "Порт",
       ],
     },
-
-
-
-    {
-      name: "Инвентарь",
-
-      items: [],
-    },
-
-
-
-    {
-      name: "Скайбоксы",
-
-      items: [],
-    },
-
 
 
     {
@@ -138,39 +97,6 @@ export default function ModsPage() {
         "Эффект при убийстве и ноке (ld_bum)",
       ],
     },
-
-
-
-    {
-      name: "Нефтевышки",
-
-      items: [],
-    },
-
-
-
-    {
-      name: "Прицелы",
-
-      items: [],
-    },
-
-
-
-    {
-      name: "Курсор мыши",
-
-      items: [],
-    },
-
-
-
-    {
-      name: "Фисты",
-
-      items: [],
-    },
-
 
 
     {
@@ -189,71 +115,31 @@ export default function ModsPage() {
     },
 
 
-
-    {
-      name: "Таймциклы",
-
-      items: [],
-    },
-
-
-
-    {
-      name: "Пикапы",
-
-      items: [],
-    },
-
-
-
-    {
-      name: "АХК",
-
-      items: [],
-    },
-
-
-
-    {
-      name: "АСИ плагины",
-
-      items: [],
-    },
-
-
-
-    {
-      name: "Деревья",
-
-      items: [],
-    },
-
-
-
-    {
-      name: "Графика",
-
-      items: [],
-    },
-
-
-
-    {
-      name: "Загрузочный экран",
-
-      items: [],
-    },
-
-
-
-    {
-      name: "Подсказки для госс. сотрудников",
-
-      items: [],
-    },
-
   ];
 
+
+
+
+  const simpleCategories = [
+
+    "Дороги",
+    "Карты",
+    "Инвентарь",
+    "Скайбоксы",
+    "Нефтевышки",
+    "Прицелы",
+    "Курсор мыши",
+    "Фисты",
+    "Таймциклы",
+    "Пикапы",
+    "АХК",
+    "АСИ плагины",
+    "Деревья",
+    "Графика",
+    "Загрузочный экран",
+    "Подсказки для госс. сотрудников",
+
+  ];
 
 
 
@@ -262,36 +148,28 @@ export default function ModsPage() {
 
     {
       title: "Государственные скины",
-
       category: "Государственные",
-
       image: "/images/mods/mod1.png",
     },
 
 
     {
       title: "Ганпак оружия",
-
       category: "Ганпак",
-
       image: "/images/mods/mod2.png",
     },
 
 
     {
       title: "Новая карта",
-
       category: "Карты",
-
       image: "/images/mods/mod3.png",
     },
 
 
     {
       title: "Интерьер банка",
-
       category: "Банк",
-
       image: "/images/mods/mod4.png",
     },
 
@@ -300,23 +178,20 @@ export default function ModsPage() {
 
 
 
-
   const filteredMods =
 
     activeCategory === "Все"
 
-    ?
+      ?
 
-    mods
+      mods
 
-    :
+      :
 
-    mods.filter(
-      (mod) =>
-        mod.category === activeCategory
-    );
-
-
+      mods.filter(
+        (mod) =>
+          mod.category === activeCategory
+      );
 
   return (
 
@@ -330,7 +205,6 @@ export default function ModsPage() {
       "
 
     >
-
 
 
       {/* VIDEO BACKGROUND */}
@@ -355,15 +229,11 @@ export default function ModsPage() {
       >
 
         <source
-
           src="/videos/background.mp4"
-
           type="video/mp4"
-
         />
 
       </video>
-
 
 
 
@@ -386,6 +256,7 @@ export default function ModsPage() {
 
 
 
+
       {/* HEADER */}
 
       <div
@@ -400,6 +271,7 @@ export default function ModsPage() {
         <Header />
 
       </div>
+
 
 
 
@@ -465,6 +337,7 @@ export default function ModsPage() {
 
 
 
+
           <button
 
             onClick={() =>
@@ -491,8 +364,13 @@ export default function ModsPage() {
 
 
 
+          {/* РАСКРЫВАЮЩИЕСЯ КАТЕГОРИИ */}
+
+
           {
-            categories.map((category) => (
+
+            expandableCategories.map((category)=>(
+
 
               <div
 
@@ -511,22 +389,21 @@ export default function ModsPage() {
                 <button
 
                   onClick={() =>
-
                     setOpenCategory(
 
                       openCategory === category.name
 
-                      ?
+                        ?
 
-                      null
+                        null
 
-                      :
+                        :
 
-                      category.name
+                        category.name
 
                     )
-
                   }
+
 
                   className="
                     w-full
@@ -547,33 +424,24 @@ export default function ModsPage() {
 
 
 
-                  {
+                  <span>
 
-                    category.items.length > 0 &&
+                    {
 
-                    (
+                      openCategory === category.name
 
-                      <span>
+                        ?
 
-                        {
+                        "−"
 
-                          openCategory === category.name
+                        :
 
-                          ?
+                        "+"
 
-                          "−"
+                    }
 
-                          :
+                  </span>
 
-                          "+"
-
-                        }
-
-                      </span>
-
-                    )
-
-                  }
 
 
                 </button>
@@ -584,12 +452,9 @@ export default function ModsPage() {
 
 
 
-
                 {
 
                   openCategory === category.name &&
-
-                  category.items.length > 0 &&
 
                   (
 
@@ -604,6 +469,7 @@ export default function ModsPage() {
 
                     >
 
+
                       {
 
                         category.items.map((item)=>(
@@ -614,13 +480,14 @@ export default function ModsPage() {
                             key={item}
 
                             onClick={() =>
-
                               setActiveCategory(item)
-
                             }
+
 
                             className="
                               block
+                              w-full
+                              text-left
                               py-1
                               text-sm
                               text-gray-400
@@ -641,11 +508,10 @@ export default function ModsPage() {
 
                     </div>
 
+
                   )
 
                 }
-
-
 
 
 
@@ -655,6 +521,71 @@ export default function ModsPage() {
             ))
 
           }
+
+
+
+
+
+
+
+
+          {/* ПРОСТЫЕ КАТЕГОРИИ */}
+
+
+          <div
+
+            className="
+              mt-6
+              border-t
+              border-zinc-800
+              pt-4
+            "
+
+          >
+
+
+
+
+            {
+
+              simpleCategories.map((item)=>(
+
+
+                <button
+
+                  key={item}
+
+                  onClick={() =>
+                    setActiveCategory(item)
+                  }
+
+
+                  className="
+                    block
+                    w-full
+                    text-left
+                    py-2
+                    text-gray-400
+                    hover:text-white
+                  "
+
+                >
+
+                  {item}
+
+                </button>
+
+
+              ))
+
+            }
+
+
+
+
+
+          </div>
+
 
 
 
@@ -670,7 +601,8 @@ export default function ModsPage() {
 
 
 
-        {/* MODS */}
+        {/* MOD CARDS */}
+
 
         <div
 
@@ -679,11 +611,9 @@ export default function ModsPage() {
             grid
             grid-cols-3
             gap-4
-            h-fit
           "
 
         >
-
 
 
 
@@ -707,6 +637,7 @@ export default function ModsPage() {
                 "
 
               >
+
 
 
 
@@ -739,6 +670,8 @@ export default function ModsPage() {
                   "
 
                 >
+
+
 
                   <h3
 
@@ -776,14 +709,12 @@ export default function ModsPage() {
 
 
 
-
               </div>
 
 
             ))
 
           }
-
 
 
 
@@ -817,6 +748,7 @@ export default function ModsPage() {
 
 
         </div>
+
 
 
 
