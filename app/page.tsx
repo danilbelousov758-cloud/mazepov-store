@@ -1,4 +1,3 @@
-import Image from "next/image";
 import Header from "@/components/Header";
 
 export default function Home() {
@@ -10,17 +9,16 @@ export default function Home() {
     "/images/mod4.png",
   ];
 
-
   return (
+
     <main
       className="
         relative
-        h-screen
+        min-h-screen
         overflow-hidden
         text-white
       "
     >
-
 
       {/* VIDEO BACKGROUND */}
       <video
@@ -28,9 +26,9 @@ export default function Home() {
         loop
         muted
         playsInline
-
+        preload="metadata"
         className="
-          absolute
+          fixed
           inset-0
           w-full
           h-full
@@ -47,11 +45,10 @@ export default function Home() {
       </video>
 
 
-
       {/* DARK OVERLAY */}
       <div
         className="
-          absolute
+          fixed
           inset-0
           bg-black/60
           z-10
@@ -59,11 +56,15 @@ export default function Home() {
       />
 
 
-
       {/* HEADER */}
-      <Header />
-
-
+      <div
+        className="
+          relative
+          z-50
+        "
+      >
+        <Header />
+      </div>
 
 
 
@@ -83,52 +84,32 @@ export default function Home() {
       >
 
 
-
-
         {/* PHOTOS */}
         <div
           className="
             grid
-
             grid-cols-[0.65fr_1.35fr]
-
             gap-5
           "
         >
-
-
 
 
           {/* LEFT IMAGE */}
           <div
             className="
               rounded-2xl
-
               border
               border-zinc-700/50
-
               overflow-hidden
-
               bg-black
-
               shadow-xl
-
               h-[420px]
-
-              flex
-              items-center
-              justify-center
             "
           >
 
-            <Image
+            <img
               src="/images/main.png"
-
               alt="Main"
-
-              width={1200}
-              height={1200}
-
               className="
                 w-full
                 h-full
@@ -141,78 +122,51 @@ export default function Home() {
 
 
 
-
-
-
-
           {/* RIGHT IMAGES */}
           <div
             className="
               grid
-
               grid-cols-2
-
               gap-4
             "
           >
 
-            {images.map((image,index)=>(
+            {
+              images.map((image,index)=>(
 
-
-              <div
-                key={index}
-
-                className="
-                  rounded-xl
-
-                  border
-                  border-zinc-700/50
-
-                  overflow-hidden
-
-                  bg-black
-
-                  shadow-lg
-
-                  h-[200px]
-
-                  flex
-                  items-center
-                  justify-center
-                "
-              >
-
-
-                <Image
-                  src={image}
-
-                  alt={`Mod ${index + 1}`}
-
-                  width={1200}
-                  height={700}
-
+                <div
+                  key={index}
                   className="
-                    w-full
-                    h-full
-                    object-cover
+                    rounded-xl
+                    border
+                    border-zinc-700/50
+                    overflow-hidden
+                    bg-black
+                    shadow-lg
+                    h-[200px]
                   "
-                />
+                >
 
+                  <img
+                    src={image}
+                    alt={`Mod ${index + 1}`}
+                    className="
+                      w-full
+                      h-full
+                      object-cover
+                    "
+                  />
 
-              </div>
+                </div>
 
-
-            ))}
+              ))
+            }
 
 
           </div>
 
 
-
         </div>
-
-
-
 
 
 
@@ -221,23 +175,15 @@ export default function Home() {
         <div
           className="
             mt-5
-
             rounded-2xl
-
             border
             border-zinc-700/50
-
             bg-black/60
-
             shadow-xl
-
             px-6
             py-4
-
-            text-left
           "
         >
-
 
           <h1
             className="
@@ -253,17 +199,12 @@ export default function Home() {
 
 
 
-
           <p
             className="
               mt-3
-
               text-gray-300
-
               leading-relaxed
-
               text-sm
-
               md:text-base
             "
           >
@@ -288,5 +229,6 @@ export default function Home() {
 
 
     </main>
+
   );
 }
