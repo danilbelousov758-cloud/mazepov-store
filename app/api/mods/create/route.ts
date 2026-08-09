@@ -1,11 +1,8 @@
 import { NextResponse } from "next/server";
 import { PrismaClient } from "@prisma/client";
-import { mkdir, writeFile } from "fs/promises";
-import path from "path";
-
+import { uploadFile } from "@/lib/storage";
 
 const prisma = new PrismaClient();
-
 
 
 export async function POST(req: Request) {
@@ -17,38 +14,51 @@ export async function POST(req: Request) {
 
 
 
-        const title = formData.get("title") as string;
-
-        const category = formData.get("category") as string;
-
-        const txdPath = formData.get("txdPath") as string;
-
-        const dffPath = formData.get("dffPath") as string;
+        const title =
+            formData.get("title") as string;
 
 
-
-        const image = formData.get("image") as File | null;
-
-        const txd = formData.get("txd") as File | null;
-
-        const dff = formData.get("dff") as File | null;
+        const category =
+            formData.get("category") as string;
 
 
+        const txdPath =
+            formData.get("txdPath") as string || "";
 
-        if (
+
+        const dffPath =
+            formData.get("dffPath") as string || "";
+
+
+
+        const image =
+            formData.get("image") as File | null;
+
+
+        const txd =
+            formData.get("txd") as File | null;
+
+
+        const dff =
+            formData.get("dff") as File | null;
+
+
+
+        if(
             !title ||
             !category ||
             !image ||
             !txd ||
             !dff
-        ) {
+        ){
 
             return NextResponse.json(
                 {
-                    error: "Заполните все обязательные поля"
+                    error:
+                    "Заполните все обязательные поля"
                 },
                 {
-                    status: 400
+                    status:400
                 }
             );
 
@@ -56,59 +66,35 @@ export async function POST(req: Request) {
 
 
 
-
-        const uploadFolder = path.join(
-            process.cwd(),
-            "public/uploads/mods"
-        );
-
-
-
-        await mkdir(
-            uploadFolder,
-            {
-                recursive: true
-            }
-        );
-
-
-
-
-
-
-        async function saveFile(file: File) {
-
-
-            const bytes =
-                await file.arrayBuffer();
+        async function upload(
+            file: File,
+            folder: string
+        ){
 
 
             const buffer =
-                Buffer.from(bytes);
-
-
-
-            const filename =
-                `${Date.now()}-${file.name}`;
-
-
-
-            const filepath =
-                path.join(
-                    uploadFolder,
-                    filename
+                Buffer.from(
+                    await file.arrayBuffer()
                 );
 
 
 
-            await writeFile(
-                filepath,
-                buffer
-            );
+            const filename =
+                `${folder}/${Date.now()}-${file.name}`;
 
 
 
-            return `/uploads/mods/${filename}`;
+            const url =
+                await uploadFile(
+                    buffer,
+                    filename,
+                    file.type
+                );
+
+
+
+            return url;
+
 
         }
 
@@ -116,23 +102,27 @@ export async function POST(req: Request) {
 
 
 
-
         const imageUrl =
-            await saveFile(image);
+            await upload(
+                image,
+                "images"
+            );
 
 
 
         const txdUrl =
-            await saveFile(txd);
+            await upload(
+                txd,
+                "txd"
+            );
 
 
 
         const dffUrl =
-            await saveFile(dff);
-
-
-
-
+            await upload(
+                dff,
+                "dff"
+            );
 
 
 
@@ -143,19 +133,30 @@ export async function POST(req: Request) {
 
                 data: {
 
+
                     title,
+
 
                     category,
 
-                    image: imageUrl,
 
-                    txd: txdUrl,
+                    image:
+                        imageUrl,
 
-                    dff: dffUrl,
 
-                    txdPath: txdPath || "",
+                    txd:
+                        txdUrl,
 
-                    dffPath: dffPath || "",
+
+                    dff:
+                        dffUrl,
+
+
+                    txdPath,
+
+
+                    dffPath,
+
 
                 }
 
@@ -165,12 +166,9 @@ export async function POST(req: Request) {
 
 
 
-
-
-
         return NextResponse.json(
             {
-                success: true,
+                success:true,
                 mod
             }
         );
@@ -178,7 +176,7 @@ export async function POST(req: Request) {
 
 
     }
-    catch(error) {
+    catch(error){
 
 
         console.error(
@@ -190,7 +188,8 @@ export async function POST(req: Request) {
 
         return NextResponse.json(
             {
-                error: "Ошибка создания мода"
+                error:
+                "Ошибка создания мода"
             },
             {
                 status:500
@@ -199,6 +198,5 @@ export async function POST(req: Request) {
 
 
     }
-
 
 }
