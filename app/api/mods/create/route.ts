@@ -1,242 +1,102 @@
 import { NextResponse } from "next/server";
-import fs from "fs";
-import path from "path";
+import { prisma } from "@/lib/prisma";
 
 
-export async function POST(req: Request) {
+export async function POST(req: Request){
 
-  try {
+try{
 
+const body = await req.json();
 
-    const formData = await req.formData();
+const {
+title,
+category,
+description,
+image,
+dff,
+txd,
+user
+}=body;
 
 
+if(!user){
+return NextResponse.json(
+{
+error:"Не авторизован"
+},
+{
+status:401
+}
+);
+}
 
-    const title = formData.get("title") as string;
 
-    const category = formData.get("category") as string;
 
-    const description = formData.get("description") as string;
+if(
+user.role !== "OWNER" &&
+user.role !== "ADMIN"
+){
 
+return NextResponse.json(
+{
+error:"Нет доступа"
+},
+{
+status:403
+}
+);
 
+}
 
-    const image = formData.get("image") as File | null;
 
-    const dff = formData.get("dff") as File | null;
 
-    const txd = formData.get("txd") as File | null;
+const mod = await prisma.mod.create({
 
+data:{
 
+title,
 
-    if(!title || !category){
+category,
 
-      return NextResponse.json(
-        {
-          error:"Заполните обязательные поля"
-        },
-        {
-          status:400
-        }
-      );
+description,
 
-    }
+image,
 
+dff,
 
+txd
 
-    const modsFolder = path.join(
-      process.cwd(),
-      "public",
-      "mods"
-    );
+}
 
+});
 
 
-    if(!fs.existsSync(modsFolder)){
 
-      fs.mkdirSync(
-        modsFolder,
-        {
-          recursive:true
-        }
-      );
+return NextResponse.json(
+{
+success:true,
+mod
+},
+{
+status:201
+}
+);
 
-    }
 
 
+}catch(error){
 
+console.error(error);
 
+return NextResponse.json(
+{
+error:"Ошибка сервера"
+},
+{
+status:500
+}
+);
 
-    async function saveFile(file:File | null){
-
-      if(!file){
-
-        return null;
-
-      }
-
-
-      const buffer = Buffer.from(
-        await file.arrayBuffer()
-      );
-
-
-      const filename =
-        Date.now()
-        +
-        "-"
-        +
-        file.name.replace(/\s/g,"_");
-
-
-
-      fs.writeFileSync(
-        path.join(
-          modsFolder,
-          filename
-        ),
-        buffer
-      );
-
-
-      return "/mods/" + filename;
-
-    }
-
-
-
-
-
-    const imagePath = await saveFile(image);
-
-    const dffPath = await saveFile(dff);
-
-    const txdPath = await saveFile(txd);
-
-
-
-
-
-
-    const filePath = path.join(
-      process.cwd(),
-      "data",
-      "mods.json"
-    );
-
-
-
-    if(!fs.existsSync(
-      path.dirname(filePath)
-    )){
-
-      fs.mkdirSync(
-        path.dirname(filePath),
-        {
-          recursive:true
-        }
-      );
-
-    }
-
-
-
-
-    let mods:any[] = [];
-
-
-
-    if(fs.existsSync(filePath)){
-
-      mods = JSON.parse(
-        fs.readFileSync(
-          filePath,
-          "utf-8"
-        )
-      );
-
-    }
-
-
-
-
-
-    const newMod = {
-
-      id: Date.now(),
-
-      title,
-
-      category,
-
-      description,
-
-      image:imagePath,
-
-      dff:dffPath,
-
-      txd:txdPath,
-
-      createdAt:new Date()
-
-    };
-
-
-
-
-
-    mods.push(newMod);
-
-
-
-
-    fs.writeFileSync(
-
-      filePath,
-
-      JSON.stringify(
-        mods,
-        null,
-        2
-      )
-
-    );
-
-
-
-
-
-
-    return NextResponse.json(
-      newMod,
-      {
-        status:200
-      }
-    );
-
-
-
-
-
-  } catch(error){
-
-
-    console.log(error);
-
-
-
-    return NextResponse.json(
-
-      {
-        error:"Ошибка создания мода"
-      },
-
-      {
-        status:500
-      }
-
-    );
-
-
-  }
+}
 
 }
