@@ -1,27 +1,14 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
-import bcrypt from "bcrypt";
+import bcrypt from "bcryptjs";
 
-
-export async function POST(request: Request) {
-
+export async function POST(req: Request) {
   try {
+    const body = await req.json();
 
-
-    const body = await request.json();
-
-
-
-    const {
-      nickname,
-      password,
-      server
-    } = body;
-
-
+    const { nickname, password, server } = body;
 
     if (!nickname || !password || !server) {
-
       return NextResponse.json(
         {
           error: "Заполните все поля"
@@ -30,41 +17,26 @@ export async function POST(request: Request) {
           status: 400
         }
       );
-
     }
 
 
-
-
-
-    const userExists = await prisma.user.findUnique({
-
-      where:{
+    const existingUser = await prisma.user.findUnique({
+      where: {
         nickname
       }
-
     });
 
 
-
-
-
-    if(userExists){
-
+    if (existingUser) {
       return NextResponse.json(
         {
-          error:"Такой никнейм уже существует"
+          error: "Пользователь уже существует"
         },
         {
-          status:400
+          status: 400
         }
       );
-
     }
-
-
-
-
 
 
     const hashedPassword = await bcrypt.hash(
@@ -73,90 +45,43 @@ export async function POST(request: Request) {
     );
 
 
-
-
-
-
-
     const user = await prisma.user.create({
-
-      data:{
-
+      data: {
         nickname,
-
-        password:hashedPassword,
-
-        server,
-
-        role:"USER"
-
+        password: hashedPassword,
+        server
       }
-
     });
 
 
-
-
-
-
-
     return NextResponse.json(
-
       {
-
-        message:"Регистрация успешна",
-
-        user:{
-
-          id:user.id,
-
-          nickname:user.nickname,
-
-          server:user.server,
-
-          role:user.role
-
+        message: "Регистрация успешна",
+        user: {
+          id: user.id,
+          nickname: user.nickname,
+          server: user.server,
+          role: user.role
         }
-
       },
-
       {
-        status:200
+        status: 201
       }
-
     );
 
 
+  } catch (error) {
 
-
-
-  } catch(error:any) {
-
-
-    console.error(
-      "REGISTER ERROR:",
-      error
-    );
-
-
+    console.error(error);
 
     return NextResponse.json(
-
       {
-
-        error:
-        error.message ||
-        "Ошибка сервера"
-
+        error: "Ошибка сервера"
       },
-
       {
-        status:500
+        status: 500
       }
-
     );
-
 
   }
-
 }

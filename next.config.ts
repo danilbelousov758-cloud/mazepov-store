@@ -1,13 +1,5 @@
-import type { NextConfig } from "next";
+import { defineConfig } from "prisma/config";
 
-const nextConfig: NextConfig = {
-  experimental: {
-    cpus: 1,
-  },
-
-  images: {
-    unoptimized: true,
-  },
-};
-
-export default nextConfig;
+export default defineConfig({
+  schema: "prisma/schema.prisma",
+});
