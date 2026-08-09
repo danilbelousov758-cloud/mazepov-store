@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { PrismaClient } from "@prisma/client";
-import { writeFile, mkdir } from "fs/promises";
+import { mkdir, writeFile } from "fs/promises";
 import path from "path";
 
 
@@ -8,159 +8,158 @@ const prisma = new PrismaClient();
 
 
 
-export async function POST(
-req: Request
-){
+export async function POST(req: Request) {
 
-try{
+    try {
 
 
-const form =
-await req.formData();
+        const formData = await req.formData();
 
 
 
-const title =
-form.get("title") as string;
+        const title = formData.get("title") as string;
 
+        const category = formData.get("category") as string;
 
+        const txdPath = formData.get("txdPath") as string;
 
-const category =
-form.get("category") as string;
+        const dffPath = formData.get("dffPath") as string;
 
 
 
-const txdPath =
-form.get("txdPath") as string;
+        const image = formData.get("image") as File | null;
 
+        const txd = formData.get("txd") as File | null;
 
+        const dff = formData.get("dff") as File | null;
 
-const dffPath =
-form.get("dffPath") as string;
 
 
+        if (
+            !title ||
+            !category ||
+            !image ||
+            !txd ||
+            !dff
+        ) {
 
-const image =
-form.get("image") as File;
+            return NextResponse.json(
+                {
+                    error: "Заполните все обязательные поля"
+                },
+                {
+                    status: 400
+                }
+            );
 
+        }
 
 
-const txd =
-form.get("txd") as File;
 
 
+        const uploadFolder = path.join(
+            process.cwd(),
+            "public/uploads/mods"
+        );
 
-const dff =
-form.get("dff") as File;
 
 
+        await mkdir(
+            uploadFolder,
+            {
+                recursive: true
+            }
+        );
 
 
 
-if(
-!title ||
-!category ||
-!image ||
-!txd ||
-!dff
-){
 
-return NextResponse.json(
-{
-error:"Не все данные заполнены"
-},
-{
-status:400
-}
-);
 
-}
 
+        async function saveFile(file: File) {
 
 
+            const bytes =
+                await file.arrayBuffer();
 
 
+            const buffer =
+                Buffer.from(bytes);
 
 
-const uploadDir =
-path.join(
-process.cwd(),
-"public/uploads/mods"
-);
 
+            const filename =
+                `${Date.now()}-${file.name}`;
 
 
-await mkdir(
-uploadDir,
-{
-recursive:true
-}
-);
 
+            const filepath =
+                path.join(
+                    uploadFolder,
+                    filename
+                );
 
 
 
+            await writeFile(
+                filepath,
+                buffer
+            );
 
 
-async function saveFile(
-file:File
-){
 
+            return `/uploads/mods/${filename}`;
 
-const bytes =
-await file.arrayBuffer();
+        }
 
 
 
-const buffer =
-Buffer.from(bytes);
 
 
 
-const filename =
-Date.now()+"_"+file.name;
+        const imageUrl =
+            await saveFile(image);
 
 
 
-const filepath =
-path.join(
-uploadDir,
-filename
-);
+        const txdUrl =
+            await saveFile(txd);
 
 
 
-await writeFile(
-filepath,
-buffer
-);
+        const dffUrl =
+            await saveFile(dff);
 
 
 
-return "/uploads/mods/"+filename;
 
 
-}
 
 
 
 
+        const mod =
+            await prisma.mod.create({
 
+                data: {
 
+                    title,
 
-const imageUrl =
-await saveFile(image);
+                    category,
 
+                    image: imageUrl,
 
+                    txd: txdUrl,
 
-const txdUrl =
-await saveFile(txd);
+                    dff: dffUrl,
 
+                    txdPath: txdPath || "",
 
+                    dffPath: dffPath || "",
 
-const dffUrl =
-await saveFile(dff);
+                }
 
+            });
 
 
 
@@ -169,82 +168,37 @@ await saveFile(dff);
 
 
 
-const mod =
-await prisma.mod.create({
+        return NextResponse.json(
+            {
+                success: true,
+                mod
+            }
+        );
 
-data:{
 
 
-title,
+    }
+    catch(error) {
 
 
-category,
+        console.error(
+            "CREATE MOD ERROR:",
+            error
+        );
 
 
-image:imageUrl,
 
+        return NextResponse.json(
+            {
+                error: "Ошибка создания мода"
+            },
+            {
+                status:500
+            }
+        );
 
-txd:txdUrl,
 
+    }
 
-dff:dffUrl,
-
-
-txdPath:
-
-
-txdPath || "",
-
-
-
-dffPath:
-
-
-dffPath || "",
-
-
-}
-
-
-});
-
-
-
-
-
-
-
-return NextResponse.json(
-{
-success:true,
-mod
-}
-);
-
-
-
-}
-catch(error){
-
-
-console.error(
-"CREATE MOD ERROR:",
-error
-);
-
-
-
-return NextResponse.json(
-{
-error:"Ошибка сервера"
-},
-{
-status:500
-}
-);
-
-
-
-}
 
 }
