@@ -8,19 +8,27 @@ import {
 } from "@aws-sdk/s3-request-presigner";
 
 
+
 const s3 = new S3Client({
 
-    region: "eu-central-003",
+    region:
+        "eu-central-003",
 
-    endpoint: process.env.B2_ENDPOINT,
 
-    credentials: {
+    endpoint:
+        process.env.B2_ENDPOINT,
+
+
+    credentials:{
+
 
         accessKeyId:
-            process.env.B2_KEY_ID as string,
+            process.env.B2_KEY_ID!,
+
 
         secretAccessKey:
-            process.env.B2_APPLICATION_KEY as string
+            process.env.B2_APPLICATION_KEY!
+
 
     }
 
@@ -28,23 +36,12 @@ const s3 = new S3Client({
 
 
 
+
+
 export async function createUploadUrl(
-    filename: string,
-    contentType: string
-) {
-
-
-    if(
-        !process.env.B2_BUCKET_NAME
-    ){
-
-        throw new Error(
-            "B2_BUCKET_NAME отсутствует"
-        );
-
-    }
-
-
+    filename:string,
+    contentType:string
+){
 
     const command =
         new PutObjectCommand({
@@ -52,8 +49,10 @@ export async function createUploadUrl(
             Bucket:
                 process.env.B2_BUCKET_NAME,
 
+
             Key:
                 filename,
+
 
             ContentType:
                 contentType
@@ -62,17 +61,16 @@ export async function createUploadUrl(
 
 
 
-    const url =
-        await getSignedUrl(
-            s3,
-            command,
-            {
-                expiresIn: 3600
-            }
-        );
+    return await getSignedUrl(
 
+        s3,
 
+        command,
 
-    return url;
+        {
+            expiresIn:3600
+        }
+
+    );
 
 }
