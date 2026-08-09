@@ -27,3 +27,27 @@ model User {
   createdAt DateTime @default(now())
 
 }
+
+
+
+
+
+model Mod {
+
+  id Int @id @default(autoincrement())
+
+  title String
+
+  category String
+
+  description String?
+
+  image String?
+
+  dff String?
+
+  txd String?
+
+  createdAt DateTime @default(now())
+
+}
