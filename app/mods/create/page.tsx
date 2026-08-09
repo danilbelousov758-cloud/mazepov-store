@@ -5,51 +5,39 @@ import { useRouter } from "next/navigation";
 
 
 type Category = {
-    name: string;
-    items: string[];
+    name:string;
+    items:string[];
 };
 
 
 
-export default function CreateModPage() {
+export default function CreateModPage(){
 
 
     const router = useRouter();
 
 
-    const [title, setTitle] =
-        useState("");
+    const [title,setTitle] = useState("");
+    const [category,setCategory] = useState("");
 
-    const [category, setCategory] =
-        useState("");
-
-    const [txdPath, setTxdPath] =
-        useState("");
-
-    const [dffPath, setDffPath] =
-        useState("");
+    const [txdPath,setTxdPath] = useState("");
+    const [dffPath,setDffPath] = useState("");
 
 
-    const [image, setImage] =
-        useState<File | null>(null);
-
-    const [txd, setTxd] =
-        useState<File | null>(null);
-
-    const [dff, setDff] =
-        useState<File | null>(null);
+    const [image,setImage] = useState<File|null>(null);
+    const [txd,setTxd] = useState<File|null>(null);
+    const [dff,setDff] = useState<File|null>(null);
 
 
-    const [loading, setLoading] =
-        useState(false);
+    const [loading,setLoading] = useState(false);
 
 
 
-    const categories: Category[] = [
+    const categories:Category[] = [
 
         {
-            name: "Скины",
-            items: [
+            name:"Скины",
+            items:[
                 "Государственные",
                 "Мафии",
                 "Банды",
@@ -57,10 +45,9 @@ export default function CreateModPage() {
             ]
         },
 
-
         {
-            name: "Оружие",
-            items: [
+            name:"Оружие",
+            items:[
                 "Ганпак",
                 "Дигл",
                 "ЮСП",
@@ -71,10 +58,9 @@ export default function CreateModPage() {
             ]
         },
 
-
         {
-            name: "Интерьеры",
-            items: [
+            name:"Интерьеры",
+            items:[
                 "24.7",
                 "Банк",
                 "Особняк",
@@ -82,10 +68,9 @@ export default function CreateModPage() {
             ]
         },
 
-
         {
-            name: "Карты",
-            items: [
+            name:"Карты",
+            items:[
                 "Города",
                 "Здания",
                 "Дороги"
@@ -97,60 +82,104 @@ export default function CreateModPage() {
 
 
 
+
     async function uploadToB2(
-        file: File,
-        folder: string
-    ) {
+        file:File,
+        folder:string
+    ){
 
 
-        const formData =
-            new FormData();
-
-
-        formData.append(
-            "file",
-            file
-        );
-
-
-        formData.append(
-            "folder",
-            folder
-        );
+        const filename =
+            `${folder}/${Date.now()}-${file.name}`;
 
 
 
-        const response =
+        const urlResponse =
             await fetch(
-                "/api/mods/upload",
+                "/api/mods/upload-url",
                 {
 
-                    method: "POST",
+                    method:"POST",
 
-                    body: formData
+                    headers:{
+                        "Content-Type":
+                        "application/json"
+                    },
+
+                    body:JSON.stringify({
+
+                        filename,
+
+                        type:
+                        file.type ||
+                        "application/octet-stream"
+
+                    })
 
                 }
             );
 
 
 
-        const data =
-            await response.json();
+        const urlData =
+            await urlResponse.json();
 
 
 
-        if(!response.ok){
+        if(!urlResponse.ok){
 
             throw new Error(
-                data.error ||
-                "Ошибка загрузки файла"
+                urlData.error ||
+                "Ошибка получения ссылки"
             );
 
         }
 
 
 
-        return data.key;
+
+        const upload =
+            await fetch(
+                urlData.url,
+                {
+
+                    method:"PUT",
+
+                    headers:{
+
+                        "Content-Type":
+                        file.type ||
+                        "application/octet-stream"
+
+                    },
+
+
+                    body:file
+
+                }
+            );
+
+
+
+        if(!upload.ok){
+
+            throw new Error(
+                "Ошибка загрузки в B2"
+            );
+
+        }
+
+
+
+        console.log(
+            "B2 UPLOAD:",
+            filename
+        );
+
+
+
+        return filename;
+
 
     }
 
@@ -159,7 +188,8 @@ export default function CreateModPage() {
 
 
 
-    async function createMod() {
+
+    async function createMod(){
 
 
         if(
@@ -184,7 +214,7 @@ export default function CreateModPage() {
 
 
 
-        try {
+        try{
 
 
             const imageKey =
@@ -256,19 +286,15 @@ export default function CreateModPage() {
 
 
 
-
-
             const result =
                 await response.json();
 
 
 
-
             if(result.success){
 
-
                 alert(
-                    "Мод успешно создан"
+                    "Мод создан"
                 );
 
 
@@ -276,16 +302,13 @@ export default function CreateModPage() {
                     "/mods"
                 );
 
-
             }
             else{
 
-
                 alert(
                     result.error ||
-                    "Ошибка создания мода"
+                    "Ошибка создания"
                 );
-
 
             }
 
@@ -293,6 +316,7 @@ export default function CreateModPage() {
 
         }
         catch(error){
+
 
             console.error(
                 error
@@ -302,6 +326,7 @@ export default function CreateModPage() {
             alert(
                 "Ошибка загрузки мода"
             );
+
 
         }
 
@@ -317,334 +342,260 @@ export default function CreateModPage() {
 
 
 
-
     return (
 
-        <main
-            className="
-            min-h-screen
-            bg-black
-            text-white
-            p-10
-            "
+        <main className="
+        min-h-screen
+        bg-black
+        text-white
+        p-10
+        ">
+
+
+        <div className="
+        max-w-6xl
+        mx-auto
+        grid
+        md:grid-cols-2
+        gap-8
+        ">
+
+
+        <section className="
+        bg-zinc-900
+        rounded-2xl
+        p-6
+        ">
+
+
+        <h1 className="
+        text-2xl
+        font-bold
+        mb-5
+        ">
+        Создание мода
+        </h1>
+
+
+
+        <input
+        className="
+        w-full
+        bg-black
+        border
+        border-zinc-700
+        rounded-xl
+        p-3
+        mb-3
+        "
+        placeholder="Название мода"
+        value={title}
+        onChange={
+            e=>setTitle(e.target.value)
+        }
+        />
+
+
+
+        <input
+        className="
+        w-full
+        bg-black
+        border
+        border-zinc-700
+        rounded-xl
+        p-3
+        mb-3
+        "
+        placeholder="Расположение TXD"
+        value={txdPath}
+        onChange={
+            e=>setTxdPath(e.target.value)
+        }
+        />
+
+
+
+        <input
+        className="
+        w-full
+        bg-black
+        border
+        border-zinc-700
+        rounded-xl
+        p-3
+        mb-5
+        "
+        placeholder="Расположение DFF"
+        value={dffPath}
+        onChange={
+            e=>setDffPath(e.target.value)
+        }
+        />
+
+
+
+        <p>Фото</p>
+        <input
+        type="file"
+        onChange={
+            e=>setImage(
+                e.target.files?.[0] || null
+            )
+        }
+        />
+
+
+        <p className="mt-4">
+        TXD
+        </p>
+
+        <input
+        type="file"
+        onChange={
+            e=>setTxd(
+                e.target.files?.[0] || null
+            )
+        }
+        />
+
+
+        <p className="mt-4">
+        DFF
+        </p>
+
+
+        <input
+        type="file"
+        onChange={
+            e=>setDff(
+                e.target.files?.[0] || null
+            )
+        }
+        />
+
+
+
+        <button
+
+        onClick={createMod}
+
+        disabled={loading}
+
+        className="
+        mt-6
+        w-full
+        bg-white
+        text-black
+        rounded-xl
+        p-3
+        font-bold
+        "
+
         >
 
-
-            <div
-                className="
-                max-w-6xl
-                mx-auto
-                grid
-                md:grid-cols-2
-                gap-8
-                "
-            >
+        {
+            loading
+            ?
+            "Загрузка в B2..."
+            :
+            "Создать мод"
+        }
 
 
+        </button>
 
-                <section
-                    className="
-                    bg-zinc-900
-                    rounded-2xl
-                    p-6
-                    "
+
+        </section>
+
+
+
+
+
+        <section className="
+        bg-zinc-900
+        rounded-2xl
+        p-6
+        ">
+
+
+        <h2 className="
+        text-xl
+        font-bold
+        mb-5
+        ">
+        Категории
+        </h2>
+
+
+        {
+            categories.map(cat=>(
+
+                <div
+                key={cat.name}
+                className="mb-5"
                 >
 
-
-                    <h1
-                        className="
-                        text-2xl
-                        font-bold
-                        mb-5
-                        "
-                    >
-
-                        Создание мода
-
-                    </h1>
+                <h3 className="
+                text-zinc-400
+                mb-2
+                ">
+                {cat.name}
+                </h3>
 
 
+                {
+                    cat.items.map(item=>(
 
-                    <input
+                        <button
 
-                        className="
+                        key={item}
+
+                        onClick={
+                            ()=>setCategory(item)
+                        }
+
+                        className={`
                         w-full
-                        bg-black
-                        border
-                        border-zinc-700
-                        rounded-xl
-                        p-3
-                        mb-3
-                        "
-
-                        placeholder="Название мода"
-
-                        value={title}
-
-                        onChange={
-                            e =>
-                            setTitle(
-                                e.target.value
-                            )
+                        text-left
+                        p-2
+                        mb-2
+                        rounded-lg
+                        ${
+                        category===item
+                        ?
+                        "bg-white text-black"
+                        :
+                        "bg-black"
                         }
+                        `}
 
-                    />
+                        >
 
+                        {item}
 
+                        </button>
 
 
-                    <input
+                    ))
+                }
 
-                        className="
-                        w-full
-                        bg-black
-                        border
-                        border-zinc-700
-                        rounded-xl
-                        p-3
-                        mb-3
-                        "
 
-                        placeholder="Расположение TXD"
+                </div>
 
-                        value={txdPath}
+            ))
+        }
 
-                        onChange={
-                            e =>
-                            setTxdPath(
-                                e.target.value
-                            )
-                        }
 
-                    />
+        </section>
 
 
-
-
-                    <input
-
-                        className="
-                        w-full
-                        bg-black
-                        border
-                        border-zinc-700
-                        rounded-xl
-                        p-3
-                        mb-5
-                        "
-
-                        placeholder="Расположение DFF"
-
-                        value={dffPath}
-
-                        onChange={
-                            e =>
-                            setDffPath(
-                                e.target.value
-                            )
-                        }
-
-                    />
-
-
-
-
-
-                    <p>Фото</p>
-
-                    <input
-                        type="file"
-                        onChange={
-                            e =>
-                            setImage(
-                                e.target.files?.[0] || null
-                            )
-                        }
-                    />
-
-
-
-                    <p className="mt-4">
-                        TXD
-                    </p>
-
-                    <input
-                        type="file"
-                        onChange={
-                            e =>
-                            setTxd(
-                                e.target.files?.[0] || null
-                            )
-                        }
-                    />
-
-
-
-                    <p className="mt-4">
-                        DFF
-                    </p>
-
-
-                    <input
-                        type="file"
-                        onChange={
-                            e =>
-                            setDff(
-                                e.target.files?.[0] || null
-                            )
-                        }
-                    />
-
-
-
-
-
-                    <button
-
-                        onClick={createMod}
-
-                        disabled={loading}
-
-                        className="
-                        mt-6
-                        w-full
-                        bg-white
-                        text-black
-                        rounded-xl
-                        p-3
-                        font-bold
-                        "
-
-                    >
-
-                        {
-                            loading
-                            ?
-                            "Загрузка файлов..."
-                            :
-                            "Создать мод"
-                        }
-
-
-                    </button>
-
-
-
-                </section>
-
-
-
-
-
-
-
-                <section
-                    className="
-                    bg-zinc-900
-                    rounded-2xl
-                    p-6
-                    "
-                >
-
-
-                    <h2
-                        className="
-                        text-xl
-                        font-bold
-                        mb-5
-                        "
-                    >
-
-                        Категории
-
-                    </h2>
-
-
-
-
-                    {
-                        categories.map(cat => (
-
-                            <div
-                                key={cat.name}
-                                className="mb-5"
-                            >
-
-
-                                <h3
-                                    className="
-                                    text-zinc-400
-                                    mb-2
-                                    "
-                                >
-
-                                    {cat.name}
-
-                                </h3>
-
-
-
-
-                                {
-                                    cat.items.map(item => (
-
-                                        <button
-
-                                            key={item}
-
-                                            onClick={
-                                                () =>
-                                                setCategory(
-                                                    item
-                                                )
-                                            }
-
-
-                                            className={`
-                                            w-full
-                                            text-left
-                                            p-2
-                                            rounded-lg
-                                            mb-2
-
-                                            ${
-                                                category === item
-                                                ?
-                                                "bg-white text-black"
-                                                :
-                                                "bg-black"
-                                            }
-
-                                            `}
-
-                                        >
-
-                                            {item}
-
-                                        </button>
-
-
-                                    ))
-                                }
-
-
-
-                            </div>
-
-
-                        ))
-                    }
-
-
-
-                </section>
-
-
-            </div>
+        </div>
 
 
         </main>
 
     );
+
 
 }
