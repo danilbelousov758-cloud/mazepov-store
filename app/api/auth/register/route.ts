@@ -7,7 +7,9 @@ export async function POST(request: Request) {
 
   try {
 
+
     const body = await request.json();
+
 
 
     const {
@@ -33,28 +35,35 @@ export async function POST(request: Request) {
 
 
 
+
+
     const userExists = await prisma.user.findUnique({
 
-      where: {
-        nickname: nickname
+      where:{
+        nickname
       }
 
     });
 
 
 
-    if (userExists) {
+
+
+    if(userExists){
 
       return NextResponse.json(
         {
-          error: "Такой никнейм уже существует"
+          error:"Такой никнейм уже существует"
         },
         {
-          status: 400
+          status:400
         }
       );
 
     }
+
+
+
 
 
 
@@ -65,33 +74,21 @@ export async function POST(request: Request) {
 
 
 
+
+
+
+
     const user = await prisma.user.create({
 
-      data: {
+      data:{
 
-        nickname: nickname,
+        nickname,
 
-        password: hashedPassword,
+        password:hashedPassword,
 
-        server: server
+        server,
 
-      }
-
-    });
-
-
-
-    return NextResponse.json({
-
-      message: "Регистрация успешна",
-
-      user: {
-
-        id: user.id,
-
-        nickname: user.nickname,
-
-        server: user.server
+        role:"USER"
 
       }
 
@@ -99,21 +96,62 @@ export async function POST(request: Request) {
 
 
 
-  } catch (error) {
 
-
-    console.log(error);
 
 
 
     return NextResponse.json(
 
       {
-        error: "Ошибка сервера"
+
+        message:"Регистрация успешна",
+
+        user:{
+
+          id:user.id,
+
+          nickname:user.nickname,
+
+          server:user.server,
+
+          role:user.role
+
+        }
+
       },
 
       {
-        status: 500
+        status:200
+      }
+
+    );
+
+
+
+
+
+  } catch(error:any) {
+
+
+    console.error(
+      "REGISTER ERROR:",
+      error
+    );
+
+
+
+    return NextResponse.json(
+
+      {
+
+        error:
+        error.message ||
+        "Ошибка сервера"
+
+      },
+
+      {
+        status:500
       }
 
     );
