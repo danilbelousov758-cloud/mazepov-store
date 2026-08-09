@@ -9,26 +9,27 @@ import {
 
 
 
+console.log("B2 CHECK:");
+console.log("KEY:", process.env.B2_KEY_ID);
+console.log("BUCKET:", process.env.B2_BUCKET_NAME);
+console.log("ENDPOINT:", process.env.B2_ENDPOINT);
+
+
+
 const s3 = new S3Client({
 
-    region:
-        "eu-central-003",
-
+    region: "eu-central-003",
 
     endpoint:
         process.env.B2_ENDPOINT,
 
-
-    credentials:{
-
+    credentials: {
 
         accessKeyId:
-            process.env.B2_KEY_ID!,
-
+            process.env.B2_KEY_ID || "",
 
         secretAccessKey:
-            process.env.B2_APPLICATION_KEY!
-
+            process.env.B2_APPLICATION_KEY || ""
 
     }
 
@@ -37,11 +38,21 @@ const s3 = new S3Client({
 
 
 
-
 export async function createUploadUrl(
-    filename:string,
-    contentType:string
-){
+    filename: string,
+    contentType: string
+) {
+
+
+    if(!process.env.B2_BUCKET_NAME){
+
+        throw new Error(
+            "B2_BUCKET_NAME отсутствует"
+        );
+
+    }
+
+
 
     const command =
         new PutObjectCommand({
@@ -61,16 +72,17 @@ export async function createUploadUrl(
 
 
 
-    return await getSignedUrl(
+    const url =
+        await getSignedUrl(
+            s3,
+            command,
+            {
+                expiresIn:3600
+            }
+        );
 
-        s3,
 
-        command,
 
-        {
-            expiresIn:3600
-        }
-
-    );
+    return url;
 
 }
