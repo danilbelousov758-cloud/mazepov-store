@@ -1,46 +1,42 @@
 import { NextResponse } from "next/server";
 import { PrismaClient } from "@prisma/client";
-import { uploadFile } from "@/lib/storage";
+
 
 const prisma = new PrismaClient();
 
 
-export async function POST(req: Request) {
+
+export async function POST(
+    req: Request
+) {
+
 
     try {
 
 
-        const formData = await req.formData();
+        const body =
+            await req.json();
 
 
 
-        const title =
-            formData.get("title") as string;
+        const {
 
+            title,
 
-        const category =
-            formData.get("category") as string;
+            category,
 
+            image,
 
-        const txdPath =
-            formData.get("txdPath") as string || "";
+            txd,
 
+            dff,
 
-        const dffPath =
-            formData.get("dffPath") as string || "";
+            txdPath,
 
+            dffPath
 
+        } = body;
 
-        const image =
-            formData.get("image") as File | null;
-
-
-        const txd =
-            formData.get("txd") as File | null;
-
-
-        const dff =
-            formData.get("dff") as File | null;
 
 
 
@@ -55,7 +51,7 @@ export async function POST(req: Request) {
             return NextResponse.json(
                 {
                     error:
-                    "Заполните все обязательные поля"
+                    "Не все данные заполнены"
                 },
                 {
                     status:400
@@ -66,96 +62,30 @@ export async function POST(req: Request) {
 
 
 
-        async function upload(
-            file: File,
-            folder: string
-        ){
-
-
-            const buffer =
-                Buffer.from(
-                    await file.arrayBuffer()
-                );
-
-
-
-            const filename =
-                `${folder}/${Date.now()}-${file.name}`;
-
-
-
-            const url =
-                await uploadFile(
-                    buffer,
-                    filename,
-                    file.type
-                );
-
-
-
-            return url;
-
-
-        }
-
-
-
-
-
-        const imageUrl =
-            await upload(
-                image,
-                "images"
-            );
-
-
-
-        const txdUrl =
-            await upload(
-                txd,
-                "txd"
-            );
-
-
-
-        const dffUrl =
-            await upload(
-                dff,
-                "dff"
-            );
-
-
-
-
 
         const mod =
             await prisma.mod.create({
 
-                data: {
+                data:{
 
 
                     title,
 
-
                     category,
 
+                    image,
 
-                    image:
-                        imageUrl,
+                    txd,
 
-
-                    txd:
-                        txdUrl,
+                    dff,
 
 
-                    dff:
-                        dffUrl,
+                    txdPath:
+                    txdPath || "",
 
 
-                    txdPath,
-
-
-                    dffPath,
+                    dffPath:
+                    dffPath || ""
 
 
                 }
@@ -165,13 +95,13 @@ export async function POST(req: Request) {
 
 
 
+        return NextResponse.json({
 
-        return NextResponse.json(
-            {
-                success:true,
-                mod
-            }
-        );
+            success:true,
+
+            mod
+
+        });
 
 
 
@@ -187,16 +117,20 @@ export async function POST(req: Request) {
 
 
         return NextResponse.json(
+
             {
                 error:
                 "Ошибка создания мода"
             },
+
             {
                 status:500
             }
+
         );
 
 
     }
+
 
 }
