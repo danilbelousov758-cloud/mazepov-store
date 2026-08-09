@@ -34,6 +34,7 @@ export default function Home() {
           h-full
           object-cover
           z-0
+          pointer-events-none
         "
       >
 
@@ -52,6 +53,7 @@ export default function Home() {
           inset-0
           bg-black/60
           z-10
+          pointer-events-none
         "
       />
 
@@ -73,28 +75,25 @@ export default function Home() {
         className="
           relative
           z-20
-
-          pt-28
-
+          pt-36
           w-[82%]
           max-w-6xl
-
           mx-auto
         "
       >
 
 
-        {/* PHOTOS */}
+        {/* IMAGES BLOCK */}
         <div
           className="
             grid
-            grid-cols-[0.65fr_1.35fr]
+            grid-cols-[0.75fr_1.25fr]
             gap-5
           "
         >
 
 
-          {/* LEFT IMAGE */}
+          {/* MAIN IMAGE */}
           <div
             className="
               rounded-2xl
@@ -103,7 +102,7 @@ export default function Home() {
               overflow-hidden
               bg-black
               shadow-xl
-              h-[420px]
+              h-[385px]
             "
           >
 
@@ -122,7 +121,7 @@ export default function Home() {
 
 
 
-          {/* RIGHT IMAGES */}
+          {/* SMALL IMAGES */}
           <div
             className="
               grid
@@ -143,7 +142,7 @@ export default function Home() {
                     overflow-hidden
                     bg-black
                     shadow-lg
-                    h-[200px]
+                    h-[185px]
                   "
                 >
 
@@ -162,11 +161,11 @@ export default function Home() {
               ))
             }
 
-
           </div>
 
 
         </div>
+
 
 
 
@@ -231,4 +230,5 @@ export default function Home() {
     </main>
 
   );
+
 }

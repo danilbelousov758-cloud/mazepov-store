@@ -5,282 +5,128 @@ import bcrypt from "bcrypt";
 
 export async function POST(request: Request) {
 
-
   try {
-
 
     const body = await request.json();
 
 
-
     const {
-
       nickname,
-
       password,
-
       server
-
     } = body;
-
-
 
 
 
     if (!nickname || !password || !server) {
 
-
       return NextResponse.json(
-
         {
-          error: "Заполните все поля"
+          error:"Заполните все поля"
         },
-
         {
           status:400
         }
-
       );
 
-
     }
-
-
-
-
-
 
 
 
     const user = await prisma.user.findUnique({
 
-
       where:{
-
         nickname:nickname
-
       }
-
 
     });
 
 
 
-
-
-
-
-
     if(!user){
 
-
       return NextResponse.json(
-
         {
           error:"Пользователь не найден"
         },
-
         {
           status:404
         }
-
       );
-
 
     }
 
 
 
-
-
-
-
-
-
-    const passwordMatch = await bcrypt.compare(
-
-
+    const checkPassword = await bcrypt.compare(
       password,
-
-
       user.password
-
-
     );
 
 
 
-
-
-
-
-
-
-
-    if(!passwordMatch){
-
+    if(!checkPassword){
 
       return NextResponse.json(
-
         {
           error:"Неверный пароль"
         },
-
         {
           status:400
         }
-
       );
 
-
     }
-
-
-
-
-
-
 
 
 
     if(user.server !== server){
 
-
       return NextResponse.json(
-
         {
-          error:"Выбран неверный сервер"
+          error:"Неверный сервер"
         },
-
         {
           status:400
         }
-
       );
-
 
     }
 
 
 
 
+    return NextResponse.json({
 
+      success:true,
 
-
-
-
-    const response = NextResponse.json(
-
-
-      {
-
-
-        message:"Вход выполнен",
-
-
-        user:{
-
-
-          id:user.id,
-
-
-          nickname:user.nickname,
-
-
-          server:user.server,
-
-
-          role:user.role
-
-
-        }
-
-
+      user:{
+        id:user.id,
+        nickname:user.nickname,
+        server:user.server,
+        role:user.role
       }
 
-
-    );
-
+    });
 
 
+  } catch(error){
 
-
-
-
-
-    response.cookies.set(
-
-
-      "userId",
-
-
-      String(user.id),
-
-
-      {
-
-
-        httpOnly:true,
-
-
-        secure:false,
-
-
-        sameSite:"lax",
-
-
-        maxAge:60 * 60 * 24 * 7
-
-
-      }
-
-
-    );
-
-
-
-
-
-
-
-
-
-    return response;
-
-
-
-
-
-
-
-  } catch(error) {
-
-
-
-    console.log(error);
-
-
+    console.log("LOGIN ERROR:",error);
 
 
     return NextResponse.json(
 
       {
-
-        error:"Ошибка сервера"
-
+        error:"Сервер авторизации недоступен"
       },
 
-
       {
-
         status:500
-
       }
 
     );
 
-
   }
-
 
 }

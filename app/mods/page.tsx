@@ -1,7 +1,8 @@
 "use client";
 
-import { useState } from "react";
 import Header from "@/components/Header";
+import Image from "next/image";
+import { useState } from "react";
 
 type CategoryItem =
   | string
@@ -15,7 +16,6 @@ type ExpandCategory = {
   items: CategoryItem[];
 };
 
-
 export default function ModsPage() {
 
   const [openCategory, setOpenCategory] = useState<string | null>(null);
@@ -24,7 +24,6 @@ export default function ModsPage() {
 
 
   const expandableCategories: ExpandCategory[] = [
-
     {
       name: "Скины",
       items: [
@@ -34,7 +33,6 @@ export default function ModsPage() {
         "Гражданские",
       ],
     },
-
 
     {
       name: "Оружие",
@@ -54,7 +52,6 @@ export default function ModsPage() {
       ],
     },
 
-
     {
       name: "Интерьеры",
       items: [
@@ -69,11 +66,9 @@ export default function ModsPage() {
       ],
     },
 
-
     {
       name: "Заменные территории",
       items: [
-
         "24.7",
         "ДПС/ППС/ФСБ",
         "Оружейка",
@@ -96,10 +91,8 @@ export default function ModsPage() {
         "Вокзалы",
         "Казино",
         "Порт",
-
       ],
     },
-
 
     {
       name:"Эффекты",
@@ -110,12 +103,10 @@ export default function ModsPage() {
       ],
     },
 
-
     {
       name:"Звуки",
       items:[
         "Попадание",
-
         {
           name:"Ганы",
           children:[
@@ -127,16 +118,13 @@ export default function ModsPage() {
             "СВД ПСО",
           ],
         },
-
       ],
     },
-
   ];
 
 
 
   const simpleCategories = [
-
     "Дороги",
     "Карты",
     "Инвентарь",
@@ -153,13 +141,11 @@ export default function ModsPage() {
     "Графика",
     "Загрузочный экран",
     "Подсказки для госс. сотрудников",
-
   ];
 
 
 
   const mods = [
-
     {
       title:"Государственные скины",
       category:"Государственные",
@@ -169,21 +155,20 @@ export default function ModsPage() {
     {
       title:"Ганпак оружия",
       category:"Ганпак",
-      image:"/images/mod2.png",
+      image:"/images/mod1.png",
     },
 
     {
       title:"Новая карта",
       category:"Карты",
-      image:"/images/mod3.png",
+      image:"/images/mod1.png",
     },
 
     {
       title:"Интерьер банка",
       category:"Банк",
-      image:"/images/mod4.png",
+      image:"/images/mod1.png",
     },
-
   ];
 
 
@@ -192,13 +177,13 @@ export default function ModsPage() {
     activeCategory === "Все"
       ? mods
       : mods.filter(
-          (mod)=>
-            mod.category === activeCategory
+          (mod)=>mod.category === activeCategory
         );
 
 
 
   return (
+
     <main
       className="
         relative
@@ -208,6 +193,8 @@ export default function ModsPage() {
       "
     >
 
+
+      {/* BACKGROUND */}
 
       <video
         autoPlay
@@ -234,26 +221,36 @@ export default function ModsPage() {
       </video>
 
 
+
+      {/* OVERLAY */}
+
       <div
         className="
           fixed
           inset-0
           bg-black/60
           z-10
+          pointer-events-none
         "
       />
 
+
+
+      {/* HEADER */}
 
       <div className="relative z-50">
         <Header />
       </div>
 
 
+
+      {/* CONTENT */}
+
       <section
         className="
           relative
           z-20
-          pt-32
+          pt-40
           w-[82%]
           max-w-6xl
           mx-auto
@@ -262,251 +259,296 @@ export default function ModsPage() {
         "
       >
 
-      <aside
-        className="
-          w-72
-          h-[75vh]
-          overflow-y-auto
-          rounded-2xl
-          border
-          border-zinc-800
-          bg-black/70
-          p-5
-        "
-      >
-
-        <h2 className="text-xl font-bold mb-5">
-          Категории
-        </h2>
-
-
-        <button
-          onClick={() => setActiveCategory("Все")}
+        <aside
           className="
-            w-full
-            text-left
-            py-2
-            text-gray-300
-            hover:text-white
+            w-72
+            h-[75vh]
+            overflow-y-auto
+            rounded-2xl
+            border
+            border-zinc-800
+            bg-black/70
+            p-5
           "
         >
-          Все моды
-        </button>
+
+          <h2 className="text-xl font-bold mb-5">
+            Категории
+          </h2>
+
+
+          <button
+            onClick={()=>setActiveCategory("Все")}
+            className="
+              w-full
+              text-left
+              py-2
+              text-gray-300
+              hover:text-white
+            "
+          >
+            Все моды
+          </button>
 
 
 
-        {
-          expandableCategories.map((category)=>(
+          {
+            expandableCategories.map((category)=>(
 
-            <div
-              key={category.name}
-              className="mt-3"
-            >
-
-              <button
-                onClick={() =>
-                  setOpenCategory(
-                    openCategory === category.name
-                      ? null
-                      : category.name
-                  )
-                }
-
-                className="
-                  w-full
-                  flex
-                  justify-between
-                  items-center
-                  py-2
-                  font-semibold
-                "
+              <div
+                key={category.name}
+                className="mt-3"
               >
 
-                {category.name}
+                <button
+                  onClick={()=>
+                    setOpenCategory(
+                      openCategory === category.name
+                      ? null
+                      : category.name
+                    )
+                  }
+                  className="
+                    w-full
+                    flex
+                    justify-between
+                    py-2
+                    font-semibold
+                  "
+                >
 
-                <span>
-                  {
-                    openCategory === category.name
+                  {category.name}
+
+                  <span>
+                    {
+                      openCategory === category.name
                       ? "−"
                       : "+"
-                  }
-                </span>
+                    }
+                  </span>
 
-              </button>
-
-
+                </button>
 
 
-              {
-                openCategory === category.name && (
 
-                  <div
-                    className="
-                      ml-4
-                      border-l
-                      border-zinc-800
-                      pl-3
-                    "
-                  >
+                {
+                  openCategory === category.name && (
 
-                    {
-                      category.items.map((item)=>(
+                    <div
+                      className="
+                        ml-4
+                        border-l
+                        border-zinc-800
+                        pl-3
+                      "
+                    >
 
-                        typeof item === "string"
+                      {
+                        category.items.map((item)=>
 
-                        ?
+                          typeof item === "string"
 
-                        <button
-                          key={item}
-                          onClick={() =>
-                            setActiveCategory(item)
-                          }
-
-                          className="
-                            block
-                            w-full
-                            text-left
-                            py-1
-                            text-sm
-                            text-gray-400
-                            hover:text-white
-                          "
-                        >
-
-                          {item}
-
-                        </button>
-
-
-                        :
-
-                        <div
-                          key={item.name}
-                        >
+                          ?
 
                           <button
-                            onClick={() =>
-                              setOpenSubCategory(
-                                openSubCategory === item.name
-                                  ? null
-                                  : item.name
-                              )
+                            key={item}
+                            onClick={()=>
+                              setActiveCategory(item)
                             }
-
                             className="
-                              flex
-                              justify-between
+                              block
                               w-full
+                              text-left
                               py-1
                               text-sm
                               text-gray-400
+                              hover:text-white
                             "
                           >
-
-                            {item.name}
-
-
-                            <span>
-                              {
-                                openSubCategory === item.name
-                                  ? "−"
-                                  : "+"
-                              }
-                            </span>
-
+                            {item}
                           </button>
 
 
+                          :
 
-                          {
-                            openSubCategory === item.name && (
+                          <div key={item.name}>
 
-                              <div className="ml-4">
+                            <button
+                              onClick={()=>
+                                setOpenSubCategory(
+                                  openSubCategory === item.name
+                                  ? null
+                                  : item.name
+                                )
+                              }
+                              className="
+                                w-full
+                                flex
+                                justify-between
+                                py-1
+                                text-sm
+                                text-gray-400
+                              "
+                            >
 
+                              {item.name}
+
+                              <span>
                                 {
-                                  item.children.map((child)=>(
-
-                                    <button
-                                      key={child}
-
-                                      onClick={() =>
-                                        setActiveCategory(child)
-                                      }
-
-                                      className="
-                                        block
-                                        py-1
-                                        text-sm
-                                        text-gray-500
-                                        hover:text-white
-                                      "
-                                    >
-
-                                      {child}
-
-                                    </button>
-
-                                  ))
+                                  openSubCategory === item.name
+                                  ? "−"
+                                  : "+"
                                 }
+                              </span>
 
-                              </div>
-
-                            )
-                          }
+                            </button>
 
 
-                        </div>
+                            {
+                              openSubCategory === item.name && (
+
+                                <div className="ml-4">
+
+                                  {
+                                    item.children.map(child=>(
+
+                                      <button
+                                        key={child}
+                                        onClick={()=>
+                                          setActiveCategory(child)
+                                        }
+                                        className="
+                                          block
+                                          py-1
+                                          text-sm
+                                          text-gray-500
+                                          hover:text-white
+                                        "
+                                      >
+
+                                        {child}
+
+                                      </button>
+
+                                    ))
+                                  }
+
+                                </div>
+
+                              )
+                            }
+
+                          </div>
+
+                        )
+                      }
+
+                    </div>
+
+                  )
+                }
 
 
-                      ))
-                    }
+              </div>
+
+            ))
+          }
 
 
-                  </div>
 
-                )
-              }
+          <div
+            className="
+              mt-6
+              border-t
+              border-zinc-800
+              pt-4
+            "
+          >
+
+            {
+              simpleCategories.map(item=>(
+
+                <button
+                  key={item}
+                  onClick={()=>
+                    setActiveCategory(item)
+                  }
+                  className="
+                    block
+                    w-full
+                    text-left
+                    py-2
+                    text-gray-400
+                    hover:text-white
+                  "
+                >
+
+                  {item}
+
+                </button>
+
+              ))
+            }
+
+          </div>
 
 
-            </div>
+        </aside>
 
-          ))
-        }
 
 
 
         <div
           className="
-            mt-6
-            border-t
-            border-zinc-800
-            pt-4
+            flex-1
+            grid
+            grid-cols-3
+            gap-4
           "
         >
 
           {
-            simpleCategories.map((item)=>(
+            filteredMods.map((mod,index)=>(
 
-              <button
-                key={item}
-
-                onClick={() =>
-                  setActiveCategory(item)
-                }
-
+              <div
+                key={index}
                 className="
-                  block
-                  w-full
-                  text-left
-                  py-2
-                  text-gray-400
-                  hover:text-white
+                  rounded-xl
+                  border
+                  border-zinc-800
+                  bg-black/70
+                  overflow-hidden
                 "
               >
 
-                {item}
+                <Image
+                  src={mod.image}
+                  alt={mod.title}
+                  width={500}
+                  height={300}
+                  className="
+                    w-full
+                    h-40
+                    object-cover
+                  "
+                />
 
-              </button>
+
+                <div className="p-3">
+
+                  <h3 className="font-semibold">
+                    {mod.title}
+                  </h3>
+
+
+                  <p className="text-xs text-gray-500">
+                    {mod.category}
+                  </p>
+
+                </div>
+
+
+              </div>
 
             ))
           }
@@ -514,93 +556,10 @@ export default function ModsPage() {
         </div>
 
 
-      </aside>
-
-
-
-
-
-      <div
-        className="
-          flex-1
-          grid
-          grid-cols-3
-          gap-4
-          h-fit
-        "
-      >
-
-
-        {
-          filteredMods.map((mod,index)=>(
-
-            <div
-              key={index}
-
-              className="
-                rounded-xl
-                border
-                border-zinc-800
-                bg-black/70
-                overflow-hidden
-                shadow-lg
-              "
-            >
-
-
-              <img
-                src={mod.image}
-
-                alt={mod.title}
-
-                className="
-                  w-full
-                  h-40
-                  object-cover
-                "
-              />
-
-
-              <div className="p-3">
-
-                <h3 className="font-semibold">
-                  {mod.title}
-                </h3>
-
-
-                <p className="text-xs text-gray-500">
-                  {mod.category}
-                </p>
-
-              </div>
-
-
-            </div>
-
-          ))
-        }
-
-
-
-
-        {
-          filteredMods.length === 0 && (
-
-            <p className="text-gray-400">
-              В этой категории пока нет модов
-            </p>
-
-          )
-        }
-
-
-      </div>
-
-
       </section>
 
 
     </main>
-  );
 
+  );
 }

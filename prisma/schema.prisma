@@ -3,12 +3,15 @@ datasource db {
   url      = "file:./dev.db"
 }
 
+
 generator client {
   provider = "prisma-client-js"
 }
 
 
+
 model User {
+
   id        Int      @id @default(autoincrement())
 
   nickname  String   @unique
@@ -19,5 +22,8 @@ model User {
 
   role      String   @default("USER")
 
+  avatar    String   @default("/images/avatar.png")
+
   createdAt DateTime @default(now())
+
 }

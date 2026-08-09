@@ -1,14 +1,65 @@
 import { NextResponse } from "next/server";
-import { getCurrentUser } from "@/lib/auth";
+import { prisma } from "@/lib/prisma";
 
 
-export async function GET(){
+export async function POST(req:Request){
 
-    const user = await getCurrentUser();
+try{
 
 
-    return NextResponse.json({
-        user
-    });
+const {id}=await req.json();
+
+
+
+const user = await prisma.user.findUnique({
+
+where:{
+id:Number(id)
+},
+
+select:{
+id:true,
+nickname:true,
+server:true,
+role:true
+}
+
+});
+
+
+
+if(!user){
+
+return NextResponse.json(
+{
+error:"Пользователь не найден"
+},
+{
+status:404
+}
+);
+
+}
+
+
+
+return NextResponse.json(user);
+
+
+
+}catch(error){
+
+
+return NextResponse.json(
+{
+error:"Ошибка сервера"
+},
+{
+status:500
+}
+);
+
+
+}
 
 }

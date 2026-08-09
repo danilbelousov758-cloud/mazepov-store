@@ -4,135 +4,244 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 
 
-export default function RegisterPage() {
+export default function RegisterPage(){
 
+const router = useRouter();
 
-  const router = useRouter();
 
+const [nickname,setNickname] = useState("");
 
-  const [nickname, setNickname] = useState("");
+const [password,setPassword] = useState("");
 
-  const [password, setPassword] = useState("");
+const [repeatPassword,setRepeatPassword] = useState("");
 
-  const [repeatPassword, setRepeatPassword] = useState("");
+const [server,setServer] = useState("RED");
 
-  const [server, setServer] = useState("RED");
+const [error,setError] = useState("");
 
-  const [error, setError] = useState("");
 
 
 
 
+const servers = [
 
-  const servers = [
+{name:"RED",color:"#ef4444"},
+{name:"YELLOW",color:"#facc15"},
+{name:"GREEN",color:"#22c55e"},
+{name:"AZURE",color:"#075985"},
+{name:"SILVER",color:"#9ca3af"},
+{name:"ROSE",color:"#fb7185"},
+{name:"BLACK",color:"#000000"},
+{name:"SKY",color:"#0ea5e9"},
+{name:"TITAN",color:"#8b5cf6"},
+{name:"X",color:"#800020"},
+{name:"FIRE",color:"#f97316"},
+{name:"LIME",color:"#84cc16"}
 
-    {name:"RED", color:"#ef4444"},
-    {name:"YELLOW", color:"#facc15"},
-    {name:"GREEN", color:"#22c55e"},
-    {name:"AZURE", color:"#075985"},
-    {name:"SILVER", color:"#9ca3af"},
-    {name:"ROSE", color:"#fb7185"},
-    {name:"BLACK", color:"#000000"},
-    {name:"SKY", color:"#0ea5e9"},
-    {name:"TITAN", color:"#8b5cf6"},
-    {name:"X", color:"#800020"},
-    {name:"FIRE", color:"#f97316"},
-    {name:"LIME", color:"#84cc16"}
+];
 
-  ];
 
 
 
 
 
 
+function checkNickname(value:string){
 
-  async function register(){
 
+const regex = /^[A-Za-zА-Яа-я]{4,}_[A-Za-zА-Яа-я]{4,}$/;
 
-    setError("");
 
+if(!regex.test(value)){
 
 
-    if(!nickname || !password || !repeatPassword){
+return "Никнейм должен быть в формате Имя_Фамилия (минимум 4 буквы)";
 
-      setError("Заполните все поля");
 
-      return;
+}
 
-    }
 
+return "";
 
+}
 
 
 
-    if(password !== repeatPassword){
 
-      setError("Пароли не совпадают");
 
-      return;
 
-    }
 
 
 
+function checkPassword(value:string){
 
 
+if(value.length < 8){
 
-    const response = await fetch(
+return "Пароль должен содержать минимум 8 символов";
 
-      "/api/auth/register",
+}
 
-      {
 
-        method:"POST",
+if(/\s/.test(value)){
 
-        headers:{
-          "Content-Type":"application/json"
-        },
+return "Пароль не должен содержать пробелы";
 
-        body:JSON.stringify({
+}
 
-          nickname,
-          password,
-          server
 
-        })
+if(!/[A-ZА-Я]/.test(value)){
 
-      }
+return "Добавьте заглавную букву";
 
-    );
+}
 
 
+if(!/[a-zа-я]/.test(value)){
 
+return "Добавьте маленькую букву";
 
+}
 
 
-    const data = await response.json();
+if(!/[0-9]/.test(value)){
 
+return "Добавьте цифру";
 
+}
 
 
 
-    if(!response.ok){
+return "";
 
-      setError(data.error);
+}
 
-      return;
 
-    }
 
 
 
 
 
+async function register(){
 
-    router.push("/login");
 
+setError("");
 
-  }
 
 
+if(!nickname || !password || !repeatPassword){
+
+
+setError("Заполните все поля");
+
+return;
+
+}
+
+
+
+
+
+
+const nicknameError = checkNickname(nickname);
+
+
+if(nicknameError){
+
+setError(nicknameError);
+
+return;
+
+}
+
+
+
+
+
+
+if(password !== repeatPassword){
+
+
+setError("Пароли не совпадают");
+
+return;
+
+}
+
+
+
+
+
+
+const passwordError = checkPassword(password);
+
+
+
+if(passwordError){
+
+setError(passwordError);
+
+return;
+
+}
+
+
+
+
+
+
+
+const response = await fetch(
+
+"/api/auth/register",
+
+{
+
+method:"POST",
+
+headers:{
+
+"Content-Type":"application/json"
+
+},
+
+body:JSON.stringify({
+
+nickname,
+password,
+server
+
+})
+
+}
+
+);
+
+
+
+
+
+const data = await response.json();
+
+
+
+
+
+if(!response.ok){
+
+setError(data.error);
+
+return;
+
+}
+
+
+
+
+router.push("/login");
+
+
+}
 
 
 
@@ -146,12 +255,18 @@ return (
 
 className="
 relative
-h-screen
-overflow-hidden
+min-h-screen
+
+overflow-y-auto
+
 text-white
+
 flex
+
 items-center
+
 justify-center
+
 p-4
 "
 
@@ -162,6 +277,7 @@ p-4
 
 
 {/* VIDEO BACKGROUND */}
+
 
 <video
 
@@ -175,10 +291,15 @@ playsInline
 
 className="
 fixed
+
 inset-0
+
 w-full
+
 h-full
+
 object-cover
+
 z-0
 "
 
@@ -200,16 +321,20 @@ type="video/mp4"
 
 
 
+{/* OVERLAY */}
 
-{/* DARK OVERLAY */}
 
 <div
 
 className="
 fixed
+
 inset-0
+
 bg-black/60
+
 z-10
+
 "
 
 />
@@ -221,50 +346,32 @@ z-10
 
 
 
+{/* REGISTER */}
 
-{/* REGISTER BOX */}
+
 
 <div
 
 className="
-
-auth-scroll
-
 relative
 
 z-20
 
-
 w-[450px]
 
-
-max-h-[92vh]
-
-
-overflow-y-auto
-
-
+my-10
 
 bg-black/70
 
-
 backdrop-blur-md
-
-
 
 border
 
 border-white/20
 
-
-
 rounded-2xl
 
-
-
 p-6
-
-
 
 shadow-2xl
 
@@ -276,18 +383,21 @@ shadow-2xl
 
 
 
-
-
 <button
 
 onClick={()=>router.push("/")}
 
 className="
 text-sm
+
 text-zinc-400
+
 hover:text-white
+
 transition
-mb-4
+
+mb-5
+
 "
 
 >
@@ -303,23 +413,24 @@ mb-4
 
 
 
-
 <h1
 
 className="
 text-3xl
+
 font-bold
+
 text-center
-mb-5
+
+mb-2
+
 "
 
 >
 
-STORE — MODS
+MAZEPOV STORE
 
 </h1>
-
-
 
 
 
@@ -331,13 +442,16 @@ STORE — MODS
 
 className="
 text-center
+
 text-zinc-400
-mb-5
+
+mb-6
+
 "
 
 >
 
-Регистрация
+Регистрация аккаунта
 
 </p>
 
@@ -353,22 +467,55 @@ mb-5
 
 className="
 w-full
+
+appearance-none
+
 bg-black/60
+
 border
+
 border-white/20
+
 rounded-xl
+
 p-3
-mb-3
+
+mb-2
+
 outline-none
+
 "
 
-placeholder="Никнейм"
+placeholder="Имя_Фамилия"
 
 value={nickname}
 
 onChange={(e)=>setNickname(e.target.value)}
 
- />
+/>
+
+
+
+
+
+
+
+<p
+
+className="
+text-xs
+
+text-zinc-500
+
+mb-4
+
+"
+
+>
+
+Формат: Имя_Фамилия. Минимум 4 буквы в имени и фамилии.
+
+</p>
 
 
 
@@ -384,13 +531,23 @@ type="password"
 
 className="
 w-full
+
+appearance-none
+
 bg-black/60
+
 border
+
 border-white/20
+
 rounded-xl
+
 p-3
-mb-3
+
+mb-2
+
 outline-none
+
 "
 
 placeholder="Пароль"
@@ -399,8 +556,30 @@ value={password}
 
 onChange={(e)=>setPassword(e.target.value)}
 
- />
+/>
 
+
+
+
+
+
+
+<p
+
+className="
+text-xs
+
+text-zinc-500
+
+mb-4
+
+"
+
+>
+
+Минимум 8 символов: заглавная буква, цифра и спецсимвол.
+
+</p>
 
 
 
@@ -415,13 +594,23 @@ type="password"
 
 className="
 w-full
+
+appearance-none
+
 bg-black/60
+
 border
+
 border-white/20
+
 rounded-xl
+
 p-3
-mb-4
+
+mb-5
+
 outline-none
+
 "
 
 placeholder="Повторите пароль"
@@ -430,7 +619,7 @@ value={repeatPassword}
 
 onChange={(e)=>setRepeatPassword(e.target.value)}
 
- />
+/>
 
 
 
@@ -444,8 +633,11 @@ onChange={(e)=>setRepeatPassword(e.target.value)}
 
 className="
 text-sm
+
 text-zinc-400
-mb-2
+
+mb-3
+
 "
 
 >
@@ -466,12 +658,17 @@ mb-2
 
 className="
 grid
+
 grid-cols-2
+
 gap-2
-mb-4
+
+mb-5
+
 "
 
 >
+
 
 {
 
@@ -489,24 +686,23 @@ onClick={()=>setServer(item.name)}
 className={`
 
 flex
+
 items-center
+
 gap-3
 
-py-1.5
-px-2
+px-3
 
+py-2
 
 rounded-xl
 
-
 border
-
 
 transition
 
-
-
 ${
+
 server===item.name
 
 ?
@@ -527,13 +723,15 @@ server===item.name
 
 
 
-
 <span
 
 className="
 w-3
+
 h-3
+
 rounded-full
+
 "
 
 style={{
@@ -549,12 +747,13 @@ backgroundColor:item.color
 
 
 
-
 <span
 
 className="
 text-sm
+
 font-semibold
+
 "
 
 >
@@ -567,8 +766,8 @@ font-semibold
 
 
 
-
 </button>
+
 
 
 ))
@@ -590,19 +789,43 @@ font-semibold
 
 error &&
 
-<p
+<div
 
 className="
-text-red-500
+w-full
+
+max-w-full
+
+overflow-hidden
+
+break-words
+
+rounded-xl
+
+bg-red-500/10
+
+border
+
+border-red-500/30
+
+px-4
+
+py-3
+
+mb-5
+
 text-sm
-mb-3
+
+text-red-400
+
 "
 
 >
 
 {error}
 
-</p>
+</div>
+
 
 }
 
@@ -620,13 +843,21 @@ onClick={register}
 
 className="
 w-full
+
 bg-white
+
 text-black
+
 font-bold
+
 py-3
+
 rounded-xl
+
 hover:bg-zinc-200
+
 transition
+
 "
 
 >
@@ -647,9 +878,13 @@ transition
 
 className="
 text-center
+
 text-zinc-500
-mt-4
+
+mt-5
+
 text-sm
+
 "
 
 >
@@ -663,8 +898,11 @@ href="/login"
 
 className="
 text-white
+
 ml-2
+
 hover:underline
+
 "
 
 >
@@ -672,6 +910,7 @@ hover:underline
 Войти
 
 </a>
+
 
 </p>
 
@@ -691,6 +930,7 @@ hover:underline
 
 
 </main>
+
 
 );
 
