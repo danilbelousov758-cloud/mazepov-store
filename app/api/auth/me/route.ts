@@ -2,26 +2,40 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 
 
-export async function POST(req:Request){
+export async function POST(req: Request){
 
 try{
 
+const {nickname}=await req.json();
 
-const {id}=await req.json();
 
+if(!nickname){
+
+return NextResponse.json(
+{
+error:"Нет пользователя"
+},
+{
+status:400
+}
+);
+
+}
 
 
 const user = await prisma.user.findUnique({
 
 where:{
-id:Number(id)
+nickname
 },
 
 select:{
 id:true,
 nickname:true,
+role:true,
 server:true,
-role:true
+avatar:true,
+createdAt:true
 }
 
 });
@@ -49,6 +63,8 @@ return NextResponse.json(user);
 
 }catch(error){
 
+console.error(error);
+
 
 return NextResponse.json(
 {
@@ -58,7 +74,6 @@ error:"Ошибка сервера"
 status:500
 }
 );
-
 
 }
 

@@ -1,6 +1,5 @@
 "use client";
 
-import Header from "@/components/Header";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 
@@ -8,6 +7,7 @@ import { useRouter } from "next/navigation";
 export default function ProfilePage(){
 
 const router = useRouter();
+
 
 const [user,setUser] = useState<any>(null);
 
@@ -35,20 +35,22 @@ SKY:"#0ea5e9",
 TITAN:"#8b5cf6",
 X:"#800020",
 FIRE:"#f97316",
-LIME:"#84cc16",
+LIME:"#84cc16"
 
 };
 
 
 
-
-
 useEffect(()=>{
 
-const data = localStorage.getItem("user");
+
+async function loadUser(){
 
 
-if(!data){
+const saved = localStorage.getItem("user");
+
+
+if(!saved){
 
 router.push("/login");
 
@@ -57,11 +59,78 @@ return;
 }
 
 
-setUser(JSON.parse(data));
+
+const oldUser = JSON.parse(saved);
+
+
+
+const response = await fetch(
+
+"/api/auth/me",
+
+{
+
+method:"POST",
+
+headers:{
+
+"Content-Type":"application/json"
+
+},
+
+body:JSON.stringify({
+
+nickname:oldUser.nickname
+
+})
+
+}
+
+);
+
+
+
+const data = await response.json();
+
+
+
+if(!response.ok){
+
+router.push("/login");
+
+return;
+
+}
+
+
+
+// Получаем актуального пользователя из Neon
+
+setUser(data);
+
+
+
+// обновляем локальные данные
+
+localStorage.setItem(
+
+"user",
+
+JSON.stringify(data)
+
+);
+
+
+
+}
+
+
+
+loadUser();
+
 
 
 },[]);
-
 
 
 
@@ -81,9 +150,8 @@ window.location.reload();
 
 
 
-
-
 async function changePassword(){
+
 
 setMessage("");
 
@@ -99,8 +167,6 @@ return;
 
 
 
-
-
 if(newPassword !== repeatPassword){
 
 setMessage("Новые пароли не совпадают");
@@ -108,9 +174,6 @@ setMessage("Новые пароли не совпадают");
 return;
 
 }
-
-
-
 
 
 
@@ -123,7 +186,9 @@ const response = await fetch(
 method:"POST",
 
 headers:{
+
 "Content-Type":"application/json"
+
 },
 
 body:JSON.stringify({
@@ -142,11 +207,7 @@ newPassword
 
 
 
-
-
 const data = await response.json();
-
-
 
 
 
@@ -160,20 +221,14 @@ return;
 
 
 
-
-
 setMessage("Пароль успешно изменён");
 
 
 setOldPassword("");
-
 setNewPassword("");
-
 setRepeatPassword("");
 
 }
-
-
 
 
 
@@ -187,9 +242,11 @@ return null;
 
 
 
+
+
 return (
 
-<main
+<div
 
 className="
 relative
@@ -200,8 +257,6 @@ text-white
 
 >
 
-
-{/* BACKGROUND */}
 
 <video
 
@@ -233,8 +288,6 @@ type="video/mp4"
 
 
 
-
-
 <div
 
 className="
@@ -248,97 +301,46 @@ z-10
 
 
 
-
-
-
-
-<div className="relative z-[999]">
-
-<Header />
-
-</div>
-
-
-
-
-
-
-
-
-
-<section
+<div
 
 className="
 relative
 z-20
-
 pt-32
 pb-10
-
 w-[82%]
-
 max-w-5xl
-
 mx-auto
-
 flex
-
 gap-6
-
-items-start
-
 "
 
 >
 
 
-
-
-
-
-
-{/* LEFT MENU */}
-
-
-
-<aside
+<div
 
 className="
 w-64
-
 min-h-[520px]
-
 rounded-2xl
-
 bg-black/70
-
 border
-
 border-zinc-800
-
 p-5
-
 "
 
 >
 
-
-<h2
-
-className="
+<h2 className="
 text-xl
 font-bold
 mb-5
-"
-
->
+">
 
 Настройки
 
 </h2>
-
-
-
 
 
 
@@ -353,7 +355,6 @@ text-left
 py-3
 text-gray-300
 hover:text-white
-transition
 "
 
 >
@@ -361,10 +362,6 @@ transition
 👤 Мой профиль
 
 </button>
-
-
-
-
 
 
 
@@ -379,7 +376,6 @@ text-left
 py-3
 text-gray-300
 hover:text-white
-transition
 "
 
 >
@@ -390,30 +386,17 @@ transition
 
 
 
-
-
-
-
 <button
 
 onClick={logout}
 
 className="
 mt-10
-
 block
-
 w-full
-
 text-left
-
 py-3
-
 text-red-400
-
-hover:text-red-300
-
-transition
 "
 
 >
@@ -423,20 +406,8 @@ transition
 </button>
 
 
+</div>
 
-
-
-</aside>
-
-
-
-
-
-
-
-
-
-{/* RIGHT BLOCK */}
 
 
 
@@ -444,27 +415,15 @@ transition
 
 className="
 flex-1
-
 min-h-[520px]
-
 rounded-2xl
-
 bg-black/70
-
 border
-
 border-zinc-800
-
 p-6
-
 "
 
 >
-
-
-
-
-
 
 
 
@@ -473,16 +432,11 @@ active==="profile" && (
 
 <>
 
-
-<h1
-
-className="
+<h1 className="
 text-2xl
 font-bold
 mb-6
-"
-
->
+">
 
 Мой профиль
 
@@ -490,54 +444,26 @@ mb-6
 
 
 
-
-
-
-
-
-
-<div
-
-className="
+<div className="
 flex
-
 items-center
-
 gap-5
-
-"
-
->
-
-
-
+">
 
 
 <div
 
 className="
 w-24
-
 h-24
-
 rounded-full
-
 flex
-
 items-center
-
 justify-center
-
 text-3xl
-
 font-bold
-
 border
-
 border-white/20
-
-shadow-lg
-
 "
 
 style={{
@@ -549,56 +475,35 @@ servers[user.server]
 
 >
 
-
 {user.nickname[0].toUpperCase()}
 
-
 </div>
-
-
-
-
-
-
 
 
 
 <div>
 
-
-<h2
-
-className="
+<div className="
 text-xl
 font-bold
-"
-
->
+">
 
 {user.nickname}
 
-</h2>
+</div>
 
 
-
-
-
-<p
-
-className="
+<div className="
 text-green-400
 text-sm
-mt-1
-"
-
->
+">
 
 ● Пользователь активен
 
-</p>
+</div>
 
 
-
+</div>
 
 
 </div>
@@ -606,305 +511,99 @@ mt-1
 
 
 
-
-
-</div>
-
-
-
-
-
-
-
-
-<div
-
-className="
+<div className="
 grid
-
 grid-cols-2
-
 gap-4
-
 mt-6
-
-"
-
->
+">
 
 
-
-
-
-
-
-<div
-
-className="
+<div className="
 rounded-xl
-
 bg-white/5
-
-border
-
-border-white/10
-
 p-4
+">
 
-"
-
->
-
-<p
-
-className="
+<div className="
 text-xs
 text-gray-500
-"
-
->
+">
 
 ID аккаунта
 
-</p>
-
-
-<p className="
-font-bold
-mt-1
-">
+</div>
 
 #{user.id}
 
-</p>
-
-
 </div>
 
 
 
-
-
-
-
-
-<div
-
-className="
+<div className="
 rounded-xl
-
 bg-white/5
-
-border
-
-border-white/10
-
 p-4
+">
 
-"
-
->
-
-<p
-
-className="
+<div className="
 text-xs
 text-gray-500
-"
-
->
-
-Игровой сервер
-
-</p>
-
-
-<p className="
-font-bold
-mt-1
 ">
+
+Сервер
+
+</div>
 
 {user.server}
 
-</p>
-
-
 </div>
 
 
 
-
-
-
-
-
-<div
-
-className="
+<div className="
 rounded-xl
-
 bg-white/5
-
-border
-
-border-white/10
-
 p-4
+">
 
-"
-
->
-
-<p
-
-className="
+<div className="
 text-xs
 text-gray-500
-"
-
->
+">
 
 Роль
 
-</p>
-
-
-<p className="
-font-bold
-mt-1
-">
+</div>
 
 {user.role}
 
-</p>
-
-
 </div>
 
 
 
-
-
-
-
-
-<div
-
-className="
+<div className="
 rounded-xl
-
 bg-white/5
-
-border
-
-border-white/10
-
 p-4
+">
 
-"
-
->
-
-<p
-
-className="
+<div className="
 text-xs
 text-gray-500
-"
-
->
+">
 
 Статус
 
-</p>
-
-
-<p className="
-font-bold
-text-green-400
-mt-1
-">
+</div>
 
 Онлайн
 
-</p>
-
-
 </div>
 
 
 
-
-
-
 </div>
-
-
-
-
-
-
-<div
-
-className="
-mt-5
-
-rounded-xl
-
-bg-white/5
-
-border
-
-border-white/10
-
-p-5
-
-"
-
->
-
-
-<h3
-
-className="
-text-lg
-font-bold
-"
-
->
-
-MAZEPOV STORE
-
-</h3>
-
-
-
-<p
-
-className="
-text-gray-400
-
-text-sm
-
-mt-2
-
-leading-relaxed
-
-"
-
->
-
-Добро пожаловать в личный кабинет.
-Здесь находятся настройки вашего профиля,
-управление аккаунтом и безопасность.
-
-</p>
-
-
-</div>
-
-
-
 
 
 </>
@@ -913,24 +612,19 @@ leading-relaxed
 
 }
 
+
+
+
 {
 active==="security" && (
 
 <>
 
-
-<h1
-
-className="
+<h1 className="
 text-2xl
-
 font-bold
-
 mb-6
-
-"
-
->
+">
 
 Безопасность
 
@@ -938,81 +632,29 @@ mb-6
 
 
 
-
-
-
-
-<div
-
-className="
-rounded-xl
-
+<div className="
 bg-white/5
-
-border
-
-border-white/10
-
+rounded-xl
 p-5
-
 mb-5
-
-"
-
->
+">
 
 
-<p
-
-className="
-text-xs
-
-text-gray-500
-
-"
-
->
-
-Текущий аккаунт
-
-</p>
-
-
-<h2
-
-className="
-text-xl
-
-font-bold
-
-mt-1
-
-"
-
->
+<div>
 
 {user.nickname}
 
-</h2>
+</div>
 
 
-<p
-
-className="
+<div className="
 text-gray-400
-
 text-sm
-
-mt-1
-
-"
-
->
+">
 
 Сервер: {user.server}
 
-</p>
-
+</div>
 
 
 </div>
@@ -1021,48 +663,22 @@ mt-1
 
 
 
-
-
-
-
-<div
-
-className="
-rounded-xl
-
+<div className="
 bg-white/5
-
-border
-
-border-white/10
-
+rounded-xl
 p-5
-
-"
-
->
+">
 
 
-<h2
-
-className="
-font-bold
-
+<h2 className="
 text-lg
-
+font-bold
 mb-4
-
-"
-
->
+">
 
 Изменение пароля
 
 </h2>
-
-
-
-
 
 
 
@@ -1074,38 +690,19 @@ placeholder="Старый пароль"
 
 value={oldPassword}
 
-onChange={(e)=>setOldPassword(e.target.value)}
+onChange={e=>setOldPassword(e.target.value)}
 
 className="
 w-full
-
-max-w-full
-
-appearance-none
-
 bg-black/50
-
 border
-
 border-white/10
-
 rounded-xl
-
 p-3
-
 mb-3
-
-outline-none
-
 "
 
- />
-
-
-
-
-
-
+/>
 
 
 
@@ -1117,38 +714,19 @@ placeholder="Новый пароль"
 
 value={newPassword}
 
-onChange={(e)=>setNewPassword(e.target.value)}
+onChange={e=>setNewPassword(e.target.value)}
 
 className="
 w-full
-
-max-w-full
-
-appearance-none
-
 bg-black/50
-
 border
-
 border-white/10
-
 rounded-xl
-
 p-3
-
 mb-3
-
-outline-none
-
 "
 
- />
-
-
-
-
-
-
+/>
 
 
 
@@ -1156,42 +734,23 @@ outline-none
 
 type="password"
 
-placeholder="Повторите новый пароль"
+placeholder="Повторите пароль"
 
 value={repeatPassword}
 
-onChange={(e)=>setRepeatPassword(e.target.value)}
+onChange={e=>setRepeatPassword(e.target.value)}
 
 className="
 w-full
-
-max-w-full
-
-appearance-none
-
 bg-black/50
-
 border
-
 border-white/10
-
 rounded-xl
-
 p-3
-
 mb-4
-
-outline-none
-
 "
 
- />
-
-
-
-
-
-
+/>
 
 
 
@@ -1201,21 +760,11 @@ onClick={changePassword}
 
 className="
 bg-white
-
 text-black
-
 font-bold
-
 px-6
-
 py-3
-
 rounded-xl
-
-hover:bg-zinc-200
-
-transition
-
 "
 
 >
@@ -1226,58 +775,22 @@ transition
 
 
 
-
-
-
-
 {
-message && (
+message &&
 
-<div
-
-className="
+<div className="
 mt-4
-
-w-full
-
-max-w-full
-
-overflow-hidden
-
-break-words
-
-rounded-xl
-
-bg-black/40
-
-border
-
-border-white/10
-
-px-4
-
-py-3
-
-text-sm
-
 text-yellow-400
-
-"
-
->
+">
 
 {message}
 
 </div>
 
-)
-
 }
 
 
-
 </div>
-
 
 
 </>
@@ -1291,22 +804,11 @@ text-yellow-400
 </div>
 
 
+</div>
 
 
-
-
-
-</section>
-
-
-
-
-
-
-
-</main>
+</div>
 
 );
-
 
 }
