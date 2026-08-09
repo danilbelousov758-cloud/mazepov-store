@@ -9,71 +9,46 @@ generator client {
 }
 
 
-
-
-
 model User {
 
   id Int @id @default(autoincrement())
 
-
   nickname String @unique
-
 
   password String
 
-
   server String
-
 
   role String @default("USER")
 
-
   avatar String @default("/images/avatar.png")
 
-
   createdAt DateTime @default(now())
-
 
 }
 
 
 
-
-
-
 model Mod {
-
 
   id Int @id @default(autoincrement())
 
-
   title String
-
 
   category String
 
-
   image String
-
 
   txd String
 
-
   dff String
-
 
   txdPath String
 
-
   dffPath String
-
 
   views Int @default(0)
 
-
   createdAt DateTime @default(now())
-
-
 
 }
