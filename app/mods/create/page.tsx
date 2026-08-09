@@ -1,8 +1,24 @@
 "use client";
 
 import Header from "@/components/Header";
+import Image from "next/image";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+
+
+type CategoryItem =
+| string
+| {
+    name:string;
+    children:string[];
+};
+
+
+type Category = {
+    name:string;
+    items:CategoryItem[];
+};
+
 
 
 export default function CreateModPage(){
@@ -11,24 +27,170 @@ export default function CreateModPage(){
 const router = useRouter();
 
 
-const [user,setUser] = useState<any>(null);
+
+const [user,setUser] =
+useState<any>(null);
 
 
-const [title,setTitle] = useState("");
 
-const [category,setCategory] = useState("");
-
-const [description,setDescription] = useState("");
+const [title,setTitle] =
+useState("");
 
 
-const [image,setImage] = useState<File | null>(null);
 
-const [dff,setDff] = useState<File | null>(null);
-
-const [txd,setTxd] = useState<File | null>(null);
+const [category,setCategory] =
+useState("");
 
 
-const [loading,setLoading] = useState(false);
+
+const [image,setImage] =
+useState<File | null>(null);
+
+
+
+const [preview,setPreview] =
+useState("");
+
+
+
+const [txd,setTxd] =
+useState<File | null>(null);
+
+
+
+const [dff,setDff] =
+useState<File | null>(null);
+
+
+
+const [txdPath,setTxdPath] =
+useState("");
+
+
+
+const [dffPath,setDffPath] =
+useState("");
+
+
+
+const [openCategory,setOpenCategory] =
+useState<string | null>(null);
+
+
+
+const [openSubCategory,setOpenSubCategory] =
+useState<string | null>(null);
+
+
+
+const [loading,setLoading] =
+useState(false);
+
+
+
+
+const categories:Category[]=[
+
+
+{
+name:"Скины",
+items:[
+
+"Государственные",
+
+"Мафии",
+
+"Банды",
+
+"Гражданские"
+
+]
+},
+
+
+
+{
+name:"Оружие",
+items:[
+
+"Ганпак",
+
+"Дигл",
+
+"ЮСП",
+
+"Револьвер",
+
+"АПС",
+
+"СВД",
+
+"M4A4"
+
+]
+},
+
+
+
+{
+name:"Интерьеры",
+items:[
+
+"24.7",
+
+"Банк",
+
+"Особняк",
+
+"Оружейка"
+
+]
+},
+
+
+
+{
+name:"Звуки",
+items:[
+
+"Попадание",
+
+{
+name:"Ганы",
+
+children:[
+
+"Пистолеты",
+
+"M4A4",
+
+"СВД"
+
+]
+
+}
+
+]
+}
+
+
+];
+
+
+
+const simpleCategories=[
+
+"Карты",
+
+"Дороги",
+
+"Графика",
+
+"Прицелы",
+
+"Таймциклы"
+
+];
 
 
 
@@ -37,7 +199,9 @@ const [loading,setLoading] = useState(false);
 useEffect(()=>{
 
 
-const data = localStorage.getItem("user");
+const data =
+localStorage.getItem("user");
+
 
 
 if(!data){
@@ -49,12 +213,15 @@ return;
 }
 
 
-const u = JSON.parse(data);
+
+const u =
+JSON.parse(data);
+
 
 
 if(
-u.role !== "ADMIN" &&
-u.role !== "OWNER"
+u.role!=="ADMIN" &&
+u.role!=="OWNER"
 ){
 
 router.push("/mods");
@@ -62,6 +229,7 @@ router.push("/mods");
 return;
 
 }
+
 
 
 setUser(u);
@@ -74,13 +242,61 @@ setUser(u);
 
 
 
+function selectImage(
+e:React.ChangeEvent<HTMLInputElement>
+){
+
+
+const file =
+e.target.files?.[0];
+
+
+
+if(file){
+
+setImage(file);
+
+setPreview(
+URL.createObjectURL(file)
+);
+
+}
+
+
+}
+
+
+
+
+function selectCategory(
+value:string
+){
+
+setCategory(value);
+
+}
+
+
+
+
+
 
 async function createMod(){
 
 
-if(!title || !category){
+if(
+!title ||
+!category ||
+!image ||
+!txd ||
+!dff ||
+!txdPath ||
+!dffPath
+){
 
-alert("Заполните обязательные поля");
+alert(
+"Заполните все поля"
+);
 
 return;
 
@@ -92,7 +308,9 @@ setLoading(true);
 
 
 
-const form = new FormData();
+const form =
+new FormData();
+
 
 
 form.append(
@@ -101,55 +319,51 @@ title
 );
 
 
+
 form.append(
 "category",
 category
 );
 
 
-form.append(
-"description",
-description
-);
-
-
-
-if(image){
 
 form.append(
 "image",
 image
 );
 
-}
 
-
-
-if(dff){
-
-form.append(
-"dff",
-dff
-);
-
-}
-
-
-
-if(txd){
 
 form.append(
 "txd",
 txd
 );
 
-}
+
+
+form.append(
+"dff",
+dff
+);
 
 
 
+form.append(
+"txdPath",
+txdPath
+);
 
 
-const res = await fetch(
+
+form.append(
+"dffPath",
+dffPath
+);
+
+
+
+const response =
+await fetch(
 "/api/mods/create",
 {
 method:"POST",
@@ -159,9 +373,8 @@ body:form
 
 
 
-
-
-const data = await res.json();
+const data =
+await response.json();
 
 
 
@@ -169,9 +382,11 @@ setLoading(false);
 
 
 
-if(!res.ok){
+if(!response.ok){
 
-alert(data.error);
+alert(
+data.error || "Ошибка"
+);
 
 return;
 
@@ -179,16 +394,16 @@ return;
 
 
 
+alert(
+"Мод создан"
+);
 
-alert("Мод создан");
 
 
 router.push("/mods");
 
 
-
 }
-
 
 
 
@@ -199,25 +414,21 @@ return null;
 
 }
 
-
-
-
-
-
 return (
 
-<main
+<div
 
 className="
 relative
 min-h-screen
-text-white
 overflow-hidden
+text-white
 "
 
 >
 
 
+<Header />
 
 
 
@@ -252,8 +463,6 @@ type="video/mp4"
 
 
 
-
-
 <div
 
 className="
@@ -268,46 +477,43 @@ z-10
 
 
 
-
-<div className="relative z-50">
-
-<Header />
-
-</div>
-
-
-
-
-
-
-
-<section
+<div
 
 className="
 relative
 z-20
-pt-40
+pt-36
+pb-10
 w-[90%]
-max-w-3xl
+max-w-6xl
 mx-auto
+flex
+gap-6
 "
 
 >
 
+
+
+
+
+{/* ЛЕВАЯ ФОРМА */}
 
 
 
 <div
 
 className="
+flex-1
 bg-black/70
 border
 border-zinc-800
-rounded-2xl
+rounded-3xl
 p-8
 "
 
 >
+
 
 
 <h1
@@ -329,92 +535,149 @@ mb-8
 
 
 
+<div>
+
+<p
+
+className="
+text-sm
+text-gray-400
+mb-2
+"
+
+>
+
+Название мода
+
+</p>
+
 
 
 <input
-
-placeholder="Название мода"
 
 value={title}
 
-onChange={(e)=>setTitle(e.target.value)}
+onChange={
+(e)=>setTitle(e.target.value)
+}
+
+placeholder="
+Например: M4A4 Military
+"
 
 className="
 w-full
-mb-4
-p-3
+p-4
 rounded-xl
 bg-black
 border
 border-zinc-700
+outline-none
+"
+
+/>
+
+
+</div>
+
+
+
+
+
+
+
+<div
+
+className="
+mt-7
+"
+
+>
+
+
+<p
+
+className="
+text-sm
+text-gray-400
+mb-2
+"
+
+>
+
+Фотография мода
+
+</p>
+
+
+
+<label
+
+className="
+h-60
+rounded-2xl
+border
+border-dashed
+border-zinc-700
+bg-black
+flex
+items-center
+justify-center
+cursor-pointer
+overflow-hidden
+"
+
+>
+
+
+
+{
+
+preview
+
+
+?
+
+
+<Image
+
+src={preview}
+
+alt="preview"
+
+width={700}
+
+height={500}
+
+className="
+w-full
+h-full
+object-cover
 "
 
 />
 
 
 
+:
 
 
-
-
-<input
-
-placeholder="Категория"
-
-value={category}
-
-onChange={(e)=>setCategory(e.target.value)}
+<span
 
 className="
-w-full
-mb-4
-p-3
-rounded-xl
-bg-black
-border
-border-zinc-700
+text-gray-500
 "
 
-/>
+>
+
++ Добавить изображение
+
+</span>
 
 
 
+}
 
-
-
-
-<textarea
-
-placeholder="Описание"
-
-value={description}
-
-onChange={(e)=>setDescription(e.target.value)}
-
-className="
-w-full
-mb-4
-p-3
-h-32
-rounded-xl
-bg-black
-border
-border-zinc-700
-"
-
-/>
-
-
-
-
-
-
-
-
-
-<label className="block mb-3">
-
-Изображение
 
 
 <input
@@ -423,60 +686,114 @@ type="file"
 
 accept="image/*"
 
-onChange={(e)=>
+onChange={selectImage}
 
-setImage(
-e.target.files?.[0] || null
-)
-
-}
+className="
+hidden
+"
 
 />
+
 
 
 </label>
 
 
 
+</div>
 
 
 
 
 
-<label className="block mb-3">
 
-DFF файл
+
+
+
+<div
+
+className="
+mt-7
+"
+
+>
+
+
+<p
+
+className="
+text-sm
+text-gray-400
+mb-2
+"
+
+>
+
+Расположение TXD
+
+</p>
+
 
 
 <input
 
-type="file"
+value={txdPath}
 
-accept=".dff"
-
-onChange={(e)=>
-
-setDff(
-e.target.files?.[0] || null
-)
-
+onChange={
+(e)=>setTxdPath(e.target.value)
 }
+
+placeholder="
+models/gta3.img/weapon.txd
+"
+
+className="
+w-full
+p-3
+mb-3
+rounded-xl
+bg-black
+border
+border-zinc-700
+outline-none
+"
 
 />
 
 
-</label>
+
+<label
+
+className="
+block
+p-4
+rounded-xl
+bg-black
+border
+border-zinc-700
+cursor-pointer
+text-gray-400
+hover:text-white
+"
+
+>
 
 
 
+{
 
+txd
 
+?
 
+txd.name
 
+:
 
-<label className="block mb-3">
+"Выбрать TXD файл"
 
-TXD файл
+}
+
 
 
 <input
@@ -485,19 +802,146 @@ type="file"
 
 accept=".txd"
 
-onChange={(e)=>
-
+onChange={
+(e)=>
 setTxd(
 e.target.files?.[0] || null
 )
-
 }
+
+className="
+hidden
+"
 
 />
 
 
+
 </label>
 
+
+
+</div>
+
+
+
+
+
+
+
+
+<div
+
+className="
+mt-7
+"
+
+>
+
+
+<p
+
+className="
+text-sm
+text-gray-400
+mb-2
+"
+
+>
+
+Расположение DFF
+
+</p>
+
+
+
+<input
+
+value={dffPath}
+
+onChange={
+(e)=>setDffPath(e.target.value)
+}
+
+placeholder="
+models/gta3.img/weapon.dff
+"
+
+className="
+w-full
+p-3
+mb-3
+rounded-xl
+bg-black
+border
+border-zinc-700
+outline-none
+"
+
+/>
+
+
+
+<label
+
+className="
+block
+p-4
+rounded-xl
+bg-black
+border
+border-zinc-700
+cursor-pointer
+text-gray-400
+hover:text-white
+"
+
+>
+
+
+
+{
+
+dff
+
+?
+
+dff.name
+
+:
+
+"Выбрать DFF файл"
+
+}
+
+
+
+<input
+
+type="file"
+
+accept=".dff"
+
+onChange={
+(e)=>
+setDff(
+e.target.files?.[0] || null
+)
+}
+
+className="
+hidden
+"
+
+/>
+
+
+
+</label>
+
+
+
+</div>
 
 
 
@@ -513,17 +957,21 @@ onClick={createMod}
 disabled={loading}
 
 className="
-mt-6
+mt-8
 w-full
+py-4
+rounded-xl
 bg-white
 text-black
-py-3
-rounded-xl
 font-bold
+text-lg
 hover:bg-zinc-200
+transition
 "
 
 >
+
+
 
 {
 
@@ -540,8 +988,8 @@ loading
 }
 
 
-</button>
 
+</button>
 
 
 
@@ -552,15 +1000,509 @@ loading
 
 
 
-</section>
+
+
+
+{/* ПРАВАЯ КАТЕГОРИЯ */}
+
+
+
+<div
+
+className="
+w-80
+h-fit
+max-h-[75vh]
+overflow-y-auto
+bg-black/70
+border
+border-zinc-800
+rounded-3xl
+p-5
+"
+
+>
+
+
+
+<h2
+
+className="
+text-xl
+font-bold
+mb-5
+"
+
+>
+
+Категория
+
+</h2>
 
 
 
 
-</main>
+
+
+
+{
+
+categories.map((cat)=>(
+
+
+<div
+
+key={cat.name}
+
+className="
+mb-3
+"
+
+>
+
+
+
+<button
+
+onClick={()=>setOpenCategory(
+
+openCategory===cat.name
+?
+null
+:
+cat.name
+
+)}
+
+className="
+w-full
+flex
+justify-between
+items-center
+py-2
+font-bold
+"
+
+>
+
+<span>
+
+{cat.name}
+
+</span>
+
+
+
+<span>
+
+{
+
+openCategory===cat.name
+
+?
+
+"−"
+
+:
+
+"+"
+
+}
+
+</span>
+
+
+
+</button>
+
+
+
+
+
+
+
+{
+
+openCategory===cat.name && (
+
+
+<div
+
+className="
+ml-3
+border-l
+border-zinc-700
+pl-3
+"
+
+>
+
+
+
+{
+
+cat.items.map((item)=>{
+
+
+
+if(typeof item === "string"){
+
+
+
+return (
+
+
+<button
+
+key={item}
+
+onClick={()=>selectCategory(item)}
+
+className={`
+
+block
+
+w-full
+
+text-left
+
+py-2
+
+text-sm
+
+transition
+
+
+${
+
+category===item
+
+?
+
+"text-white font-bold"
+
+:
+
+"text-gray-400 hover:text-white"
+
+}
+
+
+`}
+
+>
+
+
+{item}
+
+
+
+</button>
+
+
+)
+
+
+}
+
+
+
+
+
+
+
+return (
+
+
+<div
+
+key={item.name}
+
+>
+
+
+
+<button
+
+onClick={()=>setOpenSubCategory(
+
+openSubCategory===item.name
+?
+null
+:
+item.name
+
+)}
+
+className="
+w-full
+flex
+justify-between
+py-2
+text-sm
+text-gray-400
+"
+
+>
+
+
+
+<span>
+
+{item.name}
+
+</span>
+
+
+
+<span>
+
+{
+
+openSubCategory===item.name
+
+?
+
+"−"
+
+:
+
+"+"
+
+}
+
+</span>
+
+
+
+</button>
+
+
+
+
+
+
+
+
+{
+
+openSubCategory===item.name && (
+
+
+<div
+
+className="
+ml-3
+"
+
+>
+
+
+
+{
+
+item.children.map(child=>(
+
+
+<button
+
+key={child}
+
+onClick={()=>selectCategory(child)}
+
+className={`
+
+block
+
+w-full
+
+text-left
+
+py-1
+
+text-sm
+
+
+${
+
+category===child
+
+?
+
+"text-white font-bold"
+
+:
+
+"text-gray-500 hover:text-white"
+
+}
+
+
+`}
+
+>
+
+{child}
+
+
+
+</button>
+
+
+))
+
+
+
+}
+
+
+
+</div>
+
+
+
+)
+
+
+
+}
+
+
+
+
+</div>
+
+
+)
+
+
+
+})
+
+}
+
+
+
+</div>
+
+
+
+)
+
+
+
+}
+
+
+
+</div>
+
+
+
+))
+
+
+
+}
+
+
+
+
+
+
+
+
+<div
+
+className="
+mt-5
+pt-4
+border-t
+border-zinc-800
+"
+
+>
+
+
+
+{
+
+simpleCategories.map(item=>(
+
+
+<button
+
+key={item}
+
+onClick={()=>selectCategory(item)}
+
+className={`
+
+block
+
+w-full
+
+text-left
+
+py-2
+
+text-sm
+
+
+${
+
+category===item
+
+?
+
+"text-white font-bold"
+
+:
+
+"text-gray-400 hover:text-white"
+
+}
+
+
+`}
+
+>
+
+
+{item}
+
+
+
+</button>
+
+
+))
+
+
+}
+
+
+
+</div>
+
+
+
+
+
+
+</div>
+
+
+
+
+
+
+</div>
+
+
+</div>
 
 
 );
-
 
 }

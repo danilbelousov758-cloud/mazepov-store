@@ -7,37 +7,88 @@ import { useRouter } from "next/navigation";
 
 
 type CategoryItem =
-  | string
-  | {
-      name: string;
-      children: string[];
+    | string
+    | {
+        name:string;
+        children:string[];
     };
 
 
 type Category = {
-  name: string;
-  items: CategoryItem[];
+
+    name:string;
+
+    items:CategoryItem[];
+
 };
+
+
+
+type Mod = {
+
+    id:number;
+
+    title:string;
+
+    category:string;
+
+    description?:string | null;
+
+    image?:string | null;
+
+    dff?:string | null;
+
+    txd?:string | null;
+
+    views:number;
+
+    createdAt:string;
+
+};
+
+
 
 
 export default function ModsPage(){
 
+
 const router = useRouter();
 
 
-const [currentUser,setCurrentUser] = useState<any>(null);
 
-const [openCategory,setOpenCategory] = useState<string | null>(null);
+const [currentUser,setCurrentUser] =
+useState<any>(null);
 
-const [openSubCategory,setOpenSubCategory] = useState<string | null>(null);
 
-const [activeCategory,setActiveCategory] = useState("Все");
+
+const [mods,setMods] =
+useState<Mod[]>([]);
+
+
+
+const [openCategory,setOpenCategory] =
+useState<string | null>(null);
+
+
+
+const [openSubCategory,setOpenSubCategory] =
+useState<string | null>(null);
+
+
+
+const [activeCategory,setActiveCategory] =
+useState("Все");
+
+
 
 
 
 useEffect(()=>{
 
-const user = localStorage.getItem("user");
+
+const user =
+localStorage.getItem("user");
+
 
 
 if(user){
@@ -48,7 +99,51 @@ JSON.parse(user)
 
 }
 
+
+
+
+async function getMods(){
+
+
+try{
+
+
+const response =
+await fetch("/api/mods");
+
+
+
+const data =
+await response.json();
+
+
+
+if(Array.isArray(data)){
+
+setMods(data);
+
+}
+
+
+
+}catch(error){
+
+console.log(error);
+
+}
+
+
+
+}
+
+
+
+getMods();
+
+
+
 },[]);
+
 
 
 
@@ -56,124 +151,163 @@ JSON.parse(user)
 
 const categories:Category[]=[
 
+
 {
+
 name:"Скины",
+
 items:[
+
 "Государственные",
+
 "Мафии",
+
 "Банды",
+
 "Гражданские"
+
 ]
+
 },
 
 
+
 {
+
 name:"Оружие",
+
 items:[
+
 "Ганпак",
+
 "Дигл",
+
 "ЮСП",
+
 "Револьвер",
+
 "АПС",
+
 "СВД",
+
 "M4A4"
+
 ]
+
 },
 
 
+
 {
+
 name:"Интерьеры",
+
 items:[
+
 "24.7",
+
 "Банк",
+
 "Особняк",
+
 "Оружейка"
+
 ]
+
 },
 
 
+
 {
+
 name:"Звуки",
+
 items:[
+
 "Попадание",
 
 {
+
 name:"Ганы",
+
 children:[
+
 "Пистолеты",
+
 "M4A4",
+
 "СВД"
+
 ]
+
 }
 
 ]
+
 }
+
 
 
 ];
 
 
 
-const simpleCategories=[
+
+
+
+const simpleCategories:string[]=[
+
 
 "Карты",
+
 "Дороги",
+
 "Графика",
+
 "Прицелы",
+
 "Таймциклы"
 
-];
-
-
-
-const mods=[
-
-{
-title:"Государственные скины",
-category:"Государственные",
-image:"/images/mod1.png"
-},
-
-
-{
-title:"Ганпак оружия",
-category:"Ганпак",
-image:"/images/mod1.png"
-},
-
-
-{
-title:"Карта",
-category:"Карты",
-image:"/images/mod1.png"
-}
-
 
 ];
+
+
+
 
 
 
 const filteredMods =
 
+
 activeCategory==="Все"
+
 
 ?
 
+
 mods
+
 
 :
 
+
 mods.filter(
 
-m=>m.category===activeCategory
+(mod:Mod)=>
+
+mod.category===activeCategory
 
 );
 
 
 
+
+
+
 return (
 
-<main
+
+<div
 
 className="
 relative
@@ -183,6 +317,11 @@ text-white
 "
 
 >
+
+
+<Header />
+
+
 
 <video
 
@@ -227,21 +366,7 @@ z-10
 
 
 
-
-
-<div className="relative z-50">
-
-<Header />
-
-</div>
-
-
-
-
-
-
-
-<section
+<div
 
 className="
 relative
@@ -260,7 +385,7 @@ gap-6
 
 
 
-<aside
+<div
 
 className="
 w-72
@@ -274,7 +399,6 @@ p-5
 "
 
 >
-
 
 
 
@@ -305,12 +429,12 @@ font-bold
 
 
 
-
-
 {
 
 (currentUser?.role==="ADMIN" ||
-currentUser?.role==="OWNER") && (
+currentUser?.role==="OWNER")
+
+&&
 
 
 <button
@@ -335,16 +459,11 @@ hover:bg-zinc-200
 </button>
 
 
-)
-
 }
 
 
 
 </div>
-
-
-
 
 
 
@@ -371,22 +490,19 @@ hover:text-white
 
 
 
-
-
 {
-
-categories.map(category=>(
+categories.map((category:Category)=>(
 
 
 <div
 
 key={category.name}
 
-className="mt-3"
+className="
+mt-3
+"
 
 >
-
-
 
 
 <button
@@ -394,9 +510,13 @@ className="mt-3"
 onClick={()=>setOpenCategory(
 
 openCategory===category.name
+
 ?
+
 null
+
 :
+
 category.name
 
 )}
@@ -411,7 +531,6 @@ py-2
 
 >
 
-
 {category.name}
 
 
@@ -420,9 +539,13 @@ py-2
 {
 
 openCategory===category.name
+
 ?
+
 "−"
+
 :
+
 "+"
 
 }
@@ -436,10 +559,7 @@ openCategory===category.name
 
 
 
-
-
 {
-
 openCategory===category.name && (
 
 
@@ -454,17 +574,13 @@ pl-3
 
 >
 
-
 {
-
-category.items.map(item=>{
-
-
-if(typeof item==="string"){
+category.items.map((item:CategoryItem)=>(
 
 
-return (
+typeof item === "string"
 
+?
 
 <button
 
@@ -489,15 +605,7 @@ hover:text-white
 </button>
 
 
-)
-
-
-}
-
-
-
-return (
-
+:
 
 <div
 
@@ -506,14 +614,19 @@ key={item.name}
 >
 
 
+
 <button
 
 onClick={()=>setOpenSubCategory(
 
 openSubCategory===item.name
+
 ?
+
 null
+
 :
+
 item.name
 
 )}
@@ -529,7 +642,6 @@ py-1
 
 >
 
-
 {item.name}
 
 
@@ -538,9 +650,13 @@ py-1
 {
 
 openSubCategory===item.name
+
 ?
+
 "−"
+
 :
+
 "+"
 
 }
@@ -559,12 +675,12 @@ openSubCategory===item.name
 openSubCategory===item.name && (
 
 
-<div className="ml-3">
+<div>
 
 
 {
 
-item.children.map(child=>(
+item.children.map((child:string)=>(
 
 
 <button
@@ -594,31 +710,6 @@ hover:text-white
 }
 
 
-
-</div>
-
-
-)
-
-
-}
-
-
-
-
-</div>
-
-
-)
-
-
-})
-
-
-}
-
-
-
 </div>
 
 
@@ -634,11 +725,23 @@ hover:text-white
 
 ))
 
+}
+
+
+</div>
+
+
+)
 
 }
 
 
+</div>
 
+
+))
+
+}
 
 
 
@@ -656,7 +759,7 @@ pt-4
 
 {
 
-simpleCategories.map(item=>(
+simpleCategories.map((item:string)=>(
 
 
 <button
@@ -687,6 +790,9 @@ hover:text-white
 }
 
 
+</div>
+
+
 
 </div>
 
@@ -694,13 +800,7 @@ hover:text-white
 
 
 
-</aside>
-
-
-
-
-
-
+{/* MODS LIST */}
 
 
 
@@ -717,17 +817,15 @@ gap-5
 
 
 
-
-
 {
 
-filteredMods.map((mod,index)=>(
+filteredMods.map((mod:Mod)=>(
 
 
 
 <div
 
-key={index}
+key={mod.id}
 
 className="
 rounded-xl
@@ -735,14 +833,68 @@ border
 border-zinc-800
 bg-black/70
 overflow-hidden
+hover:border-white/40
+transition
 "
 
 >
 
 
+
+<div
+
+onClick={()=>router.push(`/mods/${mod.id}`)}
+
+className="
+cursor-pointer
+"
+
+>
+
+
+
+<div
+
+className="
+relative
+"
+
+>
+
+
+
+<div
+
+className="
+absolute
+top-3
+left-3
+bg-black/80
+px-3
+py-1
+rounded-lg
+text-xs
+z-10
+"
+
+>
+
+{mod.category}
+
+</div>
+
+
+
+
 <Image
 
-src={mod.image}
+src={
+mod.image
+?
+mod.image
+:
+"/images/mod-placeholder.png"
+}
 
 alt={mod.title}
 
@@ -760,6 +912,12 @@ object-cover
 
 
 
+</div>
+
+
+
+
+
 <div
 
 className="
@@ -769,30 +927,108 @@ p-4
 >
 
 
-<h3 className="font-bold">
+<h3
+
+className="
+font-bold
+text-lg
+"
+
+>
 
 {mod.title}
 
 </h3>
 
 
-
-<p
-
-className="
-text-xs
-text-gray-500
-"
-
->
-
-{mod.category}
-
-</p>
+</div>
 
 
 
 </div>
+
+
+
+
+
+<div
+
+className="
+flex
+justify-between
+items-center
+px-4
+pb-4
+"
+
+>
+
+
+
+<a
+
+href={`/api/mods/download/${mod.id}`}
+
+className="
+bg-white
+text-black
+px-4
+py-2
+rounded-xl
+font-bold
+text-sm
+"
+
+>
+
+Скачать
+
+</a>
+
+
+
+
+
+<div
+
+className="
+text-xs
+text-gray-400
+text-right
+"
+
+>
+
+
+<div>
+
+👁 {mod.views || 0}
+
+</div>
+
+
+<div>
+
+📅 {
+
+new Date(
+mod.createdAt
+)
+.toLocaleDateString(
+"ru-RU"
+)
+
+}
+
+</div>
+
+
+</div>
+
+
+
+</div>
+
 
 
 </div>
@@ -800,7 +1036,6 @@ text-gray-500
 
 
 ))
-
 
 }
 
@@ -810,20 +1045,14 @@ text-gray-500
 
 
 
+</div>
 
 
 
-
-</section>
-
+</div>
 
 
-
-
-
-</main>
 
 );
-
 
 }
