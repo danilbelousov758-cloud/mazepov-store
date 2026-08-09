@@ -1,54 +1,67 @@
-    import {
-  S3Client,
-  PutObjectCommand
+import {
+    S3Client,
+    PutObjectCommand
 } from "@aws-sdk/client-s3";
+
+import {
+    getSignedUrl
+} from "@aws-sdk/s3-request-presigner";
 
 
 const s3 = new S3Client({
 
-  region: "eu-central-003",
+    region: "eu-central-003",
 
-  endpoint: process.env.B2_ENDPOINT,
+    endpoint:
+        process.env.B2_ENDPOINT,
 
-  credentials: {
+    credentials: {
 
-    accessKeyId:
-      process.env.B2_KEY_ID!,
+        accessKeyId:
+            process.env.B2_KEY_ID!,
 
-    secretAccessKey:
-      process.env.B2_APPLICATION_KEY!
+        secretAccessKey:
+            process.env.B2_APPLICATION_KEY!
 
-  }
+    }
 
 });
 
 
-export async function uploadFile(
-  file: Buffer,
-  filename: string,
-  type: string
-){
 
-  const command = new PutObjectCommand({
-
-    Bucket:
-      process.env.B2_BUCKET_NAME,
-
-    Key:
-      filename,
-
-    Body:
-      file,
-
-    ContentType:
-      type
-
-  });
+export async function createUploadUrl(
+    filename: string,
+    contentType: string
+) {
 
 
-  await s3.send(command);
+    const command =
+        new PutObjectCommand({
+
+            Bucket:
+                process.env.B2_BUCKET_NAME,
+
+            Key:
+                filename,
+
+            ContentType:
+                contentType
+
+        });
 
 
-  return `${process.env.B2_ENDPOINT}/${process.env.B2_BUCKET_NAME}/${filename}`;
+
+    const url =
+        await getSignedUrl(
+            s3,
+            command,
+            {
+                expiresIn: 3600
+            }
+        );
+
+
+
+    return url;
 
 }

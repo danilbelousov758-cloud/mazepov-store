@@ -1,22 +1,12 @@
 "use client";
 
-import Header from "@/components/Header";
-import Image from "next/image";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
-
-
-type CategoryItem =
-| string
-| {
-    name:string;
-    children:string[];
-};
 
 
 type Category = {
     name:string;
-    items:CategoryItem[];
+    items:string[];
 };
 
 
@@ -24,1485 +14,621 @@ type Category = {
 export default function CreateModPage(){
 
 
-const router = useRouter();
+    const router = useRouter();
 
 
+    const [title,setTitle] =
+        useState("");
 
-const [user,setUser] =
-useState<any>(null);
+    const [category,setCategory] =
+        useState("");
 
 
+    const [txdPath,setTxdPath] =
+        useState("");
 
-const [title,setTitle] =
-useState("");
+    const [dffPath,setDffPath] =
+        useState("");
 
 
 
-const [category,setCategory] =
-useState("");
+    const [image,setImage] =
+        useState<File | null>(null);
 
+    const [txd,setTxd] =
+        useState<File | null>(null);
 
+    const [dff,setDff] =
+        useState<File | null>(null);
 
-const [image,setImage] =
-useState<File | null>(null);
 
 
+    const [loading,setLoading] =
+        useState(false);
 
-const [preview,setPreview] =
-useState("");
 
 
+    const categories:Category[] = [
 
-const [txd,setTxd] =
-useState<File | null>(null);
 
+        {
+            name:"Скины",
+            items:[
+                "Государственные",
+                "Мафии",
+                "Банды",
+                "Гражданские"
+            ]
+        },
 
 
-const [dff,setDff] =
-useState<File | null>(null);
+        {
+            name:"Оружие",
+            items:[
+                "Ганпак",
+                "Дигл",
+                "ЮСП",
+                "Револьвер",
+                "АПС",
+                "СВД",
+                "M4A4"
+            ]
+        },
 
 
+        {
+            name:"Интерьеры",
+            items:[
+                "24.7",
+                "Банк",
+                "Особняк",
+                "Оружейка"
+            ]
+        },
 
-const [txdPath,setTxdPath] =
-useState("");
 
+        {
+            name:"Карты",
+            items:[
+                "Города",
+                "Здания",
+                "Дороги"
+            ]
+        }
 
 
-const [dffPath,setDffPath] =
-useState("");
+    ];
 
 
 
-const [openCategory,setOpenCategory] =
-useState<string | null>(null);
 
 
+    async function uploadToB2(
+        file:File,
+        folder:string
+    ){
 
-const [openSubCategory,setOpenSubCategory] =
-useState<string | null>(null);
 
+        const res =
+            await fetch(
+                "/api/mods/upload-url",
+                {
 
+                    method:"POST",
 
-const [loading,setLoading] =
-useState(false);
+                    headers:{
+                        "Content-Type":
+                        "application/json"
+                    },
 
 
+                    body:
+                    JSON.stringify({
 
+                        filename:
+                        `${folder}/${file.name}`,
 
-const categories:Category[]=[
+                        type:
+                        file.type
 
+                    })
 
-{
-name:"Скины",
-items:[
+                }
+            );
 
-"Государственные",
 
-"Мафии",
 
-"Банды",
+        const data =
+            await res.json();
 
-"Гражданские"
 
-]
-},
 
+        await fetch(
+            data.url,
+            {
 
+                method:"PUT",
 
-{
-name:"Оружие",
-items:[
+                headers:{
+                    "Content-Type":
+                    file.type
+                },
 
-"Ганпак",
 
-"Дигл",
+                body:file
 
-"ЮСП",
+            }
+        );
 
-"Револьвер",
 
-"АПС",
 
-"СВД",
+        return data.key;
 
-"M4A4"
+    }
 
-]
-},
 
 
 
-{
-name:"Интерьеры",
-items:[
 
-"24.7",
+    async function createMod(){
 
-"Банк",
 
-"Особняк",
+        if(
+            !title ||
+            !category ||
+            !image ||
+            !txd ||
+            !dff
+        ){
 
-"Оружейка"
+            alert(
+                "Заполните все поля"
+            );
 
-]
-},
+            return;
 
+        }
 
 
-{
-name:"Звуки",
-items:[
 
-"Попадание",
+        setLoading(true);
 
-{
-name:"Ганы",
 
-children:[
 
-"Пистолеты",
+        try{
 
-"M4A4",
 
-"СВД"
+            const imageKey =
+                await uploadToB2(
+                    image,
+                    "images"
+                );
 
-]
 
-}
+            const txdKey =
+                await uploadToB2(
+                    txd,
+                    "txd"
+                );
 
-]
-}
 
+            const dffKey =
+                await uploadToB2(
+                    dff,
+                    "dff"
+                );
 
-];
 
 
 
-const simpleCategories=[
 
-"Карты",
+            const response =
+                await fetch(
+                    "/api/mods/create",
+                    {
 
-"Дороги",
+                        method:"POST",
 
-"Графика",
+                        headers:{
+                            "Content-Type":
+                            "application/json"
+                        },
 
-"Прицелы",
 
-"Таймциклы"
+                        body:
+                        JSON.stringify({
 
-];
+                            title,
 
+                            category,
 
+                            image:
+                            `${process.env.NEXT_PUBLIC_B2_URL}/${imageKey}`,
 
+                            txd:
+                            `${process.env.NEXT_PUBLIC_B2_URL}/${txdKey}`,
 
+                            dff:
+                            `${process.env.NEXT_PUBLIC_B2_URL}/${dffKey}`,
 
-useEffect(()=>{
+                            txdPath,
 
+                            dffPath
 
-const data =
-localStorage.getItem("user");
+                        })
 
+                    }
+                );
 
 
-if(!data){
 
-router.push("/login");
+            const result =
+                await response.json();
 
-return;
 
-}
 
+            if(result.success){
 
+                alert(
+                    "Мод создан"
+                );
 
-const u =
-JSON.parse(data);
 
+                router.push(
+                    "/mods"
+                );
 
+            }
+            else{
 
-if(
-u.role!=="ADMIN" &&
-u.role!=="OWNER"
-){
+                alert(
+                    result.error
+                );
 
-router.push("/mods");
+            }
 
-return;
 
-}
+        }
+        catch(error){
 
+            console.error(
+                error
+            );
 
 
-setUser(u);
+            alert(
+                "Ошибка загрузки"
+            );
 
+        }
 
 
-},[]);
+        setLoading(false);
 
 
+    }
 
 
 
-function selectImage(
-e:React.ChangeEvent<HTMLInputElement>
-){
 
 
-const file =
-e.target.files?.[0];
 
+    return (
 
+        <main
+        className="
+        min-h-screen
+        bg-black
+        text-white
+        p-10
+        "
+        >
 
-if(file){
 
-setImage(file);
+            <div
+            className="
+            max-w-5xl
+            mx-auto
+            grid
+            grid-cols-2
+            gap-8
+            "
+            >
 
-setPreview(
-URL.createObjectURL(file)
-);
 
-}
 
+                <section
+                className="
+                bg-zinc-900
+                p-6
+                rounded-2xl
+                "
+                >
 
-}
 
+                    <h1
+                    className="
+                    text-2xl
+                    font-bold
+                    mb-5
+                    "
+                    >
 
+                    Создание мода
 
+                    </h1>
 
-function selectCategory(
-value:string
-){
 
-setCategory(value);
 
-}
+                    <input
 
+                    className="
+                    w-full
+                    bg-black
+                    border
+                    border-zinc-700
+                    p-3
+                    rounded-xl
+                    mb-3
+                    "
 
+                    placeholder="Название файла"
 
+                    value={title}
 
+                    onChange={
+                        e=>setTitle(
+                            e.target.value
+                        )
+                    }
 
+                    />
 
-async function createMod(){
 
 
-if(
-!title ||
-!category ||
-!image ||
-!txd ||
-!dff ||
-!txdPath ||
-!dffPath
-){
 
-alert(
-"Заполните все поля"
-);
+                    <input
 
-return;
+                    className="
+                    w-full
+                    bg-black
+                    border
+                    border-zinc-700
+                    p-3
+                    rounded-xl
+                    mb-3
+                    "
 
-}
+                    placeholder="Расположение TXD"
 
+                    value={txdPath}
 
+                    onChange={
+                        e=>setTxdPath(
+                            e.target.value
+                        )
+                    }
 
-setLoading(true);
+                    />
 
 
 
-const form =
-new FormData();
 
+                    <input
 
+                    className="
+                    w-full
+                    bg-black
+                    border
+                    border-zinc-700
+                    p-3
+                    rounded-xl
+                    mb-3
+                    "
 
-form.append(
-"title",
-title
-);
+                    placeholder="Расположение DFF"
 
+                    value={dffPath}
 
+                    onChange={
+                        e=>setDffPath(
+                            e.target.value
+                        )
+                    }
 
-form.append(
-"category",
-category
-);
+                    />
 
 
 
-form.append(
-"image",
-image
-);
 
 
+                    <label>
+                    Фото:
 
-form.append(
-"txd",
-txd
-);
+                    <input
+                    type="file"
+                    onChange={
+                        e=>
+                        setImage(
+                            e.target.files?.[0] || null
+                        )
+                    }
+                    />
 
+                    </label>
 
 
-form.append(
-"dff",
-dff
-);
 
 
+                    <label>
+                    TXD:
 
-form.append(
-"txdPath",
-txdPath
-);
+                    <input
+                    type="file"
+                    onChange={
+                        e=>
+                        setTxd(
+                            e.target.files?.[0] || null
+                        )
+                    }
+                    />
 
+                    </label>
 
 
-form.append(
-"dffPath",
-dffPath
-);
 
 
 
-const response =
-await fetch(
-"/api/mods/create",
-{
-method:"POST",
-body:form
-}
-);
+                    <label>
+                    DFF:
 
+                    <input
+                    type="file"
+                    onChange={
+                        e=>
+                        setDff(
+                            e.target.files?.[0] || null
+                        )
+                    }
+                    />
 
+                    </label>
 
-const data =
-await response.json();
 
 
 
-setLoading(false);
 
+                    <button
 
+                    onClick={createMod}
 
-if(!response.ok){
+                    disabled={loading}
 
-alert(
-data.error || "Ошибка"
-);
+                    className="
+                    mt-6
+                    w-full
+                    bg-white
+                    text-black
+                    p-3
+                    rounded-xl
+                    font-bold
+                    "
 
-return;
+                    >
 
-}
+                    {
+                    loading
+                    ?
+                    "Загрузка..."
+                    :
+                    "Создать мод"
+                    }
 
+                    </button>
 
 
-alert(
-"Мод создан"
-);
 
+                </section>
 
 
-router.push("/mods");
 
 
-}
 
 
 
+                <section
+                className="
+                bg-zinc-900
+                p-6
+                rounded-2xl
+                "
+                >
 
-if(!user){
 
-return null;
+                    <h2
+                    className="
+                    text-xl
+                    font-bold
+                    mb-4
+                    "
+                    >
 
-}
+                    Выбор категории
 
-return (
+                    </h2>
 
-<div
 
-className="
-relative
-min-h-screen
-overflow-hidden
-text-white
-"
 
->
+                    {
+                    categories.map(cat=>(
 
+                        <div
+                        key={cat.name}
+                        className="mb-5"
+                        >
 
-<Header />
+                            <h3
+                            className="
+                            text-gray-400
+                            mb-2
+                            "
+                            >
+                            {cat.name}
+                            </h3>
 
 
 
-<video
+                            {
+                            cat.items.map(item=>(
 
-autoPlay
-loop
-muted
-playsInline
+                                <button
 
-className="
-fixed
-inset-0
-w-full
-h-full
-object-cover
-z-0
-"
+                                key={item}
 
->
+                                onClick={
+                                    ()=>setCategory(item)
+                                }
 
-<source
+                                className={`
+                                block
+                                w-full
+                                text-left
+                                p-2
+                                rounded-lg
+                                mb-1
+                                ${
+                                category===item
+                                ?
+                                "bg-white text-black"
+                                :
+                                "bg-black"
+                                }
+                                `}
 
-src="/videos/background.mp4"
+                                >
 
-type="video/mp4"
+                                {item}
 
-/>
+                                </button>
 
-</video>
+                            ))
+                            }
 
 
+                        </div>
 
+                    ))
+                    }
 
-<div
 
-className="
-fixed
-inset-0
-bg-black/70
-z-10
-"
+                </section>
 
-/>
 
+            </div>
 
 
+        </main>
 
-<div
-
-className="
-relative
-z-20
-pt-36
-pb-10
-w-[90%]
-max-w-6xl
-mx-auto
-flex
-gap-6
-"
-
->
-
-
-
-
-
-{/* ЛЕВАЯ ФОРМА */}
-
-
-
-<div
-
-className="
-flex-1
-bg-black/70
-border
-border-zinc-800
-rounded-3xl
-p-8
-"
-
->
-
-
-
-<h1
-
-className="
-text-3xl
-font-bold
-mb-8
-"
-
->
-
-Создание мода
-
-</h1>
-
-
-
-
-
-
-<div>
-
-<p
-
-className="
-text-sm
-text-gray-400
-mb-2
-"
-
->
-
-Название мода
-
-</p>
-
-
-
-<input
-
-value={title}
-
-onChange={
-(e)=>setTitle(e.target.value)
-}
-
-placeholder="
-Например: M4A4 Military
-"
-
-className="
-w-full
-p-4
-rounded-xl
-bg-black
-border
-border-zinc-700
-outline-none
-"
-
-/>
-
-
-</div>
-
-
-
-
-
-
-
-<div
-
-className="
-mt-7
-"
-
->
-
-
-<p
-
-className="
-text-sm
-text-gray-400
-mb-2
-"
-
->
-
-Фотография мода
-
-</p>
-
-
-
-<label
-
-className="
-h-60
-rounded-2xl
-border
-border-dashed
-border-zinc-700
-bg-black
-flex
-items-center
-justify-center
-cursor-pointer
-overflow-hidden
-"
-
->
-
-
-
-{
-
-preview
-
-
-?
-
-
-<Image
-
-src={preview}
-
-alt="preview"
-
-width={700}
-
-height={500}
-
-className="
-w-full
-h-full
-object-cover
-"
-
-/>
-
-
-
-:
-
-
-<span
-
-className="
-text-gray-500
-"
-
->
-
-+ Добавить изображение
-
-</span>
-
-
-
-}
-
-
-
-<input
-
-type="file"
-
-accept="image/*"
-
-onChange={selectImage}
-
-className="
-hidden
-"
-
-/>
-
-
-
-</label>
-
-
-
-</div>
-
-
-
-
-
-
-
-
-
-<div
-
-className="
-mt-7
-"
-
->
-
-
-<p
-
-className="
-text-sm
-text-gray-400
-mb-2
-"
-
->
-
-Расположение TXD
-
-</p>
-
-
-
-<input
-
-value={txdPath}
-
-onChange={
-(e)=>setTxdPath(e.target.value)
-}
-
-placeholder="
-models/gta3.img/weapon.txd
-"
-
-className="
-w-full
-p-3
-mb-3
-rounded-xl
-bg-black
-border
-border-zinc-700
-outline-none
-"
-
-/>
-
-
-
-<label
-
-className="
-block
-p-4
-rounded-xl
-bg-black
-border
-border-zinc-700
-cursor-pointer
-text-gray-400
-hover:text-white
-"
-
->
-
-
-
-{
-
-txd
-
-?
-
-txd.name
-
-:
-
-"Выбрать TXD файл"
-
-}
-
-
-
-<input
-
-type="file"
-
-accept=".txd"
-
-onChange={
-(e)=>
-setTxd(
-e.target.files?.[0] || null
-)
-}
-
-className="
-hidden
-"
-
-/>
-
-
-
-</label>
-
-
-
-</div>
-
-
-
-
-
-
-
-
-<div
-
-className="
-mt-7
-"
-
->
-
-
-<p
-
-className="
-text-sm
-text-gray-400
-mb-2
-"
-
->
-
-Расположение DFF
-
-</p>
-
-
-
-<input
-
-value={dffPath}
-
-onChange={
-(e)=>setDffPath(e.target.value)
-}
-
-placeholder="
-models/gta3.img/weapon.dff
-"
-
-className="
-w-full
-p-3
-mb-3
-rounded-xl
-bg-black
-border
-border-zinc-700
-outline-none
-"
-
-/>
-
-
-
-<label
-
-className="
-block
-p-4
-rounded-xl
-bg-black
-border
-border-zinc-700
-cursor-pointer
-text-gray-400
-hover:text-white
-"
-
->
-
-
-
-{
-
-dff
-
-?
-
-dff.name
-
-:
-
-"Выбрать DFF файл"
-
-}
-
-
-
-<input
-
-type="file"
-
-accept=".dff"
-
-onChange={
-(e)=>
-setDff(
-e.target.files?.[0] || null
-)
-}
-
-className="
-hidden
-"
-
-/>
-
-
-
-</label>
-
-
-
-</div>
-
-
-
-
-
-
-
-
-<button
-
-onClick={createMod}
-
-disabled={loading}
-
-className="
-mt-8
-w-full
-py-4
-rounded-xl
-bg-white
-text-black
-font-bold
-text-lg
-hover:bg-zinc-200
-transition
-"
-
->
-
-
-
-{
-
-loading
-
-?
-
-"Создание..."
-
-:
-
-"Создать мод"
-
-}
-
-
-
-</button>
-
-
-
-
-
-
-</div>
-
-
-
-
-
-
-{/* ПРАВАЯ КАТЕГОРИЯ */}
-
-
-
-<div
-
-className="
-w-80
-h-fit
-max-h-[75vh]
-overflow-y-auto
-bg-black/70
-border
-border-zinc-800
-rounded-3xl
-p-5
-"
-
->
-
-
-
-<h2
-
-className="
-text-xl
-font-bold
-mb-5
-"
-
->
-
-Категория
-
-</h2>
-
-
-
-
-
-
-
-{
-
-categories.map((cat)=>(
-
-
-<div
-
-key={cat.name}
-
-className="
-mb-3
-"
-
->
-
-
-
-<button
-
-onClick={()=>setOpenCategory(
-
-openCategory===cat.name
-?
-null
-:
-cat.name
-
-)}
-
-className="
-w-full
-flex
-justify-between
-items-center
-py-2
-font-bold
-"
-
->
-
-<span>
-
-{cat.name}
-
-</span>
-
-
-
-<span>
-
-{
-
-openCategory===cat.name
-
-?
-
-"−"
-
-:
-
-"+"
-
-}
-
-</span>
-
-
-
-</button>
-
-
-
-
-
-
-
-{
-
-openCategory===cat.name && (
-
-
-<div
-
-className="
-ml-3
-border-l
-border-zinc-700
-pl-3
-"
-
->
-
-
-
-{
-
-cat.items.map((item)=>{
-
-
-
-if(typeof item === "string"){
-
-
-
-return (
-
-
-<button
-
-key={item}
-
-onClick={()=>selectCategory(item)}
-
-className={`
-
-block
-
-w-full
-
-text-left
-
-py-2
-
-text-sm
-
-transition
-
-
-${
-
-category===item
-
-?
-
-"text-white font-bold"
-
-:
-
-"text-gray-400 hover:text-white"
-
-}
-
-
-`}
-
->
-
-
-{item}
-
-
-
-</button>
-
-
-)
-
-
-}
-
-
-
-
-
-
-
-return (
-
-
-<div
-
-key={item.name}
-
->
-
-
-
-<button
-
-onClick={()=>setOpenSubCategory(
-
-openSubCategory===item.name
-?
-null
-:
-item.name
-
-)}
-
-className="
-w-full
-flex
-justify-between
-py-2
-text-sm
-text-gray-400
-"
-
->
-
-
-
-<span>
-
-{item.name}
-
-</span>
-
-
-
-<span>
-
-{
-
-openSubCategory===item.name
-
-?
-
-"−"
-
-:
-
-"+"
-
-}
-
-</span>
-
-
-
-</button>
-
-
-
-
-
-
-
-
-{
-
-openSubCategory===item.name && (
-
-
-<div
-
-className="
-ml-3
-"
-
->
-
-
-
-{
-
-item.children.map(child=>(
-
-
-<button
-
-key={child}
-
-onClick={()=>selectCategory(child)}
-
-className={`
-
-block
-
-w-full
-
-text-left
-
-py-1
-
-text-sm
-
-
-${
-
-category===child
-
-?
-
-"text-white font-bold"
-
-:
-
-"text-gray-500 hover:text-white"
-
-}
-
-
-`}
-
->
-
-{child}
-
-
-
-</button>
-
-
-))
-
-
-
-}
-
-
-
-</div>
-
-
-
-)
-
-
-
-}
-
-
-
-
-</div>
-
-
-)
-
-
-
-})
-
-}
-
-
-
-</div>
-
-
-
-)
-
-
-
-}
-
-
-
-</div>
-
-
-
-))
-
-
-
-}
-
-
-
-
-
-
-
-
-<div
-
-className="
-mt-5
-pt-4
-border-t
-border-zinc-800
-"
-
->
-
-
-
-{
-
-simpleCategories.map(item=>(
-
-
-<button
-
-key={item}
-
-onClick={()=>selectCategory(item)}
-
-className={`
-
-block
-
-w-full
-
-text-left
-
-py-2
-
-text-sm
-
-
-${
-
-category===item
-
-?
-
-"text-white font-bold"
-
-:
-
-"text-gray-400 hover:text-white"
-
-}
-
-
-`}
-
->
-
-
-{item}
-
-
-
-</button>
-
-
-))
-
-
-}
-
-
-
-</div>
-
-
-
-
-
-
-</div>
-
-
-
-
-
-
-</div>
-
-
-</div>
-
-
-);
+    );
 
 }
