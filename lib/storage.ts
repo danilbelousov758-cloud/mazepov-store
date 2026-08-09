@@ -1,21 +1,50 @@
 import {
-    S3Client,
-    PutObjectCommand
+    S3Client
 } from "@aws-sdk/client-s3";
 
-import {
-    getSignedUrl
-} from "@aws-sdk/s3-request-presigner";
+
+if(!process.env.B2_KEY_ID){
+    throw new Error("B2_KEY_ID отсутствует");
+}
+
+
+if(!process.env.B2_APPLICATION_KEY){
+    throw new Error("B2_APPLICATION_KEY отсутствует");
+}
+
+
+if(!process.env.B2_BUCKET_NAME){
+    throw new Error("B2_BUCKET_NAME отсутствует");
+}
+
+
+if(!process.env.B2_ENDPOINT){
+    throw new Error("B2_ENDPOINT отсутствует");
+}
+
 
 
 console.log("B2 CHECK:");
-console.log("KEY:", process.env.B2_KEY_ID);
-console.log("BUCKET:", process.env.B2_BUCKET_NAME);
-console.log("ENDPOINT:", process.env.B2_ENDPOINT);
+
+console.log(
+    "KEY:",
+    process.env.B2_KEY_ID
+);
+
+console.log(
+    "BUCKET:",
+    process.env.B2_BUCKET_NAME
+);
+
+console.log(
+    "ENDPOINT:",
+    process.env.B2_ENDPOINT
+);
 
 
 
-const s3 = new S3Client({
+export const s3 =
+new S3Client({
 
     region: "eu-central-003",
 
@@ -23,66 +52,18 @@ const s3 = new S3Client({
         process.env.B2_ENDPOINT,
 
 
-    credentials: {
+    forcePathStyle:true,
+
+
+    credentials:{
 
         accessKeyId:
-            process.env.B2_KEY_ID || "",
+            process.env.B2_KEY_ID,
 
 
         secretAccessKey:
-            process.env.B2_APPLICATION_KEY || ""
+            process.env.B2_APPLICATION_KEY
 
     }
 
 });
-
-
-
-export async function createUploadUrl(
-    filename: string,
-    contentType: string
-) {
-
-
-    if(!process.env.B2_BUCKET_NAME){
-
-        throw new Error(
-            "B2_BUCKET_NAME отсутствует"
-        );
-
-    }
-
-
-
-    const command =
-        new PutObjectCommand({
-
-            Bucket:
-                process.env.B2_BUCKET_NAME,
-
-
-            Key:
-                filename,
-
-
-            ContentType:
-                contentType
-
-        });
-
-
-
-    const url =
-        await getSignedUrl(
-            s3,
-            command,
-            {
-                expiresIn: 3600
-            }
-        );
-
-
-
-    return url;
-
-}

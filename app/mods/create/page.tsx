@@ -97,51 +97,40 @@ export default function CreateModPage() {
 
 
 
-
     async function uploadToB2(
         file: File,
         folder: string
     ) {
 
 
+        const formData =
+            new FormData();
+
+
+        formData.append(
+            "file",
+            file
+        );
+
+
+        formData.append(
+            "folder",
+            folder
+        );
+
+
+
         const response =
             await fetch(
-                "/api/mods/upload-url",
+                "/api/mods/upload",
                 {
 
                     method: "POST",
 
-                    headers: {
-
-                        "Content-Type":
-                            "application/json"
-
-                    },
-
-
-                    body: JSON.stringify({
-
-                        filename:
-                            `${folder}/${Date.now()}-${file.name}`,
-
-                        type:
-                            file.type ||
-                            "application/octet-stream"
-
-                    })
+                    body: formData
 
                 }
             );
-
-
-
-        if (!response.ok) {
-
-            throw new Error(
-                "Ошибка получения ссылки B2"
-            );
-
-        }
 
 
 
@@ -150,33 +139,11 @@ export default function CreateModPage() {
 
 
 
-        const upload =
-            await fetch(
-                data.url,
-                {
-
-                    method: "PUT",
-
-                    headers: {
-
-                        "Content-Type":
-                            file.type ||
-                            "application/octet-stream"
-
-                    },
-
-
-                    body: file
-
-                }
-            );
-
-
-
-        if (!upload.ok) {
+        if(!response.ok){
 
             throw new Error(
-                "Ошибка загрузки файла B2"
+                data.error ||
+                "Ошибка загрузки файла"
             );
 
         }
@@ -192,19 +159,16 @@ export default function CreateModPage() {
 
 
 
-
     async function createMod() {
 
 
-        if (
-
+        if(
             !title ||
             !category ||
             !image ||
             !txd ||
             !dff
-
-        ) {
+        ){
 
             alert(
                 "Заполните все поля"
@@ -254,17 +218,15 @@ export default function CreateModPage() {
                     "/api/mods/create",
                     {
 
-                        method: "POST",
+                        method:"POST",
 
-                        headers: {
-
+                        headers:{
                             "Content-Type":
-                                "application/json"
-
+                            "application/json"
                         },
 
 
-                        body: JSON.stringify({
+                        body:JSON.stringify({
 
                             title,
 
@@ -272,15 +234,15 @@ export default function CreateModPage() {
 
 
                             image:
-                                `${process.env.NEXT_PUBLIC_B2_URL}/${imageKey}`,
+                            `${process.env.NEXT_PUBLIC_B2_URL}/${imageKey}`,
 
 
                             txd:
-                                `${process.env.NEXT_PUBLIC_B2_URL}/${txdKey}`,
+                            `${process.env.NEXT_PUBLIC_B2_URL}/${txdKey}`,
 
 
                             dff:
-                                `${process.env.NEXT_PUBLIC_B2_URL}/${dffKey}`,
+                            `${process.env.NEXT_PUBLIC_B2_URL}/${dffKey}`,
 
 
                             txdPath,
@@ -302,7 +264,7 @@ export default function CreateModPage() {
 
 
 
-            if (result.success) {
+            if(result.success){
 
 
                 alert(
@@ -316,12 +278,12 @@ export default function CreateModPage() {
 
 
             }
-            else {
+            else{
 
 
                 alert(
                     result.error ||
-                    "Ошибка создания"
+                    "Ошибка создания мода"
                 );
 
 
@@ -329,10 +291,8 @@ export default function CreateModPage() {
 
 
 
-
         }
-        catch(error) {
-
+        catch(error){
 
             console.error(
                 error
@@ -342,7 +302,6 @@ export default function CreateModPage() {
             alert(
                 "Ошибка загрузки мода"
             );
-
 
         }
 
@@ -424,9 +383,9 @@ export default function CreateModPage() {
 
                         onChange={
                             e =>
-                                setTitle(
-                                    e.target.value
-                                )
+                            setTitle(
+                                e.target.value
+                            )
                         }
 
                     />
@@ -452,9 +411,9 @@ export default function CreateModPage() {
 
                         onChange={
                             e =>
-                                setTxdPath(
-                                    e.target.value
-                                )
+                            setTxdPath(
+                                e.target.value
+                            )
                         }
 
                     />
@@ -480,9 +439,9 @@ export default function CreateModPage() {
 
                         onChange={
                             e =>
-                                setDffPath(
-                                    e.target.value
-                                )
+                            setDffPath(
+                                e.target.value
+                            )
                         }
 
                     />
@@ -497,9 +456,9 @@ export default function CreateModPage() {
                         type="file"
                         onChange={
                             e =>
-                                setImage(
-                                    e.target.files?.[0] || null
-                                )
+                            setImage(
+                                e.target.files?.[0] || null
+                            )
                         }
                     />
 
@@ -513,12 +472,11 @@ export default function CreateModPage() {
                         type="file"
                         onChange={
                             e =>
-                                setTxd(
-                                    e.target.files?.[0] || null
-                                )
+                            setTxd(
+                                e.target.files?.[0] || null
+                            )
                         }
                     />
-
 
 
 
@@ -531,9 +489,9 @@ export default function CreateModPage() {
                         type="file"
                         onChange={
                             e =>
-                                setDff(
-                                    e.target.files?.[0] || null
-                                )
+                            setDff(
+                                e.target.files?.[0] || null
+                            )
                         }
                     />
 
@@ -561,10 +519,10 @@ export default function CreateModPage() {
 
                         {
                             loading
-                                ?
-                                "Загрузка файлов..."
-                                :
-                                "Создать мод"
+                            ?
+                            "Загрузка файлов..."
+                            :
+                            "Создать мод"
                         }
 
 
@@ -636,9 +594,9 @@ export default function CreateModPage() {
 
                                             onClick={
                                                 () =>
-                                                    setCategory(
-                                                        item
-                                                    )
+                                                setCategory(
+                                                    item
+                                                )
                                             }
 
 
@@ -651,10 +609,10 @@ export default function CreateModPage() {
 
                                             ${
                                                 category === item
-                                                    ?
-                                                    "bg-white text-black"
-                                                    :
-                                                    "bg-black"
+                                                ?
+                                                "bg-white text-black"
+                                                :
+                                                "bg-black"
                                             }
 
                                             `}
@@ -662,7 +620,6 @@ export default function CreateModPage() {
                                         >
 
                                             {item}
-
 
                                         </button>
 
@@ -683,14 +640,11 @@ export default function CreateModPage() {
                 </section>
 
 
-
-
             </div>
 
 
         </main>
 
     );
-
 
 }
