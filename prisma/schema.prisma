@@ -3,47 +3,77 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+
 generator client {
   provider = "prisma-client-js"
 }
 
 
+
+
+
 model User {
 
-  id        Int      @id @default(autoincrement())
+  id Int @id @default(autoincrement())
 
-  nickname  String   @unique
 
-  password  String
+  nickname String @unique
 
-  server    String
 
-  role      String   @default("USER")
+  password String
 
-  avatar    String   @default("/images/avatar.png")
+
+  server String
+
+
+  role String @default("USER")
+
+
+  avatar String @default("/images/avatar.png")
+
 
   createdAt DateTime @default(now())
+
 
 }
 
 
 
+
+
+
 model Mod {
+
 
   id Int @id @default(autoincrement())
 
+
   title String
+
 
   category String
 
-  description String?
 
-  image String?
+  image String
 
-  dff String?
 
-  txd String?
+  txd String
+
+
+  dff String
+
+
+  txdPath String
+
+
+  dffPath String
+
+
+  views Int @default(0)
+
 
   createdAt DateTime @default(now())
+
+
 
 }
