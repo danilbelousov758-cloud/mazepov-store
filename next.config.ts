@@ -1,5 +1,7 @@
-import { defineConfig } from "prisma/config";
+import type { NextConfig } from "next";
 
-export default defineConfig({
-  schema: "prisma/schema.prisma",
-});
+const nextConfig: NextConfig = {
+
+};
+
+export default nextConfig;

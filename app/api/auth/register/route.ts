@@ -8,6 +8,7 @@ export async function POST(req: Request) {
 
     const { nickname, password, server } = body;
 
+
     if (!nickname || !password || !server) {
       return NextResponse.json(
         {
@@ -72,11 +73,13 @@ export async function POST(req: Request) {
 
   } catch (error) {
 
-    console.error(error);
+    console.error("REGISTER ERROR:", error);
+
 
     return NextResponse.json(
       {
-        error: "Ошибка сервера"
+        error: "Ошибка сервера",
+        details: String(error)
       },
       {
         status: 500
