@@ -8,7 +8,6 @@ import {
 } from "@aws-sdk/s3-request-presigner";
 
 
-
 console.log("B2 CHECK:");
 console.log("KEY:", process.env.B2_KEY_ID);
 console.log("BUCKET:", process.env.B2_BUCKET_NAME);
@@ -23,10 +22,12 @@ const s3 = new S3Client({
     endpoint:
         process.env.B2_ENDPOINT,
 
+
     credentials: {
 
         accessKeyId:
             process.env.B2_KEY_ID || "",
+
 
         secretAccessKey:
             process.env.B2_APPLICATION_KEY || ""
@@ -34,7 +35,6 @@ const s3 = new S3Client({
     }
 
 });
-
 
 
 
@@ -77,7 +77,7 @@ export async function createUploadUrl(
             s3,
             command,
             {
-                expiresIn:3600
+                expiresIn: 3600
             }
         );
 
