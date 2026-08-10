@@ -9,24 +9,62 @@ datasource db {
 }
 
 
+
+model User {
+
+  id Int @id @default(autoincrement())
+
+  username String? @unique
+
+  email String? @unique
+
+  password String
+
+  role String @default("USER")
+
+  nickname String?
+
+  avatar String?
+
+  server String?
+
+  createdAt DateTime @default(now())
+
+}
+
+
+
+
 model Mod {
 
   id Int @id @default(autoincrement())
 
+
   title String
+
 
   category String
 
+
   image String?
+
 
   dff String?
 
+
   txd String?
+
 
   dffPath String?
 
+
   txdPath String?
 
+
+  views Int @default(0)
+
+
   createdAt DateTime @default(now())
+
 
 }
