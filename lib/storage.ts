@@ -3,42 +3,21 @@ import {
 } from "@aws-sdk/client-s3";
 
 
-if(!process.env.B2_KEY_ID){
-    throw new Error("B2_KEY_ID отсутствует");
-}
-
-
-if(!process.env.B2_APPLICATION_KEY){
-    throw new Error("B2_APPLICATION_KEY отсутствует");
-}
-
-
-if(!process.env.B2_BUCKET_NAME){
-    throw new Error("B2_BUCKET_NAME отсутствует");
-}
-
-
-if(!process.env.B2_ENDPOINT){
-    throw new Error("B2_ENDPOINT отсутствует");
-}
-
-
-
-console.log("B2 CHECK:");
+console.log("TIMEWEB STORAGE:");
 
 console.log(
-    "KEY:",
-    process.env.B2_KEY_ID
+    "ENDPOINT:",
+    process.env.S3_ENDPOINT
 );
 
 console.log(
     "BUCKET:",
-    process.env.B2_BUCKET_NAME
+    process.env.S3_BUCKET
 );
 
 console.log(
-    "ENDPOINT:",
-    process.env.B2_ENDPOINT
+    "REGION:",
+    process.env.S3_REGION
 );
 
 
@@ -46,24 +25,31 @@ console.log(
 export const s3 =
 new S3Client({
 
-    region: "eu-central-003",
-
     endpoint:
-        process.env.B2_ENDPOINT,
+        "https://s3.twcstorage.ru",
 
 
-    forcePathStyle:true,
+    region:
+        "ru-1",
 
 
-    credentials:{
+    forcePathStyle:
+        true,
+
+
+    credentials: {
 
         accessKeyId:
-            process.env.B2_KEY_ID,
+            process.env.S3_ACCESS_KEY!,
 
 
         secretAccessKey:
-            process.env.B2_APPLICATION_KEY
+            process.env.S3_SECRET_KEY!
 
-    }
+    },
+
+
+    // важно для Timeweb
+    tls: true
 
 });

@@ -1,12 +1,13 @@
 "use client";
 
-import { useState } from "react";
+import Image from "next/image";
 import { useRouter } from "next/navigation";
+import { useState } from "react";
 
 
-type Category = {
+type CategoryNode = {
     name:string;
-    items:string[];
+    children?:CategoryNode[];
 };
 
 
@@ -17,65 +18,445 @@ export default function CreateModPage(){
     const router = useRouter();
 
 
+
     const [title,setTitle] = useState("");
+
     const [category,setCategory] = useState("");
 
-    const [txdPath,setTxdPath] = useState("");
-    const [dffPath,setDffPath] = useState("");
 
 
-    const [image,setImage] = useState<File|null>(null);
-    const [txd,setTxd] = useState<File|null>(null);
-    const [dff,setDff] = useState<File|null>(null);
+    const [image,setImage] = useState<File | null>(null);
 
+    const [txd,setTxd] = useState<File | null>(null);
+
+    const [dff,setDff] = useState<File | null>(null);
+
+
+
+    const [opened,setOpened] = useState<string[]>([]);
 
     const [loading,setLoading] = useState(false);
 
 
 
-    const categories:Category[] = [
+
+
+    const categories:CategoryNode[] = [
+
+
+
+        // ===== ОТКРЫВАЮЩИЕСЯ =====
+
 
         {
             name:"Скины",
-            items:[
-                "Государственные",
-                "Мафии",
-                "Банды",
-                "Гражданские"
+
+            children:[
+
+                {
+                    name:"Государственные"
+                },
+
+                {
+                    name:"Мафии"
+                },
+
+                {
+                    name:"Банды"
+                },
+
+                {
+                    name:"Гражданские"
+                }
+
             ]
+
         },
+
+
 
         {
             name:"Оружие",
-            items:[
-                "Ганпак",
-                "Дигл",
-                "ЮСП",
-                "Револьвер",
-                "АПС",
-                "СВД",
-                "M4A4"
+
+            children:[
+
+                {
+                    name:"Ганпак"
+                },
+
+                {
+                    name:"Дигл"
+                },
+
+                {
+                    name:"ЮСП"
+                },
+
+                {
+                    name:"Револьвер"
+                },
+
+                {
+                    name:"АПС"
+                },
+
+                {
+                    name:"СВД ПСО"
+                },
+
+                {
+                    name:"СВД"
+                },
+
+                {
+                    name:"M4A4"
+                },
+
+                {
+                    name:"Абакан"
+                },
+
+                {
+                    name:"Ас Вал"
+                },
+
+                {
+                    name:"Гроза"
+                },
+
+                {
+                    name:"Дробовик"
+                }
+
+
             ]
+
         },
+
+
 
         {
             name:"Интерьеры",
-            items:[
-                "24.7",
-                "Банк",
-                "Особняк",
-                "Оружейка"
+
+            children:[
+
+
+                {
+                    name:"24.7"
+                },
+
+                {
+                    name:"ДПС/ППС/ФСБ"
+                },
+
+                {
+                    name:"Оружейка"
+                },
+
+                {
+                    name:"Ашан"
+                },
+
+                {
+                    name:"Аптека"
+                },
+
+                {
+                    name:"Пк клуб"
+                },
+
+                {
+                    name:"Особа"
+                },
+
+                {
+                    name:"Банк"
+                }
+
+
             ]
+
         },
 
+
+
         {
-            name:"Карты",
-            items:[
-                "Города",
-                "Здания",
-                "Дороги"
+            name:"Заменные территории",
+
+            children:[
+
+                {
+                    name:"24.7"
+                },
+
+                {
+                    name:"ДПС/ППС/ФСБ"
+                },
+
+                {
+                    name:"Оружейка"
+                },
+
+                {
+                    name:"Ашан"
+                },
+
+                {
+                    name:"Аптека"
+                },
+
+                {
+                    name:"Пк клуб"
+                },
+
+                {
+                    name:"Особа"
+                },
+
+                {
+                    name:"ЦР"
+                },
+
+                {
+                    name:"ФСИН"
+                },
+
+                {
+                    name:"Арзамас",
+
+                    children:[
+
+                        {
+                            name:"Батырево"
+                        },
+
+                        {
+                            name:"Южка"
+                        }
+
+                    ]
+
+                },
+
+                {
+                    name:"Батырево"
+                },
+
+                {
+                    name:"Южный"
+                },
+
+                {
+                    name:"Бизвар локации"
+                },
+
+                {
+                    name:"Вокзалы"
+                },
+
+                {
+                    name:"Казино"
+                },
+
+                {
+                    name:"Порт"
+                }
+
+
             ]
+
+        },
+
+
+
+        {
+            name:"Эффекты",
+
+            children:[
+
+                {
+                    name:"Кровь"
+                },
+
+
+                {
+                    name:"Эффект при попадании"
+                },
+
+
+                {
+                    name:"Эффект при убийстве и ноке (ld_bum)"
+                }
+
+
+            ]
+
+        },
+
+
+
+        {
+            name:"Звуки",
+
+            children:[
+
+
+                {
+                    name:"Попадания"
+                },
+
+
+                {
+                    name:"Пистолеты",
+
+                    children:[
+
+
+                        {
+                            name:"Дигл"
+                        },
+
+
+                        {
+                            name:"ЮСП"
+                        },
+
+
+                        {
+                            name:"Револьвер"
+                        },
+
+
+                        {
+                            name:"АПС"
+                        },
+
+
+                        {
+                            name:"M4A4"
+                        },
+
+
+                        {
+                            name:"Абакан"
+                        },
+
+
+                        {
+                            name:"Ас Вал"
+                        },
+
+
+                        {
+                            name:"Гроза"
+                        },
+
+
+                        {
+                            name:"СВД"
+                        },
+
+
+                        {
+                            name:"СВД ПСО"
+                        }
+
+
+                    ]
+
+                }
+
+
+            ]
+
+        },
+
+
+
+
+        // ===== ОБЫЧНЫЕ =====
+
+
+
+        {
+            name:"Дороги"
+        },
+
+
+        {
+            name:"Карты"
+        },
+
+
+        {
+            name:"Инвентарь"
+        },
+
+
+        {
+            name:"Скайбоксы"
+        },
+
+
+        {
+            name:"Нефтевышки"
+        },
+
+
+        {
+            name:"Прицелы"
+        },
+
+
+        {
+            name:"Курсор мыши"
+        },
+
+
+        {
+            name:"Фисты"
+        },
+
+
+        {
+            name:"Таймциклы"
+        },
+
+
+        {
+            name:"Пикапы"
+        },
+
+
+        {
+            name:"Ахк"
+        },
+
+
+        {
+            name:"Аси плагины"
+        },
+
+
+        {
+            name:"Деревья"
+        },
+
+
+        {
+            name:"Графика"
+        },
+
+
+        {
+            name:"Загрузочный экран"
+        },
+
+
+        {
+            name:"Подсказки для госс. сотрудников"
         }
+
 
     ];
 
@@ -83,130 +464,457 @@ export default function CreateModPage(){
 
 
 
-    async function uploadToB2(
-        file:File,
-        folder:string
-    ){
 
 
-        const filename =
-            `${folder}/${Date.now()}-${file.name}`;
+    const toggleCategory = (name:string)=>{
+
+
+        setOpened(prev=>
+
+
+            prev.includes(name)
+
+            ?
+
+            prev.filter(
+
+                item=>item !== name
+
+            )
+
+            :
+
+            [
+                ...prev,
+                name
+            ]
+
+        );
+
+
+    };
 
 
 
-        const urlResponse =
-            await fetch(
-                "/api/mods/upload-url",
-                {
 
-                    method:"POST",
 
-                    headers:{
-                        "Content-Type":
-                        "application/json"
-                    },
 
-                    body:JSON.stringify({
 
-                        filename,
 
-                        type:
-                        file.type ||
-                        "application/octet-stream"
 
-                    })
+    const renderCategory = (
+
+        item:CategoryNode,
+
+        level:number = 0
+
+    )=>{
+
+
+        const hasChildren =
+
+            Boolean(item.children);
+
+
+
+        const isOpen =
+
+            opened.includes(
+
+                item.name
+
+            );
+
+
+
+
+        return (
+
+            <div
+
+            key={item.name}
+
+            className="mb-1"
+
+            >
+
+
+
+
+                <button
+
+                type="button"
+
+                onClick={()=>{
+
+
+                    if(hasChildren){
+
+
+                        toggleCategory(
+
+                            item.name
+
+                        );
+
+
+                    }
+
+                    else{
+
+
+                        setCategory(
+
+                            item.name
+
+                        );
+
+
+                    }
+
+
+                }}
+
+
+
+                className={`
+
+                w-full
+
+                flex
+
+                items-center
+
+                justify-between
+
+                rounded-xl
+
+                border
+
+                px-3
+
+                py-2.5
+
+                transition
+
+
+                ${
+                    category === item.name
+
+                    ?
+
+                    "bg-white text-black border-white"
+
+                    :
+
+                    hasChildren && isOpen
+
+                    ?
+
+                    "bg-zinc-800 text-white border-zinc-700"
+
+                    :
+
+                    "bg-[#111111] text-zinc-300 border-zinc-800 hover:bg-[#181818]"
 
                 }
-            );
+
+                `}
 
 
 
-        const urlData =
-            await urlResponse.json();
+                style={{
+
+                    marginLeft:
+
+                    `${level * 14}px`
+
+                }}
 
 
 
-        if(!urlResponse.ok){
-
-            throw new Error(
-                urlData.error ||
-                "Ошибка получения ссылки"
-            );
-
-        }
+                >
 
 
 
 
-        const upload =
-            await fetch(
-                urlData.url,
+
+                    <div
+
+                    className="flex items-center gap-2"
+
+                    >
+
+
+
+                        <span
+
+                        className="text-lg"
+
+                        >
+
+                        {
+
+                            hasChildren
+
+                            ?
+
+                            isOpen
+
+                            ?
+
+                            "📂"
+
+                            :
+
+                            "📁"
+
+                            :
+
+                            "▪"
+
+                        }
+
+                        </span>
+
+
+
+
+                        <span>
+
+                            {item.name}
+
+                        </span>
+
+
+
+                    </div>
+
+
+
+
+
+                    {
+
+                        hasChildren &&
+
+                        (
+
+                            <span
+
+                            className="text-xs text-zinc-500"
+
+                            >
+
+                            {
+
+                                isOpen
+
+                                ?
+
+                                "▲"
+
+                                :
+
+                                "▼"
+
+                            }
+
+                            </span>
+
+                        )
+
+                    }
+
+
+
+                </button>
+
+
+
+
+
                 {
 
-                    method:"PUT",
+                    hasChildren &&
 
-                    headers:{
+                    isOpen &&
 
-                        "Content-Type":
-                        file.type ||
-                        "application/octet-stream"
+                    (
 
-                    },
+                        <div
+
+                        className="
+
+                        ml-5
+
+                        mt-1
+
+                        pl-2
+
+                        border-l
+
+                        border-zinc-800
+
+                        space-y-1
+
+                        "
+
+                        >
 
 
-                    body:file
+                            {
+
+                                item.children?.map(
+
+                                    child =>
+
+                                    renderCategory(
+
+                                        child,
+
+                                        level + 1
+
+                                    )
+
+                                )
+
+                            }
+
+
+                        </div>
+
+                    )
 
                 }
-            );
 
 
 
-        if(!upload.ok){
 
-            throw new Error(
-                "Ошибка загрузки в B2"
-            );
+            </div>
 
-        }
-
-
-
-        console.log(
-            "B2 UPLOAD:",
-            filename
         );
 
 
 
-        return filename;
+    };
+
+
+
+
+
+
+
+
+
+    async function uploadFile(
+
+        file:File | null,
+
+        folder:string
+
+    ){
+
+
+        if(!file)
+
+            return "";
+
+
+
+        const formData =
+
+        new FormData();
+
+
+
+        formData.append(
+
+            "file",
+
+            file
+
+        );
+
+
+
+        formData.append(
+
+            "folder",
+
+            folder
+
+        );
+
+
+
+        const response =
+
+        await fetch(
+
+            "/api/mods/upload",
+
+            {
+
+                method:"POST",
+
+                body:formData
+
+            }
+
+        );
+
+
+
+        const data =
+
+        await response.json();
+
+
+
+        if(!response.ok){
+
+
+            throw new Error(
+
+                data.error ||
+
+                "Ошибка загрузки"
+
+            );
+
+
+        }
+
+
+
+        return data.key;
 
 
     }
-
-
-
-
-
 
 
     async function createMod(){
 
 
         if(
+
             !title ||
+
             !category ||
-            !image ||
-            !txd ||
-            !dff
+
+            !image
+
         ){
 
             alert(
-                "Заполните все поля"
+                "Заполните название, категорию и изображение"
             );
 
             return;
 
         }
+
 
 
 
@@ -217,122 +925,176 @@ export default function CreateModPage(){
         try{
 
 
-            const imageKey =
-                await uploadToB2(
-                    image,
-                    "images"
-                );
+
+            const imagePath =
+
+            await uploadFile(
+
+                image,
+
+                "images"
+
+            );
 
 
 
-            const txdKey =
-                await uploadToB2(
-                    txd,
-                    "txd"
-                );
+            const txdPath =
+
+            await uploadFile(
+
+                txd,
+
+                "txd"
+
+            );
 
 
 
-            const dffKey =
-                await uploadToB2(
-                    dff,
-                    "dff"
-                );
+            const dffPath =
+
+            await uploadFile(
+
+                dff,
+
+                "dff"
+
+            );
+
 
 
 
 
 
             const response =
-                await fetch(
-                    "/api/mods/create",
-                    {
 
-                        method:"POST",
+            await fetch(
 
-                        headers:{
-                            "Content-Type":
-                            "application/json"
-                        },
+                "/api/mods/create",
+
+                {
 
 
-                        body:JSON.stringify({
-
-                            title,
-
-                            category,
-
-
-                            image:
-                            `${process.env.NEXT_PUBLIC_B2_URL}/${imageKey}`,
-
-
-                            txd:
-                            `${process.env.NEXT_PUBLIC_B2_URL}/${txdKey}`,
-
-
-                            dff:
-                            `${process.env.NEXT_PUBLIC_B2_URL}/${dffKey}`,
-
-
-                            txdPath,
-
-                            dffPath
-
-                        })
-
-                    }
-                );
+                    method:"POST",
 
 
 
-            const result =
-                await response.json();
+                    headers:{
+
+                        "Content-Type":
+
+                        "application/json"
+
+                    },
 
 
 
-            if(result.success){
+                    body:JSON.stringify({
+
+                        title,
+
+                        category,
+
+
+                        image:imagePath,
+
+
+                        txd:txdPath,
+
+
+                        dff:dffPath,
+
+
+                        txdPath,
+
+
+                        dffPath
+
+
+                    })
+
+
+                }
+
+            );
+
+
+
+
+
+
+            const data =
+
+            await response.json();
+
+
+
+
+
+
+            if(data.success){
+
 
                 alert(
-                    "Мод создан"
+
+                    "Мод успешно создан"
+
                 );
 
 
                 router.push(
+
                     "/mods"
+
                 );
+
 
             }
+
             else{
 
+
                 alert(
-                    result.error ||
-                    "Ошибка создания"
+
+                    data.error ||
+
+                    "Ошибка"
+
                 );
+
 
             }
 
 
 
         }
+
         catch(error){
 
 
             console.error(
+
                 error
+
             );
 
 
             alert(
-                "Ошибка загрузки мода"
+
+                "Ошибка создания мода"
+
             );
 
 
         }
 
 
+        finally{
 
-        setLoading(false);
+
+            setLoading(false);
+
+
+        }
 
 
     }
@@ -342,255 +1104,807 @@ export default function CreateModPage(){
 
 
 
+
+    const preview =
+
+        image
+
+        ?
+
+        URL.createObjectURL(image)
+
+        :
+
+        "/images/mod-placeholder.png";
+
+
+
+
+
+
+
     return (
 
-        <main className="
+        <main
+
+        className="
+
         min-h-screen
-        bg-black
+
+        relative
+
+        overflow-hidden
+
         text-white
-        p-10
-        ">
 
-
-        <div className="
-        max-w-6xl
-        mx-auto
-        grid
-        md:grid-cols-2
-        gap-8
-        ">
-
-
-        <section className="
-        bg-zinc-900
-        rounded-2xl
         p-6
-        ">
 
-
-        <h1 className="
-        text-2xl
-        font-bold
-        mb-5
-        ">
-        Создание мода
-        </h1>
-
-
-
-        <input
-        className="
-        w-full
-        bg-black
-        border
-        border-zinc-700
-        rounded-xl
-        p-3
-        mb-3
-        "
-        placeholder="Название мода"
-        value={title}
-        onChange={
-            e=>setTitle(e.target.value)
-        }
-        />
-
-
-
-        <input
-        className="
-        w-full
-        bg-black
-        border
-        border-zinc-700
-        rounded-xl
-        p-3
-        mb-3
-        "
-        placeholder="Расположение TXD"
-        value={txdPath}
-        onChange={
-            e=>setTxdPath(e.target.value)
-        }
-        />
-
-
-
-        <input
-        className="
-        w-full
-        bg-black
-        border
-        border-zinc-700
-        rounded-xl
-        p-3
-        mb-5
-        "
-        placeholder="Расположение DFF"
-        value={dffPath}
-        onChange={
-            e=>setDffPath(e.target.value)
-        }
-        />
-
-
-
-        <p>Фото</p>
-        <input
-        type="file"
-        onChange={
-            e=>setImage(
-                e.target.files?.[0] || null
-            )
-        }
-        />
-
-
-        <p className="mt-4">
-        TXD
-        </p>
-
-        <input
-        type="file"
-        onChange={
-            e=>setTxd(
-                e.target.files?.[0] || null
-            )
-        }
-        />
-
-
-        <p className="mt-4">
-        DFF
-        </p>
-
-
-        <input
-        type="file"
-        onChange={
-            e=>setDff(
-                e.target.files?.[0] || null
-            )
-        }
-        />
-
-
-
-        <button
-
-        onClick={createMod}
-
-        disabled={loading}
-
-        className="
-        mt-6
-        w-full
-        bg-white
-        text-black
-        rounded-xl
-        p-3
-        font-bold
         "
 
         >
 
-        {
-            loading
-            ?
-            "Загрузка в B2..."
-            :
-            "Создать мод"
-        }
-
-
-        </button>
-
-
-        </section>
 
 
 
+            <video
+
+            autoPlay
+
+            muted
+
+            loop
+
+            playsInline
+
+            className="
+
+            fixed
+
+            inset-0
+
+            w-full
+
+            h-full
+
+            object-cover
+
+            z-0
+
+            "
+
+            >
+
+                <source
+
+                src="/videos/background.mp4"
+
+                type="video/mp4"
+
+                />
+
+            </video>
 
 
-        <section className="
-        bg-zinc-900
-        rounded-2xl
-        p-6
-        ">
 
 
-        <h2 className="
-        text-xl
-        font-bold
-        mb-5
-        ">
-        Категории
-        </h2>
 
 
-        {
-            categories.map(cat=>(
+            <div
 
-                <div
-                key={cat.name}
-                className="mb-5"
+            className="
+
+            fixed
+
+            inset-0
+
+            bg-black/85
+
+            z-10
+
+            "
+
+            />
+
+
+
+
+
+
+
+            <div
+
+            className="
+
+            relative
+
+            z-20
+
+            max-w-7xl
+
+            mx-auto
+
+            "
+
+            >
+
+
+
+
+                <h1
+
+                className="
+
+                text-4xl
+
+                font-bold
+
+                mb-8
+
+                "
+
                 >
 
-                <h3 className="
-                text-zinc-400
-                mb-2
-                ">
-                {cat.name}
-                </h3>
+                    Создание мода
+
+                </h1>
 
 
-                {
-                    cat.items.map(item=>(
 
-                        <button
 
-                        key={item}
 
-                        onClick={
-                            ()=>setCategory(item)
-                        }
 
-                        className={`
-                        w-full
-                        text-left
-                        p-2
-                        mb-2
-                        rounded-lg
-                        ${
-                        category===item
-                        ?
-                        "bg-white text-black"
-                        :
-                        "bg-black"
-                        }
-                        `}
+
+
+                <div
+
+                className="
+
+                grid
+
+                lg:grid-cols-[1fr_360px]
+
+                gap-6
+
+                "
+
+                >
+
+
+
+
+
+                    <div>
+
+
+
+
+
+                        <div
+
+                        className="
+
+                        bg-[#0d0d0d]
+
+                        border
+
+                        border-zinc-800
+
+                        rounded-3xl
+
+                        p-6
+
+                        "
 
                         >
 
-                        {item}
+
+
+                            <h2
+
+                            className="
+
+                            text-xl
+
+                            font-bold
+
+                            mb-5
+
+                            "
+
+                            >
+
+                                Данные мода
+
+                            </h2>
+
+
+
+
+
+
+                            <input
+
+                            value={title}
+
+                            onChange={e=>
+
+                                setTitle(
+
+                                    e.target.value
+
+                                )
+
+                            }
+
+
+                            placeholder="Название мода"
+
+
+                            className="
+
+                            w-full
+
+                            bg-black
+
+                            border
+
+                            border-zinc-800
+
+                            rounded-xl
+
+                            p-3
+
+                            mb-5
+
+                            "
+
+                            />
+
+
+
+
+
+
+
+                            <div
+
+                            className="
+
+                            grid
+
+                            md:grid-cols-3
+
+                            gap-4
+
+                            "
+
+                            >
+
+
+
+
+
+                                <label
+
+                                className="
+
+                                bg-black
+
+                                border
+
+                                border-zinc-800
+
+                                rounded-2xl
+
+                                p-5
+
+                                cursor-pointer
+
+                                hover:border-white
+
+                                "
+
+                                >
+
+                                    🖼 Изображение
+
+
+                                    <p
+
+                                    className="
+
+                                    text-xs
+
+                                    text-zinc-500
+
+                                    mt-2
+
+                                    "
+
+                                    >
+
+                                    {
+
+                                        image
+
+                                        ?
+
+                                        image.name
+
+                                        :
+
+                                        "Выбрать файл"
+
+                                    }
+
+                                    </p>
+
+
+
+
+                                    <input
+
+                                    hidden
+
+                                    type="file"
+
+                                    accept="image/*"
+
+                                    onChange={e=>
+
+                                        setImage(
+
+                                            e.target.files?.[0] ?? null
+
+                                        )
+
+                                    }
+
+                                    />
+
+
+                                </label>
+
+
+
+
+
+
+
+
+
+                                <label
+
+                                className="
+
+                                bg-black
+
+                                border
+
+                                border-zinc-800
+
+                                rounded-2xl
+
+                                p-5
+
+                                cursor-pointer
+
+                                hover:border-white
+
+                                "
+
+                                >
+
+                                    📦 TXD
+
+
+                                    <p
+
+                                    className="
+
+                                    text-xs
+
+                                    text-zinc-500
+
+                                    mt-2
+
+                                    "
+
+                                    >
+
+                                    {
+
+                                        txd
+
+                                        ?
+
+                                        txd.name
+
+                                        :
+
+                                        "Не обязательно"
+
+                                    }
+
+                                    </p>
+
+
+
+
+                                    <input
+
+                                    hidden
+
+                                    type="file"
+
+                                    accept=".txd"
+
+                                    onChange={e=>
+
+                                        setTxd(
+
+                                            e.target.files?.[0] ?? null
+
+                                        )
+
+                                    }
+
+                                    />
+
+
+                                </label>
+
+
+
+
+
+
+
+
+
+                                <label
+
+                                className="
+
+                                bg-black
+
+                                border
+
+                                border-zinc-800
+
+                                rounded-2xl
+
+                                p-5
+
+                                cursor-pointer
+
+                                hover:border-white
+
+                                "
+
+                                >
+
+                                    🔧 DFF
+
+
+                                    <p
+
+                                    className="
+
+                                    text-xs
+
+                                    text-zinc-500
+
+                                    mt-2
+
+                                    "
+
+                                    >
+
+                                    {
+
+                                        dff
+
+                                        ?
+
+                                        dff.name
+
+                                        :
+
+                                        "Не обязательно"
+
+                                    }
+
+                                    </p>
+
+
+
+
+                                    <input
+
+                                    hidden
+
+                                    type="file"
+
+                                    accept=".dff"
+
+                                    onChange={e=>
+
+                                        setDff(
+
+                                            e.target.files?.[0] ?? null
+
+                                        )
+
+                                    }
+
+                                    />
+
+
+                                </label>
+
+
+
+
+
+
+                            </div>
+
+
+                        </div>
+
+
+
+
+
+
+
+
+
+                        <div
+
+                        className="
+
+                        mt-6
+
+                        bg-[#0d0d0d]
+
+                        border
+
+                        border-zinc-800
+
+                        rounded-3xl
+
+                        p-6
+
+                        "
+
+                        >
+
+
+
+                            <h2
+
+                            className="
+
+                            text-xl
+
+                            font-bold
+
+                            mb-4
+
+                            "
+
+                            >
+
+                                Предпросмотр
+
+                            </h2>
+
+
+
+
+
+                            <div
+
+                            className="
+
+                            h-[420px]
+
+                            bg-black
+
+                            rounded-2xl
+
+                            overflow-hidden
+
+                            "
+
+                            >
+
+
+                                <Image
+
+                                src={preview}
+
+                                alt="preview"
+
+                                width={1200}
+
+                                height={600}
+
+                                className="
+
+                                w-full
+
+                                h-full
+
+                                object-cover
+
+                                "
+
+                                />
+
+
+                            </div>
+
+
+
+                        </div>
+
+
+
+
+
+
+
+
+                        <button
+
+                        onClick={createMod}
+
+                        disabled={loading}
+
+
+                        className="
+
+                        mt-6
+
+                        w-full
+
+                        bg-white
+
+                        text-black
+
+                        rounded-2xl
+
+                        p-4
+
+                        font-bold
+
+                        hover:bg-zinc-200
+
+                        "
+
+                        >
+
+                            {
+
+                                loading
+
+                                ?
+
+                                "Создание..."
+
+                                :
+
+                                "Создать мод"
+
+                            }
+
 
                         </button>
 
 
-                    ))
-                }
+
+
+                    </div>
+
+
+
+
+
+
+
+
+
+                    <aside
+
+                    className="
+
+                    bg-[#0d0d0d]
+
+                    border
+
+                    border-zinc-800
+
+                    rounded-3xl
+
+                    p-5
+
+                    h-fit
+
+                    "
+
+                    >
+
+
+
+                        <h2
+
+                        className="
+
+                        text-xl
+
+                        font-bold
+
+                        mb-4
+
+                        "
+
+                        >
+
+                            Категории
+
+                        </h2>
+
+
+
+
+
+                        <div
+
+                        className="
+
+                        max-h-[650px]
+
+                        overflow-y-auto
+
+                        "
+
+                        >
+
+
+                            {
+
+                                categories.map(
+
+                                    item =>
+
+                                    renderCategory(item)
+
+                                )
+
+                            }
+
+
+                        </div>
+
+
+
+
+                    </aside>
+
+
+
+
 
 
                 </div>
 
-            ))
-        }
 
 
-        </section>
+            </div>
 
-
-        </div>
 
 
         </main>

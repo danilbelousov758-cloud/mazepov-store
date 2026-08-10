@@ -1,26 +1,21 @@
 "use client";
 
+
 import Header from "@/components/Header";
 import Image from "next/image";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 
 
-type CategoryItem =
-    | string
-    | {
-        name:string;
-        children:string[];
-    };
 
-
-type Category = {
+type CategoryNode = {
 
     name:string;
 
-    items:CategoryItem[];
+    children?:CategoryNode[];
 
 };
+
 
 
 
@@ -32,15 +27,7 @@ type Mod = {
 
     category:string;
 
-    description?:string | null;
-
     image?:string | null;
-
-    dff?:string | null;
-
-    txd?:string | null;
-
-    views:number;
 
     createdAt:string;
 
@@ -49,297 +36,938 @@ type Mod = {
 
 
 
+
+
+
+function getImageUrl(
+
+    image?:string | null
+
+):string{
+
+
+    if(!image){
+
+        return "/images/mod-placeholder.png";
+
+    }
+
+
+
+    if(image.startsWith("http")){
+
+        return image;
+
+    }
+
+
+
+    if(image.startsWith("/")){
+
+        return image;
+
+    }
+
+
+
+    return "/" + image;
+
+
+}
+
+
+
+
+
+
+
+
+
 export default function ModsPage(){
 
 
-const router = useRouter();
+    const router = useRouter();
 
 
 
-const [currentUser,setCurrentUser] =
-useState<any>(null);
+    const [mods,setMods] = useState<Mod[]>([]);
 
 
 
-const [mods,setMods] =
-useState<Mod[]>([]);
+    const [currentUser,setCurrentUser] =
+    useState<any>(null);
 
 
 
-const [openCategory,setOpenCategory] =
-useState<string | null>(null);
+    const [activeCategory,setActiveCategory] =
+    useState("Все");
 
 
 
-const [openSubCategory,setOpenSubCategory] =
-useState<string | null>(null);
+    const [openedCategories,setOpenedCategories] =
+    useState<string[]>([]);
 
 
 
-const [activeCategory,setActiveCategory] =
-useState("Все");
 
 
 
 
 
-useEffect(()=>{
 
+    useEffect(()=>{
 
-const user =
-localStorage.getItem("user");
 
+        const user =
+        localStorage.getItem("user");
 
 
-if(user){
 
-setCurrentUser(
-JSON.parse(user)
-);
+        if(user){
 
-}
+            setCurrentUser(
 
+                JSON.parse(user)
 
+            );
 
+        }
 
-async function getMods(){
 
 
-try{
 
 
-const response =
-await fetch("/api/mods");
 
+        async function loadMods(){
 
 
-const data =
-await response.json();
+            try{
 
 
+                const response =
+                await fetch(
 
-if(Array.isArray(data)){
+                    "/api/mods"
 
-setMods(data);
+                );
 
-}
 
 
+                const data =
+                await response.json();
 
-}catch(error){
 
-console.log(error);
 
-}
 
+                if(Array.isArray(data)){
 
+                    setMods(data);
 
-}
+                }
 
 
 
-getMods();
+            }
 
+            catch(error){
 
+                console.log(error);
 
-},[]);
+            }
 
 
+        }
 
 
 
+        loadMods();
 
-const categories:Category[]=[
 
 
-{
+    },[]);
 
-name:"Скины",
 
-items:[
 
-"Государственные",
 
-"Мафии",
 
-"Банды",
 
-"Гражданские"
 
-]
 
-},
 
 
 
-{
 
-name:"Оружие",
+    const categories:CategoryNode[] = [
 
-items:[
 
-"Ганпак",
 
-"Дигл",
+        {
 
-"ЮСП",
+            name:"Скины",
 
-"Револьвер",
+            children:[
 
-"АПС",
+                {
+                    name:"Государственные"
+                },
 
-"СВД",
+                {
+                    name:"Мафии"
+                },
 
-"M4A4"
+                {
+                    name:"Банды"
+                },
 
-]
+                {
+                    name:"Гражданские"
+                }
 
-},
+            ]
 
+        },
 
 
-{
 
-name:"Интерьеры",
 
-items:[
 
-"24.7",
+        {
 
-"Банк",
+            name:"Оружие",
 
-"Особняк",
+            children:[
 
-"Оружейка"
 
-]
+                {
+                    name:"Ганпак"
+                },
 
-},
 
+                {
+                    name:"Дигл"
+                },
 
 
-{
+                {
+                    name:"ЮСП"
+                },
 
-name:"Звуки",
 
-items:[
+                {
+                    name:"Револьвер"
+                },
 
-"Попадание",
 
-{
+                {
+                    name:"АПС"
+                },
 
-name:"Ганы",
 
-children:[
+                {
+                    name:"СВД ПСО"
+                },
 
-"Пистолеты",
 
-"M4A4",
+                {
+                    name:"СВД"
+                },
 
-"СВД"
 
-]
+                {
+                    name:"M4A4"
+                },
 
-}
 
-]
+                {
+                    name:"Абакан"
+                },
 
-}
 
+                {
+                    name:"Ас Вал"
+                },
 
 
-];
+                {
+                    name:"Гроза"
+                },
 
 
+                {
+                    name:"Дробовик"
+                }
 
 
+            ]
 
+        },
 
-const simpleCategories:string[]=[
 
 
-"Карты",
 
-"Дороги",
 
-"Графика",
 
-"Прицелы",
 
-"Таймциклы"
 
 
-];
+        {
 
+            name:"Интерьеры",
 
+            children:[
 
 
+                {
+                    name:"24.7"
+                },
 
 
-const filteredMods =
+                {
+                    name:"ДПС/ППС/ФСБ"
+                },
 
 
-activeCategory==="Все"
+                {
+                    name:"Оружейка"
+                },
 
 
-?
+                {
+                    name:"Ашан"
+                },
 
 
-mods
+                {
+                    name:"Аптека"
+                },
 
 
-:
+                {
+                    name:"ПК клуб"
+                },
 
 
-mods.filter(
+                {
+                    name:"Особняк"
+                },
 
-(mod:Mod)=>
 
-mod.category===activeCategory
+                {
+                    name:"Банк"
+                }
 
-);
 
+            ]
 
+        },
 
 
 
 
-return (
 
 
-<div
+
+
+
+        {
+
+            name:"Заменные территории",
+
+            children:[
+
+
+                {
+                    name:"Арзамас"
+                },
+
+
+                {
+                    name:"Батырево"
+                },
+
+
+                {
+                    name:"Южный"
+                },
+
+
+                {
+                    name:"ЦР"
+                },
+
+
+                {
+                    name:"ФСИН"
+                },
+
+
+                {
+                    name:"Бизвар локации"
+                },
+
+
+                {
+                    name:"Вокзалы"
+                }
+
+
+            ]
+
+        },
+
+
+
+
+
+
+
+
+
+
+        {
+
+            name:"Звуки",
+
+            children:[
+
+
+                {
+
+                    name:"Попадание"
+
+                },
+
+
+
+                {
+
+                    name:"Ганы",
+
+                    children:[
+
+
+                        {
+                            name:"Дигл"
+                        },
+
+
+                        {
+                            name:"ЮСП"
+                        },
+
+
+                        {
+                            name:"Револьвер"
+                        },
+
+
+                        {
+                            name:"АПС"
+                        },
+
+
+                        {
+                            name:"M4A4"
+                        },
+
+
+                        {
+                            name:"Абакан"
+                        },
+
+
+                        {
+                            name:"Ас Вал"
+                        },
+
+
+                        {
+                            name:"Гроза"
+                        },
+
+
+                        {
+                            name:"Дробовик"
+                        },
+
+
+                        {
+                            name:"СВД"
+                        },
+
+
+                        {
+                            name:"СВД ПСО"
+                        }
+
+
+                    ]
+
+                },
+
+
+
+                {
+
+                    name:"Окружение"
+
+                },
+
+
+                {
+
+                    name:"Транспорт"
+
+                },
+
+
+                {
+
+                    name:"Радио"
+
+                }
+
+
+            ]
+
+        }
+
+
+
+    ];
+
+
+
+
+
+
+
+
+
+    const simpleCategories = [
+
+
+        "Дороги",
+
+        "Карты",
+
+        "Инвентарь",
+
+        "Скайбоксы",
+
+        "Эффекты",
+
+        "Нефтевышки",
+
+        "Прицелы",
+
+        "Курсор мыши",
+
+        "Фисты",
+
+        "Таймциклы",
+
+        "Пикапы",
+
+        "Ахк",
+
+        "Аси плагины",
+
+        "Деревья",
+
+        "Графика",
+
+        "Загрузочный экран",
+
+        "Подсказки"
+
+
+    ];
+
+    function toggleCategory(
+
+        name:string
+
+    ){
+
+
+        setOpenedCategories(prev =>
+
+
+            prev.includes(name)
+
+            ?
+
+            prev.filter(
+
+                item => item !== name
+
+            )
+
+            :
+
+            [
+
+                ...prev,
+
+                name
+
+            ]
+
+
+        );
+
+
+    }
+
+
+
+
+
+
+
+
+    function renderCategory(
+
+        item:CategoryNode,
+
+        level:number = 0
+
+    ){
+
+
+        const opened =
+
+        openedCategories.includes(
+
+            item.name
+
+        );
+
+
+
+        const hasChildren =
+
+        Boolean(
+
+            item.children && item.children.length
+
+        );
+
+
+
+
+
+
+        return (
+
+            <div
+
+            key={item.name}
+
+            className="mb-2"
+
+            >
+
+
+
+                <button
+
+                onClick={()=>{
+
+
+                    if(hasChildren){
+
+
+                        toggleCategory(
+
+                            item.name
+
+                        );
+
+
+                    }
+
+                    else{
+
+
+                        setActiveCategory(
+
+                            item.name
+
+                        );
+
+
+                    }
+
+
+                }}
+
+
+                style={{
+
+                    marginLeft: level * 12
+
+                }}
+
+
+
+                className={`
+
+                w-full
+
+                flex
+
+                justify-between
+
+                items-center
+
+                px-3
+
+                py-2
+
+                rounded-xl
+
+                border
+
+                text-sm
+
+                transition
+
+
+                ${
+                    activeCategory === item.name
+
+                    ?
+
+                    "bg-white text-black border-white"
+
+                    :
+
+                    "bg-[#161616] text-zinc-400 border-zinc-800 hover:text-white"
+
+                }
+
+                `}
+
+                >
+
+
+
+                    <span>
+
+
+                    {
+
+                    hasChildren
+
+                    ?
+
+                    opened
+
+                    ?
+
+                    "📂"
+
+                    :
+
+                    "📁"
+
+                    :
+
+                    "•"
+
+                    }
+
+
+                    {" "}
+
+                    {item.name}
+
+
+                    </span>
+
+
+
+                    {
+
+                    hasChildren &&
+
+                    <span>
+
+                    {
+
+                    opened ? "−" : "+"
+
+                    }
+
+                    </span>
+
+                    }
+
+
+
+                </button>
+
+
+
+
+
+
+
+                {
+
+                opened &&
+
+                (
+
+                <div
+
+                className="
+
+                ml-3
+
+                mt-2
+
+                pl-3
+
+                border-l
+
+                border-zinc-800
+
+                "
+
+                >
+
+
+
+                    {
+
+                    item.children?.map(
+
+                        child =>
+
+                        renderCategory(
+
+                            child,
+
+                            level + 1
+
+                        )
+
+                    )
+
+                    }
+
+
+
+                </div>
+
+                )
+
+                }
+
+
+
+
+
+            </div>
+
+        );
+
+
+    }
+
+
+
+
+
+
+
+
+
+    const filteredMods =
+
+
+    activeCategory === "Все"
+
+    ?
+
+    mods
+
+    :
+
+    mods.filter(
+
+        mod =>
+
+        mod.category === activeCategory
+
+    );
+
+
+
+
+
+
+
+
+
+
+
+
+    return (
+
+<main
 
 className="
+
 relative
+
 min-h-screen
+
 overflow-hidden
+
 text-white
+
 "
 
 >
 
 
-<Header />
 
-
+{/* VIDEO BACKGROUND */}
 
 <video
 
 autoPlay
+
 loop
+
 muted
+
 playsInline
 
+preload="auto"
+
 className="
+
 fixed
+
 inset-0
+
 w-full
+
 h-full
+
 object-cover
+
 z-0
+
 "
 
 >
+
 
 <source
 
@@ -349,34 +977,73 @@ type="video/mp4"
 
 />
 
+
 </video>
 
 
 
+
+
+{/* OVERLAY */}
+
 <div
 
 className="
+
 fixed
+
 inset-0
-bg-black/60
+
+bg-black/70
+
 z-10
+
 "
 
 />
 
 
 
+
+
+
+
 <div
 
 className="
+
 relative
-z-20
-pt-40
-w-[82%]
-max-w-6xl
+
+z-30
+
+"
+
+>
+
+
+<Header />
+
+
+
+
+
+
+<div
+
+className="
+
+max-w-[1500px]
+
 mx-auto
+
+pt-28
+
+px-8
+
 flex
-gap-6
+
+gap-8
+
 "
 
 >
@@ -385,30 +1052,29 @@ gap-6
 
 
 
-<div
+
+<aside
 
 className="
-w-72
+
+w-80
+
 h-[75vh]
+
 overflow-y-auto
-rounded-2xl
+
+bg-[#101010]/90
+
+backdrop-blur-xl
+
 border
+
 border-zinc-800
-bg-black/70
+
+rounded-3xl
+
 p-5
-"
 
->
-
-
-
-<div
-
-className="
-flex
-justify-between
-items-center
-mb-5
 "
 
 >
@@ -417,8 +1083,13 @@ mb-5
 <h2
 
 className="
-text-xl
+
+text-2xl
+
 font-bold
+
+mb-6
+
 "
 
 >
@@ -429,32 +1100,60 @@ font-bold
 
 
 
+
+
+
+
 {
 
-(currentUser?.role==="ADMIN" ||
-currentUser?.role==="OWNER")
+(
+
+currentUser?.role === "ADMIN"
+
+||
+
+currentUser?.role === "OWNER"
+
+)
 
 &&
 
 
 <button
 
-onClick={()=>router.push("/mods/create")}
+onClick={()=>
+
+
+router.push(
+
+"/mods/create"
+
+)
+
+
+}
 
 className="
-bg-white
-text-black
-px-3
-py-2
+
+w-full
+
+mb-5
+
+py-3
+
 rounded-xl
+
+bg-white
+
+text-black
+
 font-bold
-text-sm
-hover:bg-zinc-200
+
 "
 
 >
 
-Создать мод
++ Создать мод
 
 </button>
 
@@ -463,7 +1162,6 @@ hover:bg-zinc-200
 
 
 
-</div>
 
 
 
@@ -473,11 +1171,13 @@ hover:bg-zinc-200
 onClick={()=>setActiveCategory("Все")}
 
 className="
-w-full
-text-left
-py-2
-text-gray-300
+
+mb-5
+
+text-zinc-400
+
 hover:text-white
+
 "
 
 >
@@ -490,268 +1190,35 @@ hover:text-white
 
 
 
-{
-categories.map((category:Category)=>(
-
-
-<div
-
-key={category.name}
-
-className="
-mt-3
-"
-
->
-
-
-<button
-
-onClick={()=>setOpenCategory(
-
-openCategory===category.name
-
-?
-
-null
-
-:
-
-category.name
-
-)}
-
-className="
-w-full
-flex
-justify-between
-font-semibold
-py-2
-"
-
->
-
-{category.name}
-
-
-<span>
 
 {
 
-openCategory===category.name
+categories.map(
 
-?
+item =>
 
-"−"
-
-:
-
-"+"
-
-}
-
-</span>
-
-
-</button>
-
-
-
-
-
-{
-openCategory===category.name && (
-
-
-<div
-
-className="
-ml-3
-border-l
-border-zinc-700
-pl-3
-"
-
->
-
-{
-category.items.map((item:CategoryItem)=>(
-
-
-typeof item === "string"
-
-?
-
-<button
-
-key={item}
-
-onClick={()=>setActiveCategory(item)}
-
-className="
-block
-w-full
-text-left
-py-1
-text-sm
-text-gray-400
-hover:text-white
-"
-
->
-
-{item}
-
-</button>
-
-
-:
-
-<div
-
-key={item.name}
-
->
-
-
-
-<button
-
-onClick={()=>setOpenSubCategory(
-
-openSubCategory===item.name
-
-?
-
-null
-
-:
-
-item.name
-
-)}
-
-className="
-w-full
-flex
-justify-between
-text-sm
-text-gray-400
-py-1
-"
-
->
-
-{item.name}
-
-
-<span>
-
-{
-
-openSubCategory===item.name
-
-?
-
-"−"
-
-:
-
-"+"
-
-}
-
-</span>
-
-
-</button>
-
-
-
-
-
-{
-
-openSubCategory===item.name && (
-
-
-<div>
-
-
-{
-
-item.children.map((child:string)=>(
-
-
-<button
-
-key={child}
-
-onClick={()=>setActiveCategory(child)}
-
-className="
-block
-text-sm
-text-gray-500
-py-1
-hover:text-white
-"
-
->
-
-{child}
-
-</button>
-
-
-))
-
-
-}
-
-
-</div>
-
-
-)
-
-
-}
-
-
-
-</div>
-
-
-))
-
-}
-
-
-</div>
-
+renderCategory(item)
 
 )
 
 }
 
 
-</div>
-
-
-))
-
-}
 
 
 
 <div
 
 className="
-mt-5
-border-t
-border-zinc-800
+
+mt-6
+
 pt-4
+
+border-t
+
+border-zinc-800
+
 "
 
 >
@@ -759,8 +1226,9 @@ pt-4
 
 {
 
-simpleCategories.map((item:string)=>(
+simpleCategories.map(
 
+item =>
 
 <button
 
@@ -769,12 +1237,19 @@ key={item}
 onClick={()=>setActiveCategory(item)}
 
 className="
+
 block
+
 w-full
+
 text-left
+
 py-2
-text-gray-400
+
+text-zinc-400
+
 hover:text-white
+
 "
 
 >
@@ -784,154 +1259,151 @@ hover:text-white
 </button>
 
 
-))
-
+)
 
 }
 
 
-</div>
-
-
 
 </div>
 
 
 
+</aside>
 
 
-{/* MODS LIST */}
 
 
 
-<div
+
+
+
+
+<section
 
 className="
+
 flex-1
+
 grid
-grid-cols-3
-gap-5
+
+grid-cols-1
+
+md:grid-cols-2
+
+xl:grid-cols-3
+
+gap-7
+
 "
 
 >
 
 
 
+
+
 {
 
-filteredMods.map((mod:Mod)=>(
+filteredMods.map(
+
+mod =>
 
 
-
-<div
+<article
 
 key={mod.id}
 
 className="
-rounded-xl
+
+aspect-square
+
+bg-[#111]/95
+
 border
+
 border-zinc-800
-bg-black/70
+
+rounded-3xl
+
 overflow-hidden
-hover:border-white/40
+
+flex
+
+flex-col
+
+hover:border-zinc-500
+
 transition
+
 "
 
 >
 
 
 
+
+
 <div
 
-onClick={()=>router.push(`/mods/${mod.id}`)}
-
 className="
-cursor-pointer
+
+h-16
+
+px-5
+
+flex
+
+items-center
+
+gap-3
+
+border-b
+
+border-zinc-800
+
 "
 
 >
 
 
-
-<div
-
-className="
-relative
-"
-
->
-
-
-
-<div
+<span
 
 className="
-absolute
-top-3
-left-3
-bg-black/80
+
 px-3
+
 py-1
+
 rounded-lg
+
+bg-[#1b1b1b]
+
+border
+
+border-zinc-700
+
 text-xs
-z-10
+
 "
 
 >
 
 {mod.category}
 
-</div>
+</span>
 
 
-
-
-<Image
-
-src={
-mod.image
-?
-mod.image
-:
-"/images/mod-placeholder.png"
-}
-
-alt={mod.title}
-
-width={500}
-
-height={300}
-
-className="
-w-full
-h-40
-object-cover
-"
-
-/>
-
-
-
-</div>
-
-
-
-
-
-<div
-
-className="
-p-4
-"
-
->
 
 
 <h3
 
 className="
+
 font-bold
-text-lg
+
+truncate
+
 "
 
 >
@@ -941,11 +1413,10 @@ text-lg
 </h3>
 
 
-</div>
-
-
 
 </div>
+
+
 
 
 
@@ -954,15 +1425,62 @@ text-lg
 <div
 
 className="
-flex
-justify-between
-items-center
-px-4
-pb-4
+
+relative
+
+flex-1
+
+m-4
+
+rounded-2xl
+
+overflow-hidden
+
 "
 
 >
 
+
+<Image
+
+src={getImageUrl(mod.image)}
+
+alt={mod.title}
+
+fill
+
+priority
+
+sizes="500px"
+
+className="object-cover"
+
+/>
+
+
+</div>
+
+
+
+
+
+
+
+<div
+
+className="
+
+h-16
+
+p-4
+
+border-t
+
+border-zinc-800
+
+"
+
+>
 
 
 <a
@@ -970,74 +1488,54 @@ pb-4
 href={`/api/mods/download/${mod.id}`}
 
 className="
+
+block
+
+w-full
+
 bg-white
+
 text-black
-px-4
-py-2
+
 rounded-xl
+
+py-3
+
+text-center
+
 font-bold
+
 text-sm
+
+hover:bg-zinc-200
+
 "
 
 >
 
-Скачать
+⬇ Скачать ZIP
 
 </a>
 
 
-
-
-
-<div
-
-className="
-text-xs
-text-gray-400
-text-right
-"
-
->
-
-
-<div>
-
-👁 {mod.views || 0}
-
 </div>
 
 
-<div>
 
-📅 {
 
-new Date(
-mod.createdAt
-)
-.toLocaleDateString(
-"ru-RU"
+
+</article>
+
+
 )
 
 }
 
-</div>
 
 
-</div>
+</section>
 
 
-
-</div>
-
-
-
-</div>
-
-
-
-))
-
-}
 
 
 
@@ -1049,10 +1547,10 @@ mod.createdAt
 
 
 
-</div>
-
+</main>
 
 
 );
+
 
 }
