@@ -14,19 +14,15 @@ model User {
 
   id Int @id @default(autoincrement())
 
-  username String? @unique
-
-  email String? @unique
+  nickname String @unique
 
   password String
 
-  role String @default("USER")
+  server String
 
-  nickname String?
+  role String
 
-  avatar String?
-
-  server String?
+  avatar String
 
   createdAt DateTime @default(now())
 

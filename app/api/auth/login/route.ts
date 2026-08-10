@@ -1,132 +1,181 @@
 import { NextResponse } from "next/server";
-import { prisma } from "@/lib/prisma";
-import bcrypt from "bcrypt";
+import { PrismaClient } from "@prisma/client";
+import bcrypt from "bcryptjs";
 
 
-export async function POST(request: Request) {
-
-  try {
-
-    const body = await request.json();
-
-
-    const {
-      nickname,
-      password,
-      server
-    } = body;
+const prisma = new PrismaClient();
 
 
 
-    if (!nickname || !password || !server) {
+export async function POST(req:Request){
 
-      return NextResponse.json(
-        {
-          error:"Заполните все поля"
-        },
-        {
-          status:400
+
+    try{
+
+
+        const body = await req.json();
+
+
+
+        const {
+            nickname,
+            password,
+            server
+        } = body;
+
+
+
+
+        if(!nickname || !password){
+
+
+            return NextResponse.json(
+
+                {
+                    error:"Заполните никнейм и пароль"
+                },
+
+                {
+                    status:400
+                }
+
+            );
+
+
         }
-      );
+
+
+
+
+        const exists = await prisma.user.findUnique({
+
+            where:{
+
+                nickname:nickname
+
+            }
+
+        });
+
+
+
+
+        if(exists){
+
+
+            return NextResponse.json(
+
+                {
+                    error:"Такой пользователь уже существует"
+                },
+
+                {
+                    status:400
+                }
+
+            );
+
+
+        }
+
+
+
+
+
+        const hash = await bcrypt.hash(
+
+            password,
+
+            10
+
+        );
+
+
+
+
+
+        const user = await prisma.user.create({
+
+            data:{
+
+
+                nickname:nickname,
+
+                password:hash,
+
+                server:server || "",
+
+                role:"USER",
+
+                avatar:""
+
+            }
+
+        });
+
+
+
+
+
+
+        return NextResponse.json({
+
+
+            success:true,
+
+
+            user:{
+
+
+                id:user.id,
+
+                nickname:user.nickname,
+
+                server:user.server,
+
+                role:user.role,
+
+                avatar:user.avatar
+
+
+            }
+
+
+        });
+
+
+
 
     }
 
+    catch(error:any){
 
 
-    const user = await prisma.user.findUnique({
+        console.error(
 
-      where:{
-        nickname:nickname
-      }
+            "REGISTER ERROR:",
 
-    });
+            error
+
+        );
 
 
 
-    if(!user){
+        return NextResponse.json(
 
-      return NextResponse.json(
-        {
-          error:"Пользователь не найден"
-        },
-        {
-          status:404
-        }
-      );
+            {
+                error:error.message ||
+                "Ошибка регистрации"
+            },
+
+            {
+                status:500
+            }
+
+        );
+
 
     }
 
-
-
-    const checkPassword = await bcrypt.compare(
-      password,
-      user.password
-    );
-
-
-
-    if(!checkPassword){
-
-      return NextResponse.json(
-        {
-          error:"Неверный пароль"
-        },
-        {
-          status:400
-        }
-      );
-
-    }
-
-
-
-    if(user.server !== server){
-
-      return NextResponse.json(
-        {
-          error:"Неверный сервер"
-        },
-        {
-          status:400
-        }
-      );
-
-    }
-
-
-
-
-    return NextResponse.json({
-
-      success:true,
-
-      user:{
-        id:user.id,
-        nickname:user.nickname,
-        server:user.server,
-        role:user.role
-      }
-
-    });
-
-
-  } catch(error){
-
-    console.log("LOGIN ERROR:",error);
-
-
-    return NextResponse.json(
-
-      {
-        error:"Сервер авторизации недоступен"
-      },
-
-      {
-        status:500
-      }
-
-    );
-
-  }
 
 }

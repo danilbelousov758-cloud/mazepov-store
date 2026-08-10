@@ -1,80 +1,181 @@
 import { NextResponse } from "next/server";
-import { prisma } from "@/lib/prisma";
+import { PrismaClient } from "@prisma/client";
+import bcrypt from "bcryptjs";
 
 
-export async function POST(req: Request){
-
-try{
-
-const {nickname}=await req.json();
-
-
-if(!nickname){
-
-return NextResponse.json(
-{
-error:"Нет пользователя"
-},
-{
-status:400
-}
-);
-
-}
-
-
-const user = await prisma.user.findUnique({
-
-where:{
-nickname
-},
-
-select:{
-id:true,
-nickname:true,
-role:true,
-server:true,
-avatar:true,
-createdAt:true
-}
-
-});
+const prisma = new PrismaClient();
 
 
 
-if(!user){
+export async function POST(req:Request){
 
-return NextResponse.json(
-{
-error:"Пользователь не найден"
-},
-{
-status:404
-}
-);
 
-}
+    try{
+
+
+        const body = await req.json();
 
 
 
-return NextResponse.json(user);
+        const {
+            nickname,
+            password,
+            server
+        } = body;
 
 
 
-}catch(error){
 
-console.error(error);
+        if(!nickname || !password){
 
 
-return NextResponse.json(
-{
-error:"Ошибка сервера"
-},
-{
-status:500
-}
-);
+            return NextResponse.json(
 
-}
+                {
+                    error:"Заполните никнейм и пароль"
+                },
+
+                {
+                    status:400
+                }
+
+            );
+
+
+        }
+
+
+
+
+        const exists = await prisma.user.findUnique({
+
+            where:{
+
+                nickname:nickname
+
+            }
+
+        });
+
+
+
+
+        if(exists){
+
+
+            return NextResponse.json(
+
+                {
+                    error:"Такой пользователь уже существует"
+                },
+
+                {
+                    status:400
+                }
+
+            );
+
+
+        }
+
+
+
+
+
+        const hash = await bcrypt.hash(
+
+            password,
+
+            10
+
+        );
+
+
+
+
+
+        const user = await prisma.user.create({
+
+            data:{
+
+
+                nickname:nickname,
+
+                password:hash,
+
+                server:server || "",
+
+                role:"USER",
+
+                avatar:""
+
+            }
+
+        });
+
+
+
+
+
+
+        return NextResponse.json({
+
+
+            success:true,
+
+
+            user:{
+
+
+                id:user.id,
+
+                nickname:user.nickname,
+
+                server:user.server,
+
+                role:user.role,
+
+                avatar:user.avatar
+
+
+            }
+
+
+        });
+
+
+
+
+    }
+
+    catch(error:any){
+
+
+        console.error(
+
+            "REGISTER ERROR:",
+
+            error
+
+        );
+
+
+
+        return NextResponse.json(
+
+            {
+                error:error.message ||
+                "Ошибка регистрации"
+            },
+
+            {
+                status:500
+            }
+
+        );
+
+
+    }
+
 
 }
