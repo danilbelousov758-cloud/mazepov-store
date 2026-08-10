@@ -4,7 +4,7 @@ import { s3 } from "@/lib/storage";
 
 
 export async function POST(
-    req:Request
+    req: Request
 ){
 
     try{
@@ -19,8 +19,11 @@ export async function POST(
             formData.get("file") as File;
 
 
+
         const folder =
-            formData.get("folder") as string;
+            String(
+                formData.get("folder") || "mods"
+            );
 
 
 
@@ -46,48 +49,58 @@ export async function POST(
 
 
 
-        const key =
-            `${folder}/${Date.now()}-${file.name}`;
+        const safeName =
+            file.name
+            .replace(
+                /[^a-zA-Z0-9._-]/g,
+                "_"
+            );
 
+
+
+        const key =
+            `${folder}/${Date.now()}-${safeName}`;
 
 
 
         console.log(
-            "TIMEWEB UPLOAD:",
+            "UPLOAD S3:",
             key
         );
 
 
 
 
+        await s3.send(
 
-await s3.send(
+            new PutObjectCommand({
 
-    new PutObjectCommand({
-
-        Bucket:
-        process.env.S3_BUCKET!,
-
-
-        Key:
-        key,
+                Bucket:
+                process.env.S3_BUCKET!,
 
 
-        Body:
-        buffer,
+                Key:
+                key,
 
 
-        ContentType:
-        file.type,
+                Body:
+                buffer,
 
 
-        ACL:
-        "public-read"
+                ContentType:
+                file.type || "application/octet-stream"
 
-    })
 
-);
+            })
 
+        );
+
+
+
+
+
+        const url =
+        `${process.env.S3_PUBLIC_URL}/${key}`;
 
 
 
@@ -96,18 +109,20 @@ await s3.send(
 
             success:true,
 
-            key
+            key,
+
+            url
 
         });
 
 
 
     }
-    catch(error){
+    catch(error:any){
 
 
         console.error(
-            "TIMEWEB UPLOAD ERROR:",
+            "UPLOAD ERROR:",
             error
         );
 
@@ -117,7 +132,8 @@ await s3.send(
 
             {
                 error:
-                "Ошибка загрузки файла"
+                error.message ||
+                "Ошибка загрузки"
             },
 
             {
