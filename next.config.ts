@@ -8,9 +8,17 @@ const nextConfig: NextConfig = {
         remotePatterns: [
 
             {
-                protocol:"https",
-                hostname:"s3.twcstorage.ru"
+                protocol: "https",
+                hostname: "s3.twcstorage.ru",
             }
+
+        ],
+
+        formats: [
+
+            "image/avif",
+
+            "image/webp"
 
         ]
 

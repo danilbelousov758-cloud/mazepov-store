@@ -152,13 +152,19 @@ export async function POST(
 
 
 
-        return NextResponse.json({
+const fileUrl =
+`${process.env.NEXT_PUBLIC_FILES_URL}/${key}`;
 
-            url,
 
-            key
+return NextResponse.json({
 
-        });
+    url,
+
+    key,
+
+    fileUrl
+
+});
 
 
 

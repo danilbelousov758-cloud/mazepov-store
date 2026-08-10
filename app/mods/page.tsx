@@ -18,7 +18,6 @@ type CategoryNode = {
 
 
 
-
 type Mod = {
 
     id:number;
@@ -36,8 +35,9 @@ type Mod = {
 
 
 
-
-
+// ================================
+// IMAGE URL FIX (S3)
+// ================================
 
 function getImageUrl(
 
@@ -48,13 +48,19 @@ function getImageUrl(
 
     if(!image){
 
-        return "/images/mod-placeholder.png";
+        return "/placeholder.png";
 
     }
 
 
 
-    if(image.startsWith("http")){
+    // Уже готовая ссылка S3
+
+    if(
+
+        image.startsWith("http")
+
+    ){
 
         return image;
 
@@ -62,7 +68,13 @@ function getImageUrl(
 
 
 
-    if(image.startsWith("/")){
+    // Старые локальные картинки
+
+    if(
+
+        image.startsWith("/")
+
+    ){
 
         return image;
 
@@ -70,7 +82,13 @@ function getImageUrl(
 
 
 
-    return "/" + image;
+    // S3 key
+
+    return (
+
+        `${process.env.NEXT_PUBLIC_FILES_URL}/${image}`
+
+    );
 
 
 }
@@ -84,6 +102,7 @@ function getImageUrl(
 
 
 export default function ModsPage(){
+
 
 
     const router = useRouter();
@@ -119,17 +138,24 @@ export default function ModsPage(){
 
 
         const user =
-        localStorage.getItem("user");
+
+        localStorage.getItem(
+
+            "user"
+
+        );
 
 
 
         if(user){
+
 
             setCurrentUser(
 
                 JSON.parse(user)
 
             );
+
 
         }
 
@@ -145,6 +171,7 @@ export default function ModsPage(){
 
 
                 const response =
+
                 await fetch(
 
                     "/api/mods"
@@ -153,15 +180,25 @@ export default function ModsPage(){
 
 
 
+
+
                 const data =
+
                 await response.json();
 
 
 
 
-                if(Array.isArray(data)){
+
+                if(
+
+                    Array.isArray(data)
+
+                ){
+
 
                     setMods(data);
+
 
                 }
 
@@ -171,7 +208,15 @@ export default function ModsPage(){
 
             catch(error){
 
-                console.log(error);
+
+                console.error(
+
+                    "LOAD MODS ERROR",
+
+                    error
+
+                );
+
 
             }
 
@@ -180,11 +225,14 @@ export default function ModsPage(){
 
 
 
+
+
         loadMods();
 
 
 
     },[]);
+
 
 
 
@@ -207,25 +255,31 @@ export default function ModsPage(){
 
             children:[
 
+
                 {
                     name:"Государственные"
                 },
+
 
                 {
                     name:"Мафии"
                 },
 
+
                 {
                     name:"Банды"
                 },
+
 
                 {
                     name:"Гражданские"
                 }
 
+
             ]
 
         },
+
 
 
 
@@ -307,9 +361,6 @@ export default function ModsPage(){
 
 
 
-
-
-
         {
 
             name:"Интерьеры",
@@ -366,9 +417,6 @@ export default function ModsPage(){
 
 
 
-
-
-
         {
 
             name:"Заменные территории",
@@ -415,15 +463,6 @@ export default function ModsPage(){
 
         },
 
-
-
-
-
-
-
-
-
-
         {
 
             name:"Звуки",
@@ -436,7 +475,6 @@ export default function ModsPage(){
                     name:"Попадание"
 
                 },
-
 
 
                 {
@@ -533,7 +571,6 @@ export default function ModsPage(){
         }
 
 
-
     ];
 
 
@@ -584,6 +621,14 @@ export default function ModsPage(){
 
     ];
 
+
+
+
+
+
+
+
+
     function toggleCategory(
 
         name:string
@@ -591,34 +636,39 @@ export default function ModsPage(){
     ){
 
 
-        setOpenedCategories(prev =>
+        setOpenedCategories(
+
+            prev =>
 
 
-            prev.includes(name)
+                prev.includes(name)
 
-            ?
+                ?
 
-            prev.filter(
+                prev.filter(
 
-                item => item !== name
+                    item => item !== name
 
-            )
+                )
 
-            :
+                :
 
-            [
+                [
 
-                ...prev,
+                    ...prev,
 
-                name
+                    name
 
-            ]
-
+                ]
 
         );
 
 
     }
+
+
+
+
 
 
 
@@ -650,9 +700,12 @@ export default function ModsPage(){
 
         Boolean(
 
-            item.children && item.children.length
+            item.children &&
+
+            item.children.length
 
         );
+
 
 
 
@@ -663,7 +716,7 @@ export default function ModsPage(){
 
             <div
 
-            key={item.name}
+            key={`${item.name}-${level}`}
 
             className="mb-2"
 
@@ -671,7 +724,10 @@ export default function ModsPage(){
 
 
 
+
                 <button
+
+                type="button"
 
                 onClick={()=>{
 
@@ -704,9 +760,12 @@ export default function ModsPage(){
                 }}
 
 
+
                 style={{
 
-                    marginLeft: level * 12
+                    marginLeft:
+
+                    level * 12
 
                 }}
 
@@ -736,6 +795,7 @@ export default function ModsPage(){
 
 
                 ${
+
                     activeCategory === item.name
 
                     ?
@@ -789,19 +849,33 @@ export default function ModsPage(){
 
 
 
+
+
                     {
 
                     hasChildren &&
 
-                    <span>
+                    (
 
-                    {
+                        <span>
 
-                    opened ? "−" : "+"
+                            {
 
-                    }
+                            opened
 
-                    </span>
+                            ?
+
+                            "−"
+
+                            :
+
+                            "+"
+
+                            }
+
+                        </span>
+
+                    )
 
                     }
 
@@ -821,47 +895,47 @@ export default function ModsPage(){
 
                 (
 
-                <div
+                    <div
 
-                className="
+                    className="
 
-                ml-3
+                    ml-3
 
-                mt-2
+                    mt-2
 
-                pl-3
+                    pl-3
 
-                border-l
+                    border-l
 
-                border-zinc-800
+                    border-zinc-800
 
-                "
+                    "
 
-                >
+                    >
 
 
 
-                    {
+                        {
 
-                    item.children?.map(
+                        item.children?.map(
 
-                        child =>
+                            child =>
 
-                        renderCategory(
+                            renderCategory(
 
-                            child,
+                                child,
 
-                            level + 1
+                                level + 1
+
+                            )
 
                         )
 
-                    )
-
-                    }
+                        }
 
 
 
-                </div>
+                    </div>
 
                 )
 
@@ -877,6 +951,10 @@ export default function ModsPage(){
 
 
     }
+
+
+
+
 
 
 
@@ -913,644 +991,698 @@ export default function ModsPage(){
 
 
 
-
-
-
     return (
 
-<main
+        <main
 
-className="
+        className="
 
-relative
+        relative
 
-min-h-screen
+        min-h-screen
 
-overflow-hidden
+        overflow-hidden
 
-text-white
+        text-white
 
-"
+        "
 
->
+        >
 
 
 
-{/* VIDEO BACKGROUND */}
+        <video
 
-<video
+        autoPlay
 
-autoPlay
+        loop
 
-loop
+        muted
 
-muted
+        playsInline
 
-playsInline
+        className="
 
-preload="auto"
+        fixed
 
-className="
+        inset-0
 
-fixed
+        w-full
 
-inset-0
+        h-full
 
-w-full
+        object-cover
 
-h-full
+        z-0
 
-object-cover
+        "
 
-z-0
+        >
 
-"
 
->
+            <source
 
+            src="/videos/background.mp4"
 
-<source
+            type="video/mp4"
 
-src="/videos/background.mp4"
+            />
 
-type="video/mp4"
 
-/>
+        </video>
 
 
-</video>
 
 
 
+        <div
 
+        className="
 
-{/* OVERLAY */}
+        fixed
 
-<div
+        inset-0
 
-className="
+        bg-black/70
 
-fixed
+        z-10
 
-inset-0
+        "
 
-bg-black/70
+        />
 
-z-10
+        <div
 
-"
+        className="
 
-/>
+        relative
 
+        z-30
 
+        "
 
+        >
 
 
+            <Header />
 
 
-<div
 
-className="
 
-relative
 
-z-30
+            <div
 
-"
+            className="
 
->
+            max-w-[1500px]
 
+            mx-auto
 
-<Header />
+            pt-28
 
+            px-8
 
+            flex
 
+            gap-8
 
+            "
 
+            >
 
-<div
 
-className="
 
-max-w-[1500px]
 
-mx-auto
 
-pt-28
 
-px-8
+                <aside
 
-flex
+                className="
 
-gap-8
+                w-80
 
-"
+                h-[75vh]
 
->
+                overflow-y-auto
 
+                bg-[#101010]/90
 
+                backdrop-blur-xl
 
+                border
 
+                border-zinc-800
 
+                rounded-3xl
 
-<aside
+                p-5
 
-className="
+                "
 
-w-80
+                >
 
-h-[75vh]
 
-overflow-y-auto
 
-bg-[#101010]/90
 
-backdrop-blur-xl
+                    <h2
 
-border
+                    className="
 
-border-zinc-800
+                    text-2xl
 
-rounded-3xl
+                    font-bold
 
-p-5
+                    mb-6
 
-"
+                    "
 
->
+                    >
 
+                        Категории
 
-<h2
+                    </h2>
 
-className="
 
-text-2xl
 
-font-bold
 
-mb-6
 
-"
 
->
 
-Категории
+                    {
 
-</h2>
+                    (
 
+                    currentUser?.role === "ADMIN"
 
+                    ||
 
+                    currentUser?.role === "OWNER"
 
+                    )
 
+                    &&
 
 
-{
+                    <button
 
-(
+                    onClick={()=>
 
-currentUser?.role === "ADMIN"
 
-||
+                        router.push(
 
-currentUser?.role === "OWNER"
+                            "/mods/create"
 
-)
+                        )
 
-&&
 
+                    }
 
-<button
+                    className="
 
-onClick={()=>
+                    w-full
 
+                    mb-5
 
-router.push(
+                    py-3
 
-"/mods/create"
+                    rounded-xl
 
-)
+                    bg-white
 
+                    text-black
 
-}
+                    font-bold
 
-className="
+                    "
 
-w-full
+                    >
 
-mb-5
+                        + Создать мод
 
-py-3
+                    </button>
 
-rounded-xl
 
-bg-white
+                    }
 
-text-black
 
-font-bold
 
-"
 
->
 
-+ Создать мод
 
-</button>
 
 
-}
 
+                    <button
 
+                    onClick={()=>
 
 
+                        setActiveCategory(
 
+                            "Все"
 
+                        )
 
-<button
+                    }
 
-onClick={()=>setActiveCategory("Все")}
+                    className="
 
-className="
+                    mb-5
 
-mb-5
+                    text-zinc-400
 
-text-zinc-400
+                    hover:text-white
 
-hover:text-white
+                    "
 
-"
+                    >
 
->
+                        Все моды
 
-Все моды
+                    </button>
 
-</button>
 
 
 
 
 
 
-{
 
-categories.map(
+                    {
 
-item =>
+                    categories.map(
 
-renderCategory(item)
+                        item =>
 
-)
+                        renderCategory(
 
-}
+                            item
 
+                        )
 
+                    )
 
+                    }
 
 
-<div
 
-className="
 
-mt-6
 
-pt-4
 
-border-t
 
-border-zinc-800
+                    <div
 
-"
+                    className="
 
->
+                    mt-6
 
+                    pt-4
 
-{
+                    border-t
 
-simpleCategories.map(
+                    border-zinc-800
 
-item =>
+                    "
 
-<button
+                    >
 
-key={item}
 
-onClick={()=>setActiveCategory(item)}
 
-className="
+                        {
 
-block
+                        simpleCategories.map(
 
-w-full
+                            item =>
 
-text-left
 
-py-2
+                            <button
 
-text-zinc-400
+                            key={item}
 
-hover:text-white
+                            onClick={()=>
 
-"
 
->
+                                setActiveCategory(
 
-{item}
+                                    item
 
-</button>
+                                )
 
 
-)
+                            }
 
-}
+                            className="
 
+                            block
 
+                            w-full
 
-</div>
+                            text-left
 
+                            py-2
 
+                            text-zinc-400
 
-</aside>
+                            hover:text-white
 
+                            "
 
+                            >
 
+                                {item}
 
+                            </button>
 
 
+                        )
 
+                        }
 
 
-<section
 
-className="
+                    </div>
 
-flex-1
 
-grid
 
-grid-cols-1
 
-md:grid-cols-2
 
-xl:grid-cols-3
 
-gap-7
+                </aside>
 
-"
 
->
 
 
 
 
 
-{
 
-filteredMods.map(
 
-mod =>
 
 
-<article
 
-key={mod.id}
+                <section
 
-className="
+                className="
 
-aspect-square
+                flex-1
 
-bg-[#111]/95
+                grid
 
-border
+                grid-cols-1
 
-border-zinc-800
+                md:grid-cols-2
 
-rounded-3xl
+                xl:grid-cols-3
 
-overflow-hidden
+                gap-7
 
-flex
+                "
 
-flex-col
+                >
 
-hover:border-zinc-500
 
-transition
 
-"
 
->
 
 
 
+                    {
 
+                    filteredMods.map(
 
-<div
+                        mod =>
 
-className="
 
-h-16
 
-px-5
+                        <article
 
-flex
+                        key={mod.id}
 
-items-center
+                        className="
 
-gap-3
+                        aspect-square
 
-border-b
+                        bg-[#111]/95
 
-border-zinc-800
+                        border
 
-"
+                        border-zinc-800
 
->
+                        rounded-3xl
 
+                        overflow-hidden
 
-<span
+                        flex
 
-className="
+                        flex-col
 
-px-3
+                        hover:border-zinc-500
 
-py-1
+                        transition
 
-rounded-lg
+                        "
 
-bg-[#1b1b1b]
+                        >
 
-border
 
-border-zinc-700
 
-text-xs
 
-"
 
->
 
-{mod.category}
 
-</span>
+                            <div
 
+                            className="
 
+                            h-16
 
+                            px-5
 
-<h3
+                            flex
 
-className="
+                            items-center
 
-font-bold
+                            gap-3
 
-truncate
+                            border-b
 
-"
+                            border-zinc-800
 
->
+                            "
 
-{mod.title}
+                            >
 
-</h3>
 
 
+                                <span
 
-</div>
+                                className="
 
+                                px-3
 
+                                py-1
 
+                                rounded-lg
 
+                                bg-[#1b1b1b]
 
+                                border
 
+                                border-zinc-700
 
-<div
+                                text-xs
 
-className="
+                                "
 
-relative
+                                >
 
-flex-1
+                                    {mod.category}
 
-m-4
+                                </span>
 
-rounded-2xl
 
-overflow-hidden
 
-"
 
->
 
 
-<Image
+                                <h3
 
-src={getImageUrl(mod.image)}
+                                className="
 
-alt={mod.title}
+                                font-bold
 
-fill
+                                truncate
 
-priority
+                                "
 
-sizes="500px"
+                                >
 
-className="object-cover"
+                                    {mod.title}
 
-/>
+                                </h3>
 
 
-</div>
 
 
+                            </div>
 
 
 
 
 
-<div
 
-className="
 
-h-16
 
-p-4
 
-border-t
+                            <div
 
-border-zinc-800
+                            className="
 
-"
+                            relative
 
->
+                            flex-1
 
+                            m-4
 
-<a
+                            rounded-2xl
 
-href={`/api/mods/download/${mod.id}`}
+                            overflow-hidden
 
-className="
+                            "
 
-block
+                            >
 
-w-full
 
-bg-white
 
-text-black
 
-rounded-xl
 
-py-3
+                                <Image
 
-text-center
+                                src={getImageUrl(mod.image)}
 
-font-bold
+                                alt={mod.title}
 
-text-sm
+                                fill
 
-hover:bg-zinc-200
+                                sizes="500px"
 
-"
+                                className="object-cover"
 
->
+                                />
 
-⬇ Скачать ZIP
 
-</a>
 
 
-</div>
+                            </div>
 
 
 
 
 
-</article>
 
 
-)
 
-}
 
+                            <div
 
+                            className="
 
-</section>
+                            h-16
 
+                            p-4
 
+                            border-t
 
+                            border-zinc-800
 
+                            "
 
-</div>
+                            >
 
 
 
-</div>
+                                <a
 
+                                href={
 
+                                    `/api/mods/download/${mod.id}`
 
-</main>
+                                }
 
+                                className="
 
-);
+                                block
+
+                                w-full
+
+                                bg-white
+
+                                text-black
+
+                                rounded-xl
+
+                                py-3
+
+                                text-center
+
+                                font-bold
+
+                                text-sm
+
+                                hover:bg-zinc-200
+
+                                "
+
+                                >
+
+                                    ⬇ Скачать ZIP
+
+                                </a>
+
+
+
+
+                            </div>
+
+
+
+
+
+
+                        </article>
+
+
+                    )
+
+                    }
+
+
+
+
+
+                </section>
+
+
+
+
+
+
+
+            </div>
+
+
+
+
+
+        </div>
+
+
+
+
+
+        </main>
+
+    );
 
 
 }
