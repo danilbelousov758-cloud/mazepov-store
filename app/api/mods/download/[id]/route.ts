@@ -6,6 +6,7 @@ import {
     GetObjectCommand
 } from "@aws-sdk/client-s3";
 
+
 const prisma = new PrismaClient();
 
 
@@ -57,6 +58,28 @@ async function streamToBuffer(
 
 
 
+function cleanFileName(
+    filePath:string
+){
+
+    const fileName =
+    filePath.split("/").pop()
+    ||
+    "file";
+
+
+    return fileName.replace(
+        /^\d+-/,
+        ""
+    );
+
+}
+
+
+
+
+
+
 
 
 export async function GET(
@@ -76,7 +99,8 @@ export async function GET(
 
         const {
             id
-        } = await context.params;
+        } =
+        await context.params;
 
 
 
@@ -86,7 +110,9 @@ export async function GET(
         await prisma.mod.findUnique({
 
             where:{
+
                 id:Number(id)
+
             }
 
         });
@@ -95,7 +121,9 @@ export async function GET(
 
 
 
+
         if(!mod){
+
 
             return NextResponse.json(
 
@@ -109,8 +137,8 @@ export async function GET(
 
             );
 
-        }
 
+        }
 
 
 
@@ -123,14 +151,19 @@ export async function GET(
 
 
 
-
-
         let filesCount = 0;
 
 
 
 
 
+
+
+
+
+        // =====================
+        // DFF
+        // =====================
 
 
         if(mod.dff){
@@ -154,8 +187,10 @@ export async function GET(
 
 
 
+
                 const response =
                 await s3.send(command);
+
 
 
 
@@ -170,9 +205,13 @@ export async function GET(
 
 
 
+
+
                     zip.file(
 
-                        `${mod.title}.dff`,
+                        cleanFileName(
+                            mod.dff
+                        ),
 
                         buffer
 
@@ -193,13 +232,12 @@ export async function GET(
 
 
                 console.log(
-                    "DFF ERROR",
+                    "DFF ERROR:",
                     error
                 );
 
 
             }
-
 
 
         }
@@ -210,6 +248,11 @@ export async function GET(
 
 
 
+
+
+        // =====================
+        // TXD
+        // =====================
 
 
         if(mod.txd){
@@ -240,6 +283,7 @@ export async function GET(
 
 
 
+
                 if(response.Body){
 
 
@@ -250,9 +294,13 @@ export async function GET(
 
 
 
+
+
                     zip.file(
 
-                        `${mod.title}.txd`,
+                        cleanFileName(
+                            mod.txd
+                        ),
 
                         buffer
 
@@ -273,7 +321,7 @@ export async function GET(
 
 
                 console.log(
-                    "TXD ERROR",
+                    "TXD ERROR:",
                     error
                 );
 
@@ -291,8 +339,7 @@ export async function GET(
 
 
 
-
-        if(filesCount===0){
+        if(filesCount === 0){
 
 
             return NextResponse.json(
@@ -300,7 +347,7 @@ export async function GET(
                 {
 
                     error:
-                    "Файлы не найдены в S3",
+                    "Файлы DFF/TXD не найдены",
 
                     dff:
                     mod.dff,
@@ -330,19 +377,21 @@ export async function GET(
 
 
         const archive =
-await zip.generateAsync({
+        await zip.generateAsync({
 
-    type:"arraybuffer",
+            type:"arraybuffer",
 
-    compression:"DEFLATE",
+            compression:"DEFLATE",
 
-    compressionOptions:{
+            compressionOptions:{
 
-        level:9
+                level:9
 
-    }
+            }
 
-});
+        });
+
+
 
 
 
@@ -365,9 +414,11 @@ await zip.generateAsync({
 
 
 
+
                     "Content-Disposition":
 
                     `attachment; filename="${encodeURIComponent(mod.title)}.zip"`
+
 
 
                 }
@@ -375,6 +426,7 @@ await zip.generateAsync({
             }
 
         );
+
 
 
 
@@ -413,6 +465,5 @@ await zip.generateAsync({
 
 
     }
-
 
 }
