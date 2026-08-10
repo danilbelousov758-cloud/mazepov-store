@@ -1,44 +1,92 @@
 import { NextResponse } from "next/server";
 import { PrismaClient } from "@prisma/client";
 import JSZip from "jszip";
-import fs from "fs/promises";
-import path from "path";
-
+import {
+    S3Client,
+    GetObjectCommand
+} from "@aws-sdk/client-s3";
 
 const prisma = new PrismaClient();
 
 
 
-export async function GET(
+const s3 = new S3Client({
 
-    req: Request,
+    region: process.env.S3_REGION,
 
-    context: {
+    endpoint: process.env.S3_ENDPOINT,
 
-        params: Promise<{
+    credentials: {
 
-            id:string;
+        accessKeyId:
+        process.env.S3_ACCESS_KEY!,
 
-        }>
+        secretAccessKey:
+        process.env.S3_SECRET_KEY!
 
     }
 
-) {
-
-
-    try {
-
-
-        const { id } = await context.params;
+});
 
 
 
-        const mod = await prisma.mod.findUnique({
+
+
+async function streamToBuffer(
+    stream:any
+){
+
+    const chunks:any[] = [];
+
+
+    for await(
+        const chunk of stream
+    ){
+
+        chunks.push(chunk);
+
+    }
+
+
+    return Buffer.concat(chunks);
+
+}
+
+
+
+
+
+
+
+
+export async function GET(
+
+    req:Request,
+
+    context:{
+        params:Promise<{
+            id:string
+        }>
+    }
+
+){
+
+    try{
+
+
+        const {
+            id
+        } = await context.params;
+
+
+
+
+
+        const mod =
+        await prisma.mod.findUnique({
 
             where:{
-
                 id:Number(id)
-
             }
 
         });
@@ -46,25 +94,20 @@ export async function GET(
 
 
 
-        if(!mod){
 
+        if(!mod){
 
             return NextResponse.json(
 
                 {
-
                     error:"Мод не найден"
-
                 },
 
                 {
-
                     status:404
-
                 }
 
             );
-
 
         }
 
@@ -72,18 +115,13 @@ export async function GET(
 
 
 
-        const zip = new JSZip();
 
 
 
+        const zip =
+        new JSZip();
 
-        const publicDir = path.join(
 
-            process.cwd(),
-
-            "public"
-
-        );
 
 
 
@@ -95,53 +133,58 @@ export async function GET(
 
 
 
-
-        // =====================
-        // DFF
-        // =====================
-
-
         if(mod.dff){
-
-
-            const dffFilePath = path.join(
-
-                publicDir,
-
-                mod.dff.replace(
-
-                    /^\//,
-
-                    ""
-
-                )
-
-            );
-
 
 
             try{
 
 
-                const dffFile = await fs.readFile(
+                const command =
+                new GetObjectCommand({
 
-                    dffFilePath
-
-                );
-
+                    Bucket:
+                    process.env.S3_BUCKET,
 
 
-                zip.file(
+                    Key:
+                    mod.dff
 
-                    `${mod.title}.dff`,
-
-                    dffFile
-
-                );
+                });
 
 
 
-                filesCount++;
+
+                const response =
+                await s3.send(command);
+
+
+
+
+                if(response.Body){
+
+
+                    const buffer =
+                    await streamToBuffer(
+                        response.Body
+                    );
+
+
+
+                    zip.file(
+
+                        `${mod.title}.dff`,
+
+                        buffer
+
+                    );
+
+
+
+                    filesCount++;
+
+
+                }
+
 
 
             }
@@ -150,15 +193,13 @@ export async function GET(
 
 
                 console.log(
-
-                    "DFF не найден:",
-
-                    dffFilePath
-
+                    "DFF ERROR",
+                    error
                 );
 
 
             }
+
 
 
         }
@@ -169,54 +210,61 @@ export async function GET(
 
 
 
-
-
-        // =====================
-        // TXD
-        // =====================
 
 
         if(mod.txd){
 
 
-            const txdFilePath = path.join(
-
-                publicDir,
-
-                mod.txd.replace(
-
-                    /^\//,
-
-                    ""
-
-                )
-
-            );
-
-
-
             try{
 
 
-                const txdFile = await fs.readFile(
+                const command =
+                new GetObjectCommand({
 
-                    txdFilePath
-
-                );
-
+                    Bucket:
+                    process.env.S3_BUCKET,
 
 
-                zip.file(
+                    Key:
+                    mod.txd
 
-                    `${mod.title}.txd`,
-
-                    txdFile
-
-                );
+                });
 
 
 
-                filesCount++;
+
+
+                const response =
+                await s3.send(command);
+
+
+
+
+                if(response.Body){
+
+
+                    const buffer =
+                    await streamToBuffer(
+                        response.Body
+                    );
+
+
+
+                    zip.file(
+
+                        `${mod.title}.txd`,
+
+                        buffer
+
+                    );
+
+
+
+                    filesCount++;
+
+
+                }
+
 
 
             }
@@ -225,11 +273,8 @@ export async function GET(
 
 
                 console.log(
-
-                    "TXD не найден:",
-
-                    txdFilePath
-
+                    "TXD ERROR",
+                    error
                 );
 
 
@@ -246,7 +291,8 @@ export async function GET(
 
 
 
-        if(filesCount === 0){
+
+        if(filesCount===0){
 
 
             return NextResponse.json(
@@ -254,17 +300,12 @@ export async function GET(
                 {
 
                     error:
-
-                    "У мода нет файлов DFF/TXD",
-
+                    "Файлы не найдены в S3",
 
                     dff:
-
                     mod.dff,
 
-
                     txd:
-
                     mod.txd
 
                 },
@@ -288,21 +329,20 @@ export async function GET(
 
 
 
-        const archive = await zip.generateAsync({
+        const archive =
+await zip.generateAsync({
 
-            type:"arraybuffer",
+    type:"arraybuffer",
 
-            compression:"DEFLATE",
+    compression:"DEFLATE",
 
-            compressionOptions:{
+    compressionOptions:{
 
-                level:9
+        level:9
 
-            }
+    }
 
-        });
-
-
+});
 
 
 
@@ -347,11 +387,8 @@ export async function GET(
 
 
         console.error(
-
             "DOWNLOAD ERROR:",
-
             error
-
         );
 
 
@@ -361,10 +398,8 @@ export async function GET(
             {
 
                 error:
-
                 error.message ||
-
-                "Ошибка архива"
+                "Ошибка скачивания"
 
             },
 
