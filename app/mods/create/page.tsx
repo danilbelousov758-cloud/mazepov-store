@@ -6,9 +6,13 @@ import { useState } from "react";
 
 
 type CategoryNode = {
+
     name:string;
+
     children?:CategoryNode[];
+
 };
+
 
 
 
@@ -40,7 +44,9 @@ export default function CreateModPage(){
 
 
 
+
     const categories:CategoryNode[] = [
+
 
         {
             name:"Скины",
@@ -64,6 +70,7 @@ export default function CreateModPage(){
                 }
 
             ]
+
         },
 
 
@@ -130,36 +137,90 @@ export default function CreateModPage(){
 
             children:[
 
+
                 {
                     name:"24.7"
                 },
+
 
                 {
                     name:"ДПС/ППС/ФСБ"
                 },
 
+
                 {
                     name:"Оружейка"
                 },
+
 
                 {
                     name:"Ашан"
                 },
 
+
                 {
                     name:"Аптека"
                 },
+
 
                 {
                     name:"ПК клуб"
                 },
 
+
                 {
                     name:"Особняк"
                 },
 
+
                 {
                     name:"Банк"
+                }
+
+
+            ]
+
+        },
+
+
+        {
+            name:"Заменные территории",
+
+            children:[
+
+
+                {
+                    name:"Арзамас"
+                },
+
+
+                {
+                    name:"Батырево"
+                },
+
+
+                {
+                    name:"Южный"
+                },
+
+
+                {
+                    name:"ЦР"
+                },
+
+
+                {
+                    name:"ФСИН"
+                },
+
+
+                {
+                    name:"Бизвар локации"
+                },
+
+
+                {
+                    name:"Вокзалы"
                 }
 
             ]
@@ -172,17 +233,21 @@ export default function CreateModPage(){
 
             children:[
 
+
                 {
                     name:"Кровь"
                 },
 
-                {
-                    name:"Эффект при попадании"
-                },
 
                 {
-                    name:"Эффект при убийстве и ноке"
+                    name:"Попадание"
+                },
+
+
+                {
+                    name:"Убийство и нок"
                 }
+
 
             ]
 
@@ -193,6 +258,7 @@ export default function CreateModPage(){
             name:"Звуки",
 
             children:[
+
 
                 {
                     name:"Попадания"
@@ -257,77 +323,95 @@ export default function CreateModPage(){
             name:"Дороги"
         },
 
+
         {
             name:"Карты"
         },
+
 
         {
             name:"Инвентарь"
         },
 
+
         {
             name:"Скайбоксы"
         },
+
 
         {
             name:"Графика"
         },
 
+
         {
             name:"Загрузочный экран"
         },
+
 
         {
             name:"Подсказки для госс. сотрудников"
         }
 
+
     ];
 
-    const toggleCategory = (name:string)=>{
+
+
+
+
+    function toggleCategory(name:string){
+
 
         setOpened(prev =>
+
 
             prev.includes(name)
 
             ?
 
             prev.filter(
+
                 item => item !== name
+
             )
 
             :
 
             [
+
                 ...prev,
+
                 name
+
             ]
+
 
         );
 
-    };
 
+    }
 
-
-
-
-
-
-    const renderCategory = (
+    function renderCategory(
 
         item:CategoryNode,
 
         level:number = 0
 
-    )=>{
+    ){
 
 
         const hasChildren = Boolean(
-            item.children
+
+            item.children?.length
+
         );
 
 
         const isOpen = opened.includes(
+
             item.name
+
         );
 
 
@@ -335,9 +419,13 @@ export default function CreateModPage(){
         return (
 
             <div
+
             key={item.name}
+
             className="mb-1"
+
             >
+
 
 
                 <button
@@ -349,32 +437,59 @@ export default function CreateModPage(){
 
                     if(hasChildren){
 
+
                         toggleCategory(
+
                             item.name
+
                         );
 
+
                     }
+
                     else{
 
+
                         setCategory(
+
                             item.name
+
                         );
+
 
                     }
 
+
                 }}
+
+
+
+                style={{
+
+                    marginLeft:`${level * 14}px`
+
+                }}
+
 
 
                 className={`
 
                 w-full
+
                 flex
+
                 items-center
+
                 justify-between
+
                 rounded-xl
+
                 border
+
                 px-3
-                py-2.5
+
+                py-2
+
                 transition
 
 
@@ -387,84 +502,83 @@ export default function CreateModPage(){
 
                     :
 
-                    hasChildren && isOpen
-
-                    ?
-
-                    "bg-zinc-800 text-white border-zinc-700"
-
-                    :
-
-                    "bg-[#111111] text-zinc-300 border-zinc-800 hover:bg-[#181818]"
+                    "bg-[#111] text-zinc-300 border-zinc-800 hover:bg-[#181818]"
 
                 }
 
                 `}
 
-
-                style={{
-
-                    marginLeft:`${level * 14}px`
-
-                }}
-
                 >
 
 
-                    <div className="flex items-center gap-2">
 
-
-                        <span className="text-lg">
-
-                        {
-                            hasChildren
-
-                            ?
-
-                            isOpen
-                            
-                            ?
-
-                            "📂"
-
-                            :
-
-                            "📁"
-
-                            :
-
-                            "▪"
-                        }
-
-                        </span>
+                    <span className="flex items-center gap-2">
 
 
                         <span>
 
-                            {item.name}
+
+                        {
+
+                        hasChildren
+
+                        ?
+
+                        isOpen
+
+                        ?
+
+                        "📂"
+
+                        :
+
+                        "📁"
+
+                        :
+
+                        "▪"
+
+                        }
+
 
                         </span>
 
 
-                    </div>
+
+                        {item.name}
+
+
+                    </span>
+
+
 
 
 
                     {
-                        hasChildren &&
 
-                        <span className="text-xs text-zinc-500">
+                    hasChildren &&
 
-                            {
-                                isOpen
-                                ?
-                                "▲"
-                                :
-                                "▼"
-                            }
+                    <span>
 
-                        </span>
+                    {
+
+                    isOpen
+
+                    ?
+
+                    "−"
+
+                    :
+
+                    "+"
+
                     }
+
+
+                    </span>
+
+                    }
+
 
 
                 </button>
@@ -473,59 +587,79 @@ export default function CreateModPage(){
 
 
 
+
+
                 {
 
-                    hasChildren &&
+                hasChildren &&
 
-                    isOpen &&
-
-                    (
-
-                        <div
-
-                        className="
-                        ml-5
-                        mt-1
-                        pl-2
-                        border-l
-                        border-zinc-800
-                        space-y-1
-                        "
-
-                        >
+                isOpen &&
 
 
-                            {
+                (
 
-                                item.children?.map(
+                    <div
 
-                                    child =>
+                    className="
 
-                                    renderCategory(
+                    ml-5
 
-                                        child,
+                    mt-1
 
-                                        level + 1
+                    pl-2
 
-                                    )
+                    border-l
 
-                                )
+                    border-zinc-800
 
-                            }
+                    space-y-1
+
+                    "
+
+                    >
 
 
-                        </div>
+
+                    {
+
+                    item.children?.map(
+
+                        child =>
+
+                        renderCategory(
+
+                            child,
+
+                            level + 1
+
+                        )
 
                     )
 
+
+                    }
+
+
+
+                    </div>
+
+
+                )
+
+
                 }
+
 
 
             </div>
 
         );
 
-    };
+
+    }
+
+
+
 
 
 
@@ -544,11 +678,15 @@ export default function CreateModPage(){
     ){
 
 
+
         if(!file){
 
             return "";
 
         }
+
+
+
 
 
 
@@ -563,9 +701,12 @@ export default function CreateModPage(){
 
                 headers:{
 
-                    "Content-Type":"application/json"
+                    "Content-Type":
+
+                    "application/json"
 
                 },
+
 
                 body:JSON.stringify({
 
@@ -577,20 +718,30 @@ export default function CreateModPage(){
 
                 })
 
+
             }
+
 
         );
 
 
 
 
-        const presignData = await presignResponse.json();
+
+
+
+
+        const presignData =
+
+        await presignResponse.json();
+
 
 
 
 
 
         if(!presignResponse.ok){
+
 
             throw new Error(
 
@@ -600,7 +751,10 @@ export default function CreateModPage(){
 
             );
 
+
         }
+
+
 
 
 
@@ -616,7 +770,9 @@ export default function CreateModPage(){
 
                 headers:{
 
-                    "Content-Type":file.type
+                    "Content-Type":
+
+                    file.type
 
                 },
 
@@ -624,7 +780,10 @@ export default function CreateModPage(){
 
             }
 
+
         );
+
+
 
 
 
@@ -632,13 +791,17 @@ export default function CreateModPage(){
 
         if(!uploadResponse.ok){
 
+
             throw new Error(
 
-                "Ошибка загрузки файла"
+                "Ошибка загрузки файла в S3"
 
             );
 
+
         }
+
+
 
 
 
@@ -656,7 +819,13 @@ export default function CreateModPage(){
 
 
 
+
+
+
+
+
     async function createMod(){
+
 
 
         if(
@@ -669,13 +838,20 @@ export default function CreateModPage(){
 
         ){
 
+
             alert(
+
                 "Заполните название, категорию и изображение"
+
             );
+
 
             return;
 
+
         }
+
+
 
 
 
@@ -685,7 +861,13 @@ export default function CreateModPage(){
 
 
 
+
+
+
         try{
+
+
+
 
 
 
@@ -699,6 +881,10 @@ export default function CreateModPage(){
 
 
 
+
+
+
+
             const txdPath = await uploadFile(
 
                 txd,
@@ -706,6 +892,9 @@ export default function CreateModPage(){
                 "txd"
 
             );
+
+
+
 
 
 
@@ -721,6 +910,10 @@ export default function CreateModPage(){
 
 
 
+
+
+
+
             const response = await fetch(
 
                 "/api/mods/create",
@@ -731,9 +924,12 @@ export default function CreateModPage(){
 
                     headers:{
 
-                        "Content-Type":"application/json"
+                        "Content-Type":
+
+                        "application/json"
 
                     },
+
 
                     body:JSON.stringify({
 
@@ -755,7 +951,11 @@ export default function CreateModPage(){
 
                 }
 
+
             );
+
+
+
 
 
 
@@ -765,29 +965,17 @@ export default function CreateModPage(){
 
 
 
-            if(data.success){
 
 
-                alert(
-                    "Мод успешно создан"
-                );
+
+            if(!response.ok){
 
 
-                router.push(
-                    "/mods"
-                );
-
-
-            }
-
-            else{
-
-
-                alert(
+                throw new Error(
 
                     data.error ||
 
-                    "Ошибка создания"
+                    "Ошибка создания мода"
 
                 );
 
@@ -796,32 +984,71 @@ export default function CreateModPage(){
 
 
 
-        }
 
-        catch(error){
-
-
-            console.error(
-                error
-            );
 
 
             alert(
-                "Ошибка создания мода"
+
+                "Мод успешно создан"
+
             );
 
 
+
+
+
+            router.push(
+
+                "/mods"
+
+            );
+
+
+
+
+
+
         }
 
+        catch(error:any){
+
+
+
+            console.error(
+
+                error
+
+            );
+
+
+
+            alert(
+
+                error.message ||
+
+                "Ошибка создания"
+
+            );
+
+
+
+        }
 
         finally{
 
+
             setLoading(false);
+
 
         }
 
 
+
     }
+
+
+
+
 
 
 
@@ -836,13 +1063,7 @@ export default function CreateModPage(){
 
     "/images/mod-placeholder.png";
 
-
-
-
-
-
     return (
-
 
         <main
 
@@ -861,8 +1082,6 @@ export default function CreateModPage(){
         "
 
         >
-
-
 
 
 
@@ -894,7 +1113,6 @@ export default function CreateModPage(){
 
             >
 
-
                 <source
 
                 src="/videos/background.mp4"
@@ -903,10 +1121,7 @@ export default function CreateModPage(){
 
                 />
 
-
             </video>
-
-
 
 
 
@@ -934,8 +1149,6 @@ export default function CreateModPage(){
 
 
 
-
-
             <div
 
             className="
@@ -951,8 +1164,6 @@ export default function CreateModPage(){
             "
 
             >
-
-
 
 
 
@@ -998,11 +1209,7 @@ export default function CreateModPage(){
 
 
 
-
-
-
                     <div>
-
 
 
 
@@ -1114,7 +1321,6 @@ export default function CreateModPage(){
 
 
 
-
                                 <label
 
                                 className="
@@ -1138,7 +1344,9 @@ export default function CreateModPage(){
                                 >
 
 
+
                                     🖼 Изображение
+
 
 
 
@@ -1158,19 +1366,21 @@ export default function CreateModPage(){
 
                                     {
 
-                                        image
+                                    image
 
-                                        ?
+                                    ?
 
-                                        image.name
+                                    image.name
 
-                                        :
+                                    :
 
-                                        "Выбрать файл"
+                                    "Выбрать файл"
 
                                     }
 
+
                                     </p>
+
 
 
 
@@ -1196,6 +1406,7 @@ export default function CreateModPage(){
                                     />
 
 
+
                                 </label>
 
 
@@ -1229,7 +1440,10 @@ export default function CreateModPage(){
                                 >
 
 
+
                                     📦 TXD
+
+
 
 
 
@@ -1249,19 +1463,21 @@ export default function CreateModPage(){
 
                                     {
 
-                                        txd
+                                    txd
 
-                                        ?
+                                    ?
 
-                                        txd.name
+                                    txd.name
 
-                                        :
+                                    :
 
-                                        "Не обязательно"
+                                    "Не обязательно"
 
                                     }
 
+
                                     </p>
+
 
 
 
@@ -1287,6 +1503,7 @@ export default function CreateModPage(){
                                     />
 
 
+
                                 </label>
 
 
@@ -1320,7 +1537,10 @@ export default function CreateModPage(){
                                 >
 
 
+
                                     🔧 DFF
+
+
 
 
 
@@ -1340,19 +1560,21 @@ export default function CreateModPage(){
 
                                     {
 
-                                        dff
+                                    dff
 
-                                        ?
+                                    ?
 
-                                        dff.name
+                                    dff.name
 
-                                        :
+                                    :
 
-                                        "Не обязательно"
+                                    "Не обязательно"
 
                                     }
 
+
                                     </p>
+
 
 
 
@@ -1378,12 +1600,16 @@ export default function CreateModPage(){
                                     />
 
 
+
                                 </label>
 
 
 
 
+
+
                             </div>
+
 
 
                         </div>
@@ -1440,21 +1666,24 @@ export default function CreateModPage(){
 
 
 
+
+
                             <div
 
                             className="
 
                             h-[420px]
 
-                            bg-black
-
                             rounded-2xl
 
                             overflow-hidden
 
+                            bg-black
+
                             "
 
                             >
+
 
 
                                 <Image
@@ -1480,7 +1709,9 @@ export default function CreateModPage(){
                                 />
 
 
+
                             </div>
+
 
 
                         </div>
@@ -1515,29 +1746,30 @@ export default function CreateModPage(){
 
                         font-bold
 
-                        hover:bg-zinc-200
-
                         "
 
                         >
 
 
+
                             {
 
-                                loading
+                            loading
 
-                                ?
+                            ?
 
-                                "Создание..."
+                            "Создание..."
 
-                                :
+                            :
 
-                                "Создать мод"
+                            "Создать мод"
 
                             }
 
 
+
                         </button>
+
 
 
 
@@ -1574,6 +1806,7 @@ export default function CreateModPage(){
 
 
 
+
                         <h2
 
                         className="
@@ -1596,6 +1829,8 @@ export default function CreateModPage(){
 
 
 
+
+
                         <div
 
                         className="
@@ -1609,20 +1844,24 @@ export default function CreateModPage(){
                         >
 
 
+
                             {
 
-                                categories.map(
+                            categories.map(
 
-                                    item =>
+                                item =>
 
-                                    renderCategory(item)
+                                renderCategory(item)
 
-                                )
+                            )
 
                             }
 
 
+
                         </div>
+
+
 
 
 
@@ -1632,11 +1871,21 @@ export default function CreateModPage(){
 
 
 
+
+
                 </div>
 
 
 
+
+
+
+
             </div>
+
+
+
+
 
 
 
