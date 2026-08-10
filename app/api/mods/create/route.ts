@@ -1,7 +1,10 @@
 import { NextResponse } from "next/server";
 import { PrismaClient } from "@prisma/client";
 
+
 const prisma = new PrismaClient();
+
+
 
 
 
@@ -10,51 +13,114 @@ async function uploadFile(
     folder: string
 ) {
 
-    const uploadData = new FormData();
 
-
-    uploadData.append(
-        "file",
-        file
-    );
-
-
-    uploadData.append(
-        "folder",
-        folder
-    );
-
-
-
-    const response = await fetch(
-        `${process.env.NEXT_PUBLIC_URL || ""}/api/mods/upload`,
+    const presignResponse = await fetch(
+        `${process.env.NEXT_PUBLIC_URL || ""}/api/mods/presign`,
         {
             method:"POST",
-            body:uploadData
+
+            headers:{
+                "Content-Type":"application/json"
+            },
+
+            body:JSON.stringify({
+
+                fileName:file.name,
+
+                fileType:file.type,
+
+                folder
+
+            })
         }
     );
 
 
 
-    const data =
-        await response.json();
+
+
+    const presignData =
+        await presignResponse.json();
 
 
 
-    if(!response.ok){
+
+
+    if(!presignResponse.ok){
+
 
         throw new Error(
-            data.error ||
-            "Ошибка загрузки файла"
+
+            presignData.error ||
+
+            "Ошибка получения ссылки"
+
         );
+
 
     }
 
 
 
-    return data.url;
+
+
+
+
+
+    const uploadResponse = await fetch(
+
+        presignData.url,
+
+        {
+
+            method:"PUT",
+
+            headers:{
+
+                "Content-Type":file.type
+
+            },
+
+            body:file
+
+        }
+
+    );
+
+
+
+
+
+
+
+    if(!uploadResponse.ok){
+
+
+        throw new Error(
+
+            "Ошибка загрузки в S3"
+
+        );
+
+
+    }
+
+
+
+
+
+
+
+    return presignData.key;
+
+
 
 }
+
+
+
+
+
 
 
 
@@ -68,37 +134,66 @@ export async function POST(
 
 
         const formData =
-            await req.formData();
+
+        await req.formData();
+
+
+
 
 
 
 
         const title =
-            String(
-                formData.get("title") || ""
-            );
+
+        String(
+
+            formData.get("title") || ""
+
+        );
+
+
+
 
 
 
         const category =
-            String(
-                formData.get("category") || ""
-            );
+
+        String(
+
+            formData.get("category") || ""
+
+        );
+
+
+
+
 
 
 
         const image =
-            formData.get("image") as File | null;
+
+        formData.get("image") as File | null;
+
+
+
 
 
 
         const dff =
-            formData.get("dff") as File | null;
+
+        formData.get("dff") as File | null;
+
+
+
 
 
 
         const txd =
-            formData.get("txd") as File | null;
+
+        formData.get("txd") as File | null;
+
+
+
 
 
 
@@ -106,21 +201,29 @@ export async function POST(
 
 
         if(
+
             !title ||
+
             !category ||
+
             !image
+
         ){
 
 
             return NextResponse.json(
 
                 {
+
                     error:
                     "Заполните название, категорию и картинку"
+
                 },
 
                 {
+
                     status:400
+
                 }
 
             );
@@ -132,35 +235,41 @@ export async function POST(
 
 
 
+
+
+
+
         console.log(
+
             "CREATE MOD:",
+
             title
+
         );
 
 
 
 
 
-        // =====================
-        // IMAGE
-        // =====================
+
+
 
 
         const imageUrl =
-            await uploadFile(
-                image,
-                "images"
-            );
+
+        await uploadFile(
+
+            image,
+
+            "images"
+
+        );
 
 
 
 
 
 
-
-        // =====================
-        // DFF
-        // =====================
 
 
         let dffUrl = "";
@@ -171,10 +280,14 @@ export async function POST(
 
 
             dffUrl =
-                await uploadFile(
-                    dff,
-                    "dff"
-                );
+
+            await uploadFile(
+
+                dff,
+
+                "dff"
+
+            );
 
 
         }
@@ -186,10 +299,6 @@ export async function POST(
 
 
 
-        // =====================
-        // TXD
-        // =====================
-
 
         let txdUrl = "";
 
@@ -199,10 +308,14 @@ export async function POST(
 
 
             txdUrl =
-                await uploadFile(
-                    txd,
-                    "txd"
-                );
+
+            await uploadFile(
+
+                txd,
+
+                "txd"
+
+            );
 
 
         }
@@ -216,6 +329,7 @@ export async function POST(
 
 
         const mod =
+
         await prisma.mod.create({
 
             data:{
@@ -227,16 +341,21 @@ export async function POST(
                 category,
 
 
+
                 image:imageUrl,
+
 
 
                 dff:dffUrl,
 
 
+
                 txd:txdUrl,
 
 
+
                 dffPath:dffUrl,
+
 
 
                 txdPath:txdUrl
@@ -245,6 +364,7 @@ export async function POST(
             }
 
         });
+
 
 
 
@@ -265,33 +385,50 @@ export async function POST(
 
 
 
+
     }
+
     catch(error:any){
 
 
+
         console.error(
+
             "CREATE MOD ERROR:",
+
             error
+
         );
+
+
+
 
 
 
         return NextResponse.json(
 
             {
+
                 error:
+
                 error.message ||
+
                 "Ошибка создания мода"
+
             },
 
             {
+
                 status:500
+
             }
 
         );
 
 
+
     }
+
 
 
 }

@@ -40,13 +40,7 @@ export default function CreateModPage(){
 
 
 
-
     const categories:CategoryNode[] = [
-
-
-
-        // ===== ОТКРЫВАЮЩИЕСЯ =====
-
 
         {
             name:"Скины",
@@ -70,9 +64,7 @@ export default function CreateModPage(){
                 }
 
             ]
-
         },
-
 
 
         {
@@ -128,11 +120,9 @@ export default function CreateModPage(){
                     name:"Дробовик"
                 }
 
-
             ]
 
         },
-
 
 
         {
@@ -140,7 +130,6 @@ export default function CreateModPage(){
 
             children:[
 
-
                 {
                     name:"24.7"
                 },
@@ -162,111 +151,20 @@ export default function CreateModPage(){
                 },
 
                 {
-                    name:"Пк клуб"
+                    name:"ПК клуб"
                 },
 
                 {
-                    name:"Особа"
+                    name:"Особняк"
                 },
 
                 {
                     name:"Банк"
                 }
 
-
             ]
 
         },
-
-
-
-        {
-            name:"Заменные территории",
-
-            children:[
-
-                {
-                    name:"24.7"
-                },
-
-                {
-                    name:"ДПС/ППС/ФСБ"
-                },
-
-                {
-                    name:"Оружейка"
-                },
-
-                {
-                    name:"Ашан"
-                },
-
-                {
-                    name:"Аптека"
-                },
-
-                {
-                    name:"Пк клуб"
-                },
-
-                {
-                    name:"Особа"
-                },
-
-                {
-                    name:"ЦР"
-                },
-
-                {
-                    name:"ФСИН"
-                },
-
-                {
-                    name:"Арзамас",
-
-                    children:[
-
-                        {
-                            name:"Батырево"
-                        },
-
-                        {
-                            name:"Южка"
-                        }
-
-                    ]
-
-                },
-
-                {
-                    name:"Батырево"
-                },
-
-                {
-                    name:"Южный"
-                },
-
-                {
-                    name:"Бизвар локации"
-                },
-
-                {
-                    name:"Вокзалы"
-                },
-
-                {
-                    name:"Казино"
-                },
-
-                {
-                    name:"Порт"
-                }
-
-
-            ]
-
-        },
-
 
 
         {
@@ -278,28 +176,23 @@ export default function CreateModPage(){
                     name:"Кровь"
                 },
 
-
                 {
                     name:"Эффект при попадании"
                 },
 
-
                 {
-                    name:"Эффект при убийстве и ноке (ld_bum)"
+                    name:"Эффект при убийстве и ноке"
                 }
-
 
             ]
 
         },
 
 
-
         {
             name:"Звуки",
 
             children:[
-
 
                 {
                     name:"Попадания"
@@ -311,175 +204,95 @@ export default function CreateModPage(){
 
                     children:[
 
-
                         {
                             name:"Дигл"
                         },
-
 
                         {
                             name:"ЮСП"
                         },
 
-
                         {
                             name:"Револьвер"
                         },
-
 
                         {
                             name:"АПС"
                         },
 
-
                         {
                             name:"M4A4"
                         },
-
 
                         {
                             name:"Абакан"
                         },
 
-
                         {
                             name:"Ас Вал"
                         },
-
 
                         {
                             name:"Гроза"
                         },
 
-
                         {
                             name:"СВД"
                         },
-
 
                         {
                             name:"СВД ПСО"
                         }
 
-
                     ]
 
                 }
-
 
             ]
 
         },
 
 
-
-
-        // ===== ОБЫЧНЫЕ =====
-
-
-
         {
             name:"Дороги"
         },
-
 
         {
             name:"Карты"
         },
 
-
         {
             name:"Инвентарь"
         },
-
 
         {
             name:"Скайбоксы"
         },
 
-
-        {
-            name:"Нефтевышки"
-        },
-
-
-        {
-            name:"Прицелы"
-        },
-
-
-        {
-            name:"Курсор мыши"
-        },
-
-
-        {
-            name:"Фисты"
-        },
-
-
-        {
-            name:"Таймциклы"
-        },
-
-
-        {
-            name:"Пикапы"
-        },
-
-
-        {
-            name:"Ахк"
-        },
-
-
-        {
-            name:"Аси плагины"
-        },
-
-
-        {
-            name:"Деревья"
-        },
-
-
         {
             name:"Графика"
         },
-
 
         {
             name:"Загрузочный экран"
         },
 
-
         {
             name:"Подсказки для госс. сотрудников"
         }
 
-
     ];
-
-
-
-
-
-
 
     const toggleCategory = (name:string)=>{
 
-
-        setOpened(prev=>
-
+        setOpened(prev =>
 
             prev.includes(name)
 
             ?
 
             prev.filter(
-
-                item=>item !== name
-
+                item => item !== name
             )
 
             :
@@ -491,10 +304,7 @@ export default function CreateModPage(){
 
         );
 
-
     };
-
-
 
 
 
@@ -511,34 +321,23 @@ export default function CreateModPage(){
     )=>{
 
 
-        const hasChildren =
+        const hasChildren = Boolean(
+            item.children
+        );
 
-            Boolean(item.children);
 
-
-
-        const isOpen =
-
-            opened.includes(
-
-                item.name
-
-            );
-
+        const isOpen = opened.includes(
+            item.name
+        );
 
 
 
         return (
 
             <div
-
             key={item.name}
-
             className="mb-1"
-
             >
-
-
 
 
                 <button
@@ -550,51 +349,32 @@ export default function CreateModPage(){
 
                     if(hasChildren){
 
-
                         toggleCategory(
-
                             item.name
-
                         );
 
-
                     }
-
                     else{
 
-
                         setCategory(
-
                             item.name
-
                         );
-
 
                     }
 
-
                 }}
-
 
 
                 className={`
 
                 w-full
-
                 flex
-
                 items-center
-
                 justify-between
-
                 rounded-xl
-
                 border
-
                 px-3
-
                 py-2.5
-
                 transition
 
 
@@ -622,45 +402,27 @@ export default function CreateModPage(){
                 `}
 
 
-
                 style={{
 
-                    marginLeft:
-
-                    `${level * 14}px`
+                    marginLeft:`${level * 14}px`
 
                 }}
-
-
 
                 >
 
 
+                    <div className="flex items-center gap-2">
 
 
-
-                    <div
-
-                    className="flex items-center gap-2"
-
-                    >
-
-
-
-                        <span
-
-                        className="text-lg"
-
-                        >
+                        <span className="text-lg">
 
                         {
-
                             hasChildren
 
                             ?
 
                             isOpen
-
+                            
                             ?
 
                             "📂"
@@ -672,12 +434,9 @@ export default function CreateModPage(){
                             :
 
                             "▪"
-
                         }
 
                         </span>
-
-
 
 
                         <span>
@@ -687,45 +446,25 @@ export default function CreateModPage(){
                         </span>
 
 
-
                     </div>
 
 
 
-
-
                     {
-
                         hasChildren &&
 
-                        (
-
-                            <span
-
-                            className="text-xs text-zinc-500"
-
-                            >
+                        <span className="text-xs text-zinc-500">
 
                             {
-
                                 isOpen
-
                                 ?
-
                                 "▲"
-
                                 :
-
                                 "▼"
-
                             }
 
-                            </span>
-
-                        )
-
+                        </span>
                     }
-
 
 
                 </button>
@@ -745,19 +484,12 @@ export default function CreateModPage(){
                         <div
 
                         className="
-
                         ml-5
-
                         mt-1
-
                         pl-2
-
                         border-l
-
                         border-zinc-800
-
                         space-y-1
-
                         "
 
                         >
@@ -789,13 +521,9 @@ export default function CreateModPage(){
                 }
 
 
-
-
             </div>
 
         );
-
-
 
     };
 
@@ -816,49 +544,38 @@ export default function CreateModPage(){
     ){
 
 
-        if(!file)
+        if(!file){
 
             return "";
 
-
-
-        const formData =
-
-        new FormData();
+        }
 
 
 
-        formData.append(
 
-            "file",
+        const presignResponse = await fetch(
 
-            file
-
-        );
-
-
-
-        formData.append(
-
-            "folder",
-
-            folder
-
-        );
-
-
-
-        const response =
-
-        await fetch(
-
-            "/api/mods/upload",
+            "/api/mods/presign",
 
             {
 
                 method:"POST",
 
-                body:formData
+                headers:{
+
+                    "Content-Type":"application/json"
+
+                },
+
+                body:JSON.stringify({
+
+                    fileName:file.name,
+
+                    fileType:file.type,
+
+                    folder
+
+                })
 
             }
 
@@ -866,32 +583,77 @@ export default function CreateModPage(){
 
 
 
-        const data =
 
-        await response.json();
-
+        const presignData = await presignResponse.json();
 
 
-        if(!response.ok){
 
+
+
+        if(!presignResponse.ok){
 
             throw new Error(
 
-                data.error ||
+                presignData.error ||
 
-                "Ошибка загрузки"
+                "Ошибка получения ссылки"
 
             );
-
 
         }
 
 
 
-        return data.key;
+
+
+        const uploadResponse = await fetch(
+
+            presignData.url,
+
+            {
+
+                method:"PUT",
+
+                headers:{
+
+                    "Content-Type":file.type
+
+                },
+
+                body:file
+
+            }
+
+        );
+
+
+
+
+
+        if(!uploadResponse.ok){
+
+            throw new Error(
+
+                "Ошибка загрузки файла"
+
+            );
+
+        }
+
+
+
+
+
+        return presignData.key;
 
 
     }
+
+
+
+
+
+
 
 
     async function createMod(){
@@ -918,6 +680,7 @@ export default function CreateModPage(){
 
 
 
+
         setLoading(true);
 
 
@@ -926,9 +689,7 @@ export default function CreateModPage(){
 
 
 
-            const imagePath =
-
-            await uploadFile(
+            const imagePath = await uploadFile(
 
                 image,
 
@@ -938,9 +699,7 @@ export default function CreateModPage(){
 
 
 
-            const txdPath =
-
-            await uploadFile(
+            const txdPath = await uploadFile(
 
                 txd,
 
@@ -950,9 +709,7 @@ export default function CreateModPage(){
 
 
 
-            const dffPath =
-
-            await uploadFile(
+            const dffPath = await uploadFile(
 
                 dff,
 
@@ -964,29 +721,19 @@ export default function CreateModPage(){
 
 
 
-
-            const response =
-
-            await fetch(
+            const response = await fetch(
 
                 "/api/mods/create",
 
                 {
 
-
                     method:"POST",
-
-
 
                     headers:{
 
-                        "Content-Type":
-
-                        "application/json"
+                        "Content-Type":"application/json"
 
                     },
-
-
 
                     body:JSON.stringify({
 
@@ -994,24 +741,17 @@ export default function CreateModPage(){
 
                         category,
 
-
                         image:imagePath,
-
 
                         txd:txdPath,
 
-
                         dff:dffPath,
-
 
                         txdPath,
 
-
                         dffPath
 
-
                     })
-
 
                 }
 
@@ -1020,13 +760,7 @@ export default function CreateModPage(){
 
 
 
-
-
-            const data =
-
-            await response.json();
-
-
+            const data = await response.json();
 
 
 
@@ -1035,16 +769,12 @@ export default function CreateModPage(){
 
 
                 alert(
-
                     "Мод успешно создан"
-
                 );
 
 
                 router.push(
-
                     "/mods"
-
                 );
 
 
@@ -1057,7 +787,7 @@ export default function CreateModPage(){
 
                     data.error ||
 
-                    "Ошибка"
+                    "Ошибка создания"
 
                 );
 
@@ -1072,16 +802,12 @@ export default function CreateModPage(){
 
 
             console.error(
-
                 error
-
             );
 
 
             alert(
-
                 "Ошибка создания мода"
-
             );
 
 
@@ -1090,9 +816,7 @@ export default function CreateModPage(){
 
         finally{
 
-
             setLoading(false);
-
 
         }
 
@@ -1102,21 +826,15 @@ export default function CreateModPage(){
 
 
 
+    const preview = image
 
+    ?
 
+    URL.createObjectURL(image)
 
-    const preview =
+    :
 
-        image
-
-        ?
-
-        URL.createObjectURL(image)
-
-        :
-
-        "/images/mod-placeholder.png";
-
+    "/images/mod-placeholder.png";
 
 
 
@@ -1124,6 +842,7 @@ export default function CreateModPage(){
 
 
     return (
+
 
         <main
 
@@ -1142,6 +861,7 @@ export default function CreateModPage(){
         "
 
         >
+
 
 
 
@@ -1174,6 +894,7 @@ export default function CreateModPage(){
 
             >
 
+
                 <source
 
                 src="/videos/background.mp4"
@@ -1182,7 +903,9 @@ export default function CreateModPage(){
 
                 />
 
+
             </video>
+
 
 
 
@@ -1211,6 +934,8 @@ export default function CreateModPage(){
 
 
 
+
+
             <div
 
             className="
@@ -1226,6 +951,7 @@ export default function CreateModPage(){
             "
 
             >
+
 
 
 
@@ -1268,6 +994,8 @@ export default function CreateModPage(){
                 "
 
                 >
+
+
 
 
 
@@ -1322,6 +1050,7 @@ export default function CreateModPage(){
 
 
 
+
                             <input
 
                             value={title}
@@ -1336,9 +1065,7 @@ export default function CreateModPage(){
 
                             }
 
-
                             placeholder="Название мода"
-
 
                             className="
 
@@ -1366,6 +1093,8 @@ export default function CreateModPage(){
 
 
 
+
+
                             <div
 
                             className="
@@ -1379,6 +1108,8 @@ export default function CreateModPage(){
                             "
 
                             >
+
+
 
 
 
@@ -1406,7 +1137,9 @@ export default function CreateModPage(){
 
                                 >
 
+
                                     🖼 Изображение
+
 
 
                                     <p
@@ -1495,7 +1228,9 @@ export default function CreateModPage(){
 
                                 >
 
+
                                     📦 TXD
+
 
 
                                     <p
@@ -1584,7 +1319,9 @@ export default function CreateModPage(){
 
                                 >
 
+
                                     🔧 DFF
+
 
 
                                     <p
@@ -1642,8 +1379,6 @@ export default function CreateModPage(){
 
 
                                 </label>
-
-
 
 
 
@@ -1748,8 +1483,8 @@ export default function CreateModPage(){
                             </div>
 
 
-
                         </div>
+
 
 
 
@@ -1763,7 +1498,6 @@ export default function CreateModPage(){
                         onClick={createMod}
 
                         disabled={loading}
-
 
                         className="
 
@@ -1786,6 +1520,7 @@ export default function CreateModPage(){
                         "
 
                         >
+
 
                             {
 
@@ -1891,9 +1626,7 @@ export default function CreateModPage(){
 
 
 
-
                     </aside>
-
 
 
 
@@ -1908,6 +1641,7 @@ export default function CreateModPage(){
 
 
         </main>
+
 
     );
 
